@@ -35,5 +35,22 @@ class LoginController extends Controller
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
+        $this->middleware('guest:teachers')->except('logout');
+        $this->middleware('guest:students')->except('logout');
+    }
+
+    public function username()
+    {
+        return 'username';
+    }
+
+    public function showStudentLogin()
+    {
+        return view('auth.student.login');
+    }
+
+    public function authStudentLogin()
+    {
+
     }
 }

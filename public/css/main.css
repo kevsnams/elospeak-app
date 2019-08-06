@@ -1,0 +1,81 @@
+html, body {
+height: 100%;
+    font-family: 'Quicksand', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.font-patrick-hand {
+    font-family: 'Patrick Hand', cursive;
+}
+
+.font-quicksand {
+    font-family: 'Quicksand', sans-serif;
+}
+
+button.fncy-button,
+input[type="button"].fncy-button,
+input[type="submit"].fncy-button,
+input[type="reset"].fncy-button {
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    cursor: pointer;
+    _cursor: hand;
+    font-family: inherit;
+    font-size: 1em;
+}
+.fncy-green {
+    background: #54b574;
+    background-image: -webkit-linear-gradient(top, #54b574, #4fb06e);
+    background-image: -moz-linear-gradient(top, #54b574, #4fb06e);
+    background-image: -ms-linear-gradient(top, #54b574, #4fb06e);
+    background-image: -o-linear-gradient(top, #54b574, #4fb06e);
+    background-image: linear-gradient(to bottom, #54b574, #4fb06e);
+    -webkit-border-radius: 8;
+    -moz-border-radius: 8;
+    border-radius: 8px;
+    -webkit-box-shadow: 0px 10px 20px #4bab69;
+    -moz-box-shadow: 0px 10px 20px #4bab69;
+    box-shadow: 0px 10px 20px #4bab69;
+    font-family: Arial;
+    color: #ffffff;
+    font-size: 20px;
+    padding: 10px 20px 10px 20px;
+    border-bottom: solid #499c64 5px;
+    text-decoration: none;
+}
+
+.fncy-green:hover {
+    background: #54b574;
+    background-image: -webkit-linear-gradient(top, #54b574, #5dd483);
+    background-image: -moz-linear-gradient(top, #54b574, #5dd483);
+    background-image: -ms-linear-gradient(top, #54b574, #5dd483);
+    background-image: -o-linear-gradient(top, #54b574, #5dd483);
+    background-image: linear-gradient(to bottom, #54b574, #5dd483);
+    text-decoration: none;
+}
+
+.fncy-orange {
+    -webkit-border-radius: 8;
+    -moz-border-radius: 8;
+    border-radius: 8px;
+    -webkit-box-shadow: 0px 10px 20px #ff833b;
+    -moz-box-shadow: 0px 10px 20px #ff833b;
+    box-shadow: 0px 10px 20px #ff833b;
+    font-family: Arial;
+    color: #ffffff;
+    font-size: 20px;
+    background: #f9670c;
+    padding: 10px 20px 10px 20px;
+    border-bottom: solid #e65c12 5px;
+    text-decoration: none;
+}
+
+.fncy-orange {
+    background: #f9670c;
+    background-image: -webkit-linear-gradient(top, #f9670c, #ff8742);
+    background-image: -moz-linear-gradient(top, #f9670c, #ff8742);
+    background-image: -ms-linear-gradient(top, #f9670c, #ff8742);
+    background-image: -o-linear-gradient(top, #f9670c, #ff8742);
+    background-image: linear-gradient(to bottom, #f9670c, #ff8742);
+    text-decoration: none;
+}
