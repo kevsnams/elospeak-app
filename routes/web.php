@@ -16,14 +16,16 @@ Route::get('/', function () {
 });
 
 Auth::routes();
-Route::get('/login/student', 'Auth\LoginController@showStudentLogin');
+Route::get('/login/student', 'Auth\LoginController@showStudentLogin')->name('student.login');
 //Route::get('/login/teacher', 'Auth\LoginController@showTeacherLogin');
 
-Route::post('/login/student', 'Auth\LoginController@authStudentLogin');
+Route::post('/login/student', 'Auth\LoginController@authStudentLogin')->name('student.auth');
 //Route::post('/login/teacher', 'Auth\LoginController@teacherLogin');
 
-/*
-Route::view('/home', 'home')->middleware('auth');
-Route::view('/admin', 'admin');
-Route::view('/writer', 'writer');
-*/
+Route::name('student.')->group(function () {
+    Route::get('/student', 'StudentController@index')->name('index');
+    Route::get('/student/logout', 'StudentController@logout')->name('logout');
+    Route::get('/student/notifications', 'StudentController@notifications')->name('notifications');
+    Route::get('/student/feedbacks', 'StudentController@feedbacks')->name('feedbacks');
+    Route::get('/student/balance', 'StudentController@balance')->name('balance');
+});

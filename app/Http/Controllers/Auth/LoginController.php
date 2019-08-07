@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
+use Illuminate\Http\Request;
+use Auth;
+
 class LoginController extends Controller
 {
     /*
@@ -19,13 +22,6 @@ class LoginController extends Controller
     */
 
     use AuthenticatesUsers;
-
-    /**
-     * Where to redirect users after login.
-     *
-     * @var string
-     */
-    protected $redirectTo = '/home';
 
     /**
      * Create a new controller instance.
@@ -49,8 +45,30 @@ class LoginController extends Controller
         return view('auth.student.login');
     }
 
-    public function authStudentLogin()
+    public function authStudentLogin(Request $request)
     {
+        $credentials = [
+            'username' => $request->username,
+            'password' => $request->password
+        ];
 
+        if (Auth::guard('student')->attempt($credentials, $request->get('remember_me'))) {
+            return redirect()->intended('/student');
+        }
+
+        return back()->with('loginError', 'Username or password is incorrect');
+    }
+
+    public function redirectTo()
+    {
+        if (Auth::guard('student')->check()) {
+            return '/student';
+        }
+
+        if (Auth::guard('teacher')->check()) {
+            return '/teacher';
+        }
+
+        return '/';
     }
 }

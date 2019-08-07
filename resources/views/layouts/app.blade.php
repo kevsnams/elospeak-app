@@ -21,15 +21,77 @@
     <link href="{{ asset('css/main.css') }}" rel="stylesheet">
 
     @yield('pageCss')
+    
 </head>
 <body>
     <div id="main-app">
-        @yield('pageContent')
+        <div id="left-column">
+            <div class="uk-padding">
+                <div class="uk-text-center">
+                    <img class="uk-border-circle" width="100" height="100" src="https://a.imge.to/2019/08/07/AsQlR.jpg" alt="" />
+                    <a href="#" class="student-full-name">
+                        <span class="uk-text-small" style="display: block"><?php echo Auth::guard('student')->user()->full_name ?></span>
+                    </a>
+                </div>
+                <hr>
+                <nav class="vertical-nav">
+                    <a href="{{ route('student.index') }}" class="@yield('vNav-active-classes', '')">
+                        <span uk-icon="icon: fa-chalkboard-teacher-s; ratio: 2"></span>
+                        Classes
+                    </a>
+        
+                    <a href="{{ route('student.notifications') }}" class="@yield('vNav-active-notifications', '')">
+                        <span uk-icon="icon: fa-bell; ratio: 2"></span>
+                        Notifications
+                    </a>
+        
+                    <a href="{{ route('student.feedbacks') }}" class="@yield('vNav-active-feedbacks', '')">
+                        <span uk-icon="icon: fa-comment-alt; ratio: 2"></span>
+                        Feedbacks
+                    </a>
+        
+                    <a href="{{ route('student.balance') }}" class="@yield('vNav-active-balance', '')">
+                        <span uk-icon="icon: fa-money-check-s; ratio: 2"></span>
+                        Balance
+                    </a>
+                </nav>
+            </div>
+        </div>
+
+        <div id="right-column">
+            <div class="uk-padding">
+                <div class="content-header">
+                    <div class="uk-grid" uk-grid>
+                        <div class="uk-width-expand">
+                            @hasSection('pageHeader')
+                                <span>@yield('pageHeader')</span>
+                            @endif
+                        </div>
+                        <div class="uk-width-small">
+                            <a href="#" class="uk-text-right" style="display: block"><span uk-icon="icon: fa-angle-down-s; ratio: 1.5"></span></a>
+                            <div uk-dropdown>
+                                <ul class="uk-nav uk-dropdown-nav">
+                                    <li class="uk-nav-header">Settings</li>
+                                    <li><a href="#">Account</a></li>
+                                    <li><a href="#">Payment</a></li>
+                                    <li><a href="#">Contact Us</a></li>
+                                    <li class="uk-nav-divider"></li>
+                                    <li><a href="{{ route('student.logout') }}">Logout</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @yield('pageContent')
+            </div>
+        </div>
     </div>
 
     <!-- Scripts -->
     <script src="{{ asset('/uikit-3.1.6/js/uikit.min.js') }}"></script>
     <script src="{{ asset('/uikit-3.1.6/js/uikit-icons.min.js') }}"></script>
+    <script src="{{ asset('/js/uikit-fa-icons.min.js') }}"></script>
     <script src="{{ asset('js/underscore-1.9.1.min.js') }}"></script>
     <script src="{{ asset('js/axios.min.js') }}"></script>
     <script src="{{ asset('js/moment-2.24.0.min.js') }}"></script>
@@ -51,5 +113,6 @@
     </script>
 
     @yield('pageJavascript')
+
 </body>
 </html>

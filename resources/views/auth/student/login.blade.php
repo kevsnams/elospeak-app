@@ -1,11 +1,21 @@
-@extends('layouts.app')
+@extends('layouts.blank')
+@section('pageTitle', 'Login')
 
 @section('pageContent')
     <div class="uk-flex uk-flex-center">
         <div class="uk-width-large uk-border-rounded uk-box-shadow-large" id="login-container">
             <span class="uk-text-center font-patrick-hand student-login-header">Welcome!</span>
 
-            <form class="uk-form-stacked uk-padding">
+            <form class="uk-form-stacked uk-padding uk-padding-remove-top" action="<?php echo route('student.auth') ?>" method="POST" autocomplete="off">
+                @csrf
+
+                @if(session('loginError'))
+                    <div class="uk-alert-danger" uk-alert>
+                        <a class="uk-alert-close" uk-close></a>
+                        <p>{{ session('loginError') }}</p>
+                    </div>
+                @endif
+
                 <div class="uk-margin">
                     <label class="uk-form-label" for="login-username">Username</label>
                     <div class="uk-inline uk-width-expand">
@@ -24,10 +34,10 @@
 
                 <div class="uk-grid-small" uk-grid>
                     <div class="uk-margin">
-                        <button class="fncy-button fncy-orange">Login</button>
+                        <button class="fncy-button fncy-orange" type="submit">Login</button>
                     </div>
                     <div class="uk-width-expand" style="padding-top: 10px;">
-                        <label><input class="uk-checkbox" type="checkbox"> Remember</label>
+                        <label><input class="uk-checkbox" name="remember_me" type="checkbox"> Remember</label>
                     </div>
                 </div>
 
