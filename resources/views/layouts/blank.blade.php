@@ -17,7 +17,7 @@
     <!-- link href="https://fonts.googleapis.com/css?family=Jua|Nanum+Gothic:400,700&display=swap&subset=korean" rel="stylesheet" -->
 
     <!-- Styles -->
-    <link href="{{ asset('/uikit-3.1.6/css/uikit.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('/uikit-3.1.7/css/uikit.min.css') }}" rel="stylesheet">
     <link href="{{ asset('css/main.css') }}" rel="stylesheet">
 
     @yield('pageCss')
@@ -27,8 +27,8 @@
     @yield('pageContent')
 
     <!-- Scripts -->
-    <script src="{{ asset('/uikit-3.1.6/js/uikit.min.js') }}"></script>
-    <script src="{{ asset('/uikit-3.1.6/js/uikit-icons.min.js') }}"></script>
+    <script src="{{ asset('/uikit-3.1.7/js/uikit.min.js') }}"></script>
+    <script src="{{ asset('/uikit-3.1.7/js/uikit-icons.min.js') }}"></script>
     <script src="{{ asset('/js/uikit-fa-icons.min.js') }}"></script>
     <script src="{{ asset('js/underscore-1.9.1.min.js') }}"></script>
     <script src="{{ asset('js/axios.min.js') }}"></script>

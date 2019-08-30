@@ -17,7 +17,7 @@
     <!-- link href="https://fonts.googleapis.com/css?family=Jua|Nanum+Gothic:400,700&display=swap&subset=korean" rel="stylesheet" -->
 
     <!-- Styles -->
-    <link href="{{ asset('/uikit-3.1.6/css/uikit.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('/uikit-3.1.7/css/uikit.min.css') }}" rel="stylesheet">
     <link href="{{ asset('css/main.css') }}" rel="stylesheet">
 
     @yield('pageCss')
@@ -34,27 +34,36 @@
                     </a>
                 </div>
                 <hr>
-                <nav class="vertical-nav">
-                    <a href="{{ route('student.index') }}" class="@yield('vNav-active-classes', '')">
-                        <span uk-icon="icon: fa-chalkboard-teacher-s; ratio: 2"></span>
-                        Classes
-                    </a>
-        
-                    <a href="{{ route('student.notifications') }}" class="@yield('vNav-active-notifications', '')">
-                        <span uk-icon="icon: fa-bell; ratio: 2"></span>
-                        Notifications
-                    </a>
-        
-                    <a href="{{ route('student.feedbacks') }}" class="@yield('vNav-active-feedbacks', '')">
-                        <span uk-icon="icon: fa-comment-alt; ratio: 2"></span>
-                        Feedbacks
-                    </a>
-        
-                    <a href="{{ route('student.balance') }}" class="@yield('vNav-active-balance', '')">
-                        <span uk-icon="icon: fa-money-check-s; ratio: 2"></span>
-                        Balance
-                    </a>
-                </nav>
+                @include('includes.sideNav', [
+                    'id' => 'side-nav',
+                    'class' => 'vertical-nav',
+                    'items' => [
+                        [
+                            'text' => 'Classes',
+                            'route' => route('student.index'),
+                            'icon' => 'fa-chalkboard-teacher-s',
+                            'active' => 'classes'
+                        ],
+                        [
+                            'text' => 'Notifications',
+                            'route' => route('student.notifications'),
+                            'icon' => 'fa-bell',
+                            'active' => 'notifications'
+                        ],
+                        [
+                            'text' => 'Feedbacks',
+                            'route' => route('student.feedbacks'),
+                            'icon' => 'fa-comment-alt',
+                            'active' => 'feedbacks'
+                        ],
+                        [
+                            'text' => 'Balance',
+                            'route' => route('student.balance'),
+                            'icon' => 'fa-money-check-s',
+                            'active' => 'balance'
+                        ]
+                    ]
+                ])
             </div>
         </div>
 
@@ -89,8 +98,8 @@
     </div>
 
     <!-- Scripts -->
-    <script src="{{ asset('/uikit-3.1.6/js/uikit.min.js') }}"></script>
-    <script src="{{ asset('/uikit-3.1.6/js/uikit-icons.min.js') }}"></script>
+    <script src="{{ asset('/uikit-3.1.7/js/uikit.min.js') }}"></script>
+    <script src="{{ asset('/uikit-3.1.7/js/uikit-icons.min.js') }}"></script>
     <script src="{{ asset('/js/uikit-fa-icons.min.js') }}"></script>
     <script src="{{ asset('js/underscore-1.9.1.min.js') }}"></script>
     <script src="{{ asset('js/axios.min.js') }}"></script>

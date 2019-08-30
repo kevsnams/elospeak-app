@@ -11,7 +11,7 @@
         <a href="#"><span>History</span></a>
     </nav>
     <div id="classroom-switch" class="uk-switcher">
-        <div uk-switcher-item="0">
+        <div>
             <div id="classroom-notif" class="uk-width-expand uk-border-rounded">
                 <div class="uk-text-center" style="margin-bottom: 10px;">
                     <h1 class="font-patrick-hand status">Class Started</h1>
@@ -38,7 +38,7 @@
             </div>
         </div>
         
-        <div uk-switcher-item="1">
+        <div>
             <table class="uk-table uk-table-justify">
                 <thead>
                     <tr>
@@ -191,7 +191,7 @@
             </table>
         </div>
 
-        <div uk-switcher-item="2">
+        <div>
             <table class="uk-table uk-table-justify">
                 <thead>
                     <tr>
@@ -344,4 +344,13 @@
             </table>
         </div>
     </div>
+@endsection
+
+@section('pageJavascript')
+    <script src="{{ asset('/ClassroomDateView.js') }}"></script>
+    <script>
+        var cdv = new ClassroomDateView('#upcoming-classes', {
+            source: ''
+        });
+    </script>
 @endsection
