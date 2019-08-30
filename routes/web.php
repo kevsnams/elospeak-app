@@ -29,3 +29,7 @@ Route::name('student.')->group(function () {
     Route::get('/student/feedbacks', 'StudentController@feedbacks')->name('feedbacks');
     Route::get('/student/balance', 'StudentController@balance')->name('balance');
 });
+
+Route::name('classroom.')->group(function() {
+    Route::get('/classroom/{id}', 'ClassroomController@show')->name('show');
+});

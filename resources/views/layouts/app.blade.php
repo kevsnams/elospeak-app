@@ -78,7 +78,7 @@
                         </div>
                         <div class="uk-width-small">
                             <a href="#" class="uk-text-right" style="display: block"><span uk-icon="icon: fa-angle-down-s; ratio: 1.5"></span></a>
-                            <div uk-dropdown>
+                            <div uk-dropdown="mode:click">
                                 <ul class="uk-nav uk-dropdown-nav">
                                     <li class="uk-nav-header">Settings</li>
                                     <li><a href="#">Account</a></li>
