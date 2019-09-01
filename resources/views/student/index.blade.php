@@ -32,7 +32,7 @@
                 </div>
                 <div class="uk-flex uk-flex-center">
                     <div class="uk-width-medium uk-text-center">
-                        <a href="#" class="uk-width-expand fncy-button fncy-orange font-patrick-hand" id="enter-classroom">Enter Classroom</a>
+                        <a href="{{ url('/classroom/1') }}" class="uk-width-expand fncy-button fncy-orange font-patrick-hand" id="enter-classroom">Enter Classroom</a>
                     </div>
                 </div>
             </div>
