@@ -22,14 +22,74 @@
                 </div>
             </div>
             <div id="vr-typebox">
-                <button class="send fncy-button fncy-green">Send</button>
-                <textarea class="typebox"></textarea>
+                <div class="wrapper">
+                    <textarea class="typebox" id="sender-message"></textarea>
+                    <button class="send fncy-button fncy-green" id="send-message-button">Send</button>
+                </div>
             </div>
         </div>
         <div id="vr-board">
             <div id="vr-drawingboard">
-                <canvas id="vr-canvas"></div>
+                <canvas id="vr-canvas"></canvas>
             </div>
+        </div>
+
+        <div id="vr-tools">
+            <ul class="tool-nav">
+                <li>
+                    <a href="#" uk-toggle="target: #vr-files">
+                        <span uk-icon="icon: file-text; ratio: 3" class="icon"></span>
+                        <span class="text">Files</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <span uk-icon="icon: star; ratio: 3" class="icon star"></span>
+                        <span class="text">Cheer!</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" uk-toggle="target: #vr-emojis">
+                        <span uk-icon="icon: happy; ratio: 3" class="icon emoji"></span>
+                        <span class="text">Emoji</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div id="vr-person">
+            <div class="uk-flex" uk-grid>
+                <div><img src="https://images-na.ssl-images-amazon.com/images/I/414uEP5qtwL._SY355_.jpg" width="75" height="75" class="uk-border-circle"></div>
+                <div class="uk-padding-small">
+                    <span class="full_name">Kevin Namuag</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a href="#" id="vr-settings-button" uk-toggle="target: #vr-settings">
+        <span uk-icon="icon: settings; ratio: 1.4"></span>
+    </a>
+
+    <div id="vr-settings" uk-offcanvas="flip:true;overlay:true;mode:push">
+        <div class="uk-offcanvas-bar">
+            <h1>Settings</h1>
+        </div>
+    </div>
+
+    <div id="vr-files" uk-offcanvas="flip: true;overlay: true;mode">
+        <div class="uk-offcanvas-bar light-bar">
+            <span class="uk-text-lead light-header">
+                <span uk-icon="icon: file-text; ratio: 1.5"></span> Files
+            </span>
+        </div>
+    </div>
+
+    <div id="vr-emojis" uk-offcanvas="flip: true;overlay: true;">
+        <div class="uk-offcanvas-bar light-bar">
+            <span class="uk-text-lead light-header">
+                <span uk-icon="icon: happy; ratio: 1.5"></span> Emoji
+            </span>
         </div>
     </div>
 @endsection
@@ -48,7 +108,7 @@
         currY = 0,
         dot_flag = false;
 
-        var x = "#000",
+        var x = "#f03",
             y = 2;
         
         function init() {
@@ -120,8 +180,55 @@
             canvas.height = vrDrawingBoard.getBoundingClientRect().height;
         }
 
+        
+
+        function sendMessage(evt) {
+            var chatField = evt.target;
+            var vrChatbox = document.getElementById('vr-chatbox');
+
+            if (evt.keyCode === 13 || evt === false) {
+                if (evt === false) {
+                    chatField = document.getElementById('sender-message');
+                }
+
+                if (!chatField.value.trim().length) {
+                    chatField.value = '';
+                    return;
+                }
+
+                var chat = document.createElement('div');
+                chat.setAttribute('class', 'chat-right');
+                chat.innerHTML = '<span>'+ chatField.value.trim() +'</span>';
+
+                vrChatbox.appendChild(chat);
+
+                chatField.value = '';
+                vrChatbox.scrollTop = vrChatbox.scrollHeight;
+                return;
+            }
+        }
+
+        function clearInput(evt) {
+            if (evt.keyCode === 13) {
+                evt.target.value = '';
+                return;
+            }
+        }
+
+        function initChat() {
+            var chatField = document.getElementById('sender-message');
+            chatField.addEventListener('keypress', sendMessage, false);
+            chatField.addEventListener('keyup', clearInput, false);
+            chatField.addEventListener('keyup', clearInput, false);
+
+            document.getElementById('send-message-button').addEventListener('click', function (evt) {
+                sendMessage(false);
+            }, false);
+        }
+
         window.onload = function() {
             init();
+            initChat();
         }
     </script>
 @endsection
