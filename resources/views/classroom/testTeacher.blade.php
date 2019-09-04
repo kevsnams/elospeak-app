@@ -180,7 +180,7 @@
             axios.post(url('/classroom/chat'), {
                 id: {{ $classroom->id }},
                 message: message,
-                from: 'student'
+                from: 'teacher'
             });
         }
 
@@ -241,7 +241,7 @@
 
         Echo.channel('classroom.{{ $classroom->id }}').listen('ChatNew', function (e) {
             console.log(e);
-            if (e.from == 'teacher') chatMessage(e.message);
+            if (e.from == 'student') chatMessage(e.message);
         });
 
         window.onload = function() {
