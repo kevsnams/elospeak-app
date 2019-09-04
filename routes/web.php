@@ -32,6 +32,6 @@ Route::name('student.')->group(function () {
 
 Route::name('classroom.')->group(function() {
     Route::get('/classroom/{id}', 'ClassroomController@show')->name('show');
-    Route::get('/classroom-test-teacher', 'ClassroomController@xteacher')->name('test-teacher');
+    Route::get('/classroom-test-teacher/{id}', 'ClassroomController@xteacher')->name('test-teacher');
     Route::post('/classroom/chat', 'ClassroomController@chat')->name('chat');
 });

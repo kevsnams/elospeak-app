@@ -15,16 +15,16 @@ class ClassroomController extends Controller
 
     public function show(Request $request, $id)
     {
-        $classroom = Classroom::findOrFail(381);
+        $classroom = Classroom::findOrFail($id);
 
         return view('classroom.show', [
             'classroom' => $classroom
         ]);
     }
 
-    public function xteacher(Request $request)
+    public function xteacher(Request $request, $id)
     {
-        $classroom = Classroom::findOrFail(381);
+        $classroom = Classroom::findOrFail($id);
 
         return view('classroom.testTeacher', [
             'classroom' => $classroom
