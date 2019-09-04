@@ -347,10 +347,4 @@
 @endsection
 
 @section('pageJavascript')
-    <script src="{{ asset('/ClassroomDateView.js') }}"></script>
-    <script>
-        var cdv = new ClassroomDateView('#upcoming-classes', {
-            source: ''
-        });
-    </script>
 @endsection

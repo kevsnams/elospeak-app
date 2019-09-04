@@ -78,16 +78,16 @@
     </div>
 
     <div id="vr-files" uk-offcanvas="flip: true;overlay: true;mode">
-        <div class="uk-offcanvas-bar light-bar">
-            <span class="uk-text-lead light-header">
+        <div class="uk-offcanvas-bar">
+            <span class="uk-text-lead">
                 <span uk-icon="icon: file-text; ratio: 1.5"></span> Files
             </span>
         </div>
     </div>
 
     <div id="vr-emojis" uk-offcanvas="flip: true;overlay: true;">
-        <div class="uk-offcanvas-bar light-bar">
-            <span class="uk-text-lead light-header">
+        <div class="uk-offcanvas-bar">
+            <span class="uk-text-lead">
                 <span uk-icon="icon: happy; ratio: 1.5"></span> Emoji
             </span>
         </div>
@@ -95,7 +95,7 @@
 @endsection
 
 @section('pageCss')
-    <link rel="stylesheet" href="{{ asset('/css/classroom.css') }}">
+
 @endsection
 
 @section('pageJavascript')

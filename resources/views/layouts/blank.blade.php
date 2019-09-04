@@ -9,16 +9,15 @@
 
     <title>{{ config('app.name', 'LEGO') }} &#8212; @yield('pageTitle', '')</title>
 
-    <!-- Fonts -->
+    <!-- Font Pre-fetch -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css?family=Patrick+Hand|Quicksand:300,400,700&display=swap" rel="stylesheet">
 
     <!-- KR Fonts [@TODO if-else] -->
     <!-- link href="https://fonts.googleapis.com/css?family=Jua|Nanum+Gothic:400,700&display=swap&subset=korean" rel="stylesheet" -->
 
     <!-- Styles -->
-    <link href="{{ asset('/uikit-3.1.7/css/uikit.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/main.css') }}" rel="stylesheet">
+    <link href="{{ asset('/dist/css/lib.css') }}" rel="stylesheet">
+    <link href="{{ asset('/dist/css/main.css') }}" rel="stylesheet">
 
     @yield('pageCss')
     
@@ -27,12 +26,8 @@
     @yield('pageContent')
 
     <!-- Scripts -->
-    <script src="{{ asset('/uikit-3.1.7/js/uikit.min.js') }}"></script>
-    <script src="{{ asset('/uikit-3.1.7/js/uikit-icons.min.js') }}"></script>
+    <script src="{{ asset('/dist/js/lib.js') }}"></script>
     <script src="{{ asset('/js/uikit-fa-icons.min.js') }}"></script>
-    <script src="{{ asset('js/underscore-1.9.1.min.js') }}"></script>
-    <script src="{{ asset('js/axios.min.js') }}"></script>
-    <script src="{{ asset('js/moment-2.24.0.min.js') }}"></script>
     <script src="{{ asset('js/util.js') }}" defer></script>
 
     <script>
