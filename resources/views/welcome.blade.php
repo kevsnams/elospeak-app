@@ -26,6 +26,8 @@
             <img src="{{ asset('/splash.png') }}">
             <h1 style="font-family: 'Patrick Hand', sans-seriff; font-weight: 700; color: rgba(0, 0, 0, 0.5)">Home Page - Coming Soon</h1>
             <a href="{{ url('/login/student') }}" class="uk-button uk-button-default" style="font-family: 'Quicksand', sans-seriff;">Student Login</a>
+            &nbsp;
+            <a href="{{ url('/login/teacher') }}" class="uk-button uk-button-default" style="font-family: 'Quicksand', sans-seriff;">Teacher Login</a>
             <!-- a class="uk-button uk-button-default" style="font-family: 'Quicksand', sans-seriff;">Teacher Login</a -->
         </div>
     </div>
