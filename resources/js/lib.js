@@ -33,7 +33,7 @@ import Echo from 'laravel-echo';
 window.Pusher = require('pusher-js');
 
 window.Echo = new Echo({
-    authEndpoint : 'http://localhost:81/lego-main/public/broadcasting/auth',
+    authEndpoint : process.env.MIX_PUSHER_AUTH_ENDPOINT +'/broadcasting/auth',
     devMode: true,
     broadcaster: 'pusher',
     key: process.env.MIX_PUSHER_APP_KEY,
