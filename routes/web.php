@@ -17,10 +17,15 @@ Route::get('/', function () {
 
 Auth::routes();
 Route::get('/login/student', 'Auth\LoginController@showStudentLogin')->name('student.login');
-//Route::get('/login/teacher', 'Auth\LoginController@showTeacherLogin');
+Route::get('/login/teacher', 'Auth\LoginController@showTeacherLogin')->name('teacher.login');
 
 Route::post('/login/student', 'Auth\LoginController@authStudentLogin')->name('student.auth');
-//Route::post('/login/teacher', 'Auth\LoginController@teacherLogin');
+Route::post('/login/teacher', 'Auth\LoginController@authTeacherLogin')->name('teacher.auth');
+
+Route::name('teacher.')->group(function() {
+    Route::get('/teacher', 'TeacherController@index')->name('index');
+    Route::get('/teacher/logout', 'TeacherController@logout')->name('logout');
+});
 
 Route::name('student.')->group(function () {
     Route::get('/student', 'StudentController@index')->name('index');
@@ -32,6 +37,5 @@ Route::name('student.')->group(function () {
 
 Route::name('classroom.')->group(function() {
     Route::get('/classroom/{id}', 'ClassroomController@show')->name('show');
-    Route::get('/classroom-test-teacher/{id}', 'ClassroomController@xteacher')->name('test-teacher');
     Route::post('/classroom/chat', 'ClassroomController@chat')->name('chat');
 });

@@ -8,7 +8,7 @@
                 <div class="uk-grid" uk-grid>
                     <div><img src="https://usercontent1.hubstatic.com/13400924.png" width="75" height="75" class="uk-border-circle"></div>
                     <div>
-                        <span class="full_name">Aileen Violon</span>
+                        <span class="full_name">{{ $currentUser->full_name }}</span>
                         <a href="#">View Profile</a>
                     </div>
                 </div>
@@ -58,7 +58,7 @@
             <div class="uk-flex" uk-grid>
                 <div><img src="https://images-na.ssl-images-amazon.com/images/I/414uEP5qtwL._SY355_.jpg" width="75" height="75" class="uk-border-circle"></div>
                 <div class="uk-padding-small">
-                    <span class="full_name">Kevin Namuag</span>
+                    <span class="full_name">{{ $otherUser->full_name }}</span>
                 </div>
             </div>
         </div>
@@ -106,28 +106,6 @@
 
         var x = "#f03",
             y = 2;
-        
-        function init() {
-            canvas = document.getElementById('vr-canvas');
-            ctx = canvas.getContext("2d");
-            w = canvas.width;
-            h = canvas.height;
-
-            resizeCanvas();
-            
-            canvas.addEventListener("mousemove", function (e) {
-                findxy('move', e)
-            }, false);
-            canvas.addEventListener("mousedown", function (e) {
-                findxy('down', e)
-            }, false);
-            canvas.addEventListener("mouseup", function (e) {
-                findxy('up', e)
-            }, false);
-            canvas.addEventListener("mouseout", function (e) {
-                findxy('out', e)
-            }, false);
-        }
 
         function draw() {
             ctx.beginPath();
@@ -166,21 +144,29 @@
                     currX = e.clientX - canvas.getBoundingClientRect().left;
                     currY = e.clientY - canvas.getBoundingClientRect().top;
                     draw();
+
+                    @if ($currentUserType == 'teacher')
+                        drawWhisper();
+                    @endif
                 }
             }
         }
 
         function resizeCanvas() {
+            var prevImgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
             var vrDrawingBoard = document.getElementById('vr-drawingboard');
             canvas.width = vrDrawingBoard.getBoundingClientRect().width;
             canvas.height = vrDrawingBoard.getBoundingClientRect().height;
+
+            ctx.putImageData(prevImgData, 0, 0);
         }
 
         function chatSend(message) {
             axios.post(url('/classroom/chat'), {
                 id: {{ $classroom->id }},
                 message: message,
-                from: 'student'
+                from: '{{ $currentUserType }}'
             });
         }
 
@@ -198,27 +184,24 @@
                     return;
                 }
 
-                var chat = document.createElement('div');
-                chat.setAttribute('class', 'chat-right');
-                chat.innerHTML = '<span>'+ chatField.value.trim() +'</span>';
-
-                vrChatbox.appendChild(chat);
-
+                chatMessage(chatField.value.trim(), 'right');
                 chatSend(chatField.value.trim());
 
                 chatField.value = '';
-                vrChatbox.scrollTop = vrChatbox.scrollHeight;
+                chatField.focus();
                 return;
             }
         }
 
-        function chatMessage(message) {
+        function chatMessage(message, lor) {
             var vrChatbox = document.getElementById('vr-chatbox');
             var chat = document.createElement('div');
-            chat.setAttribute('class', 'chat-left');
+            chat.setAttribute('class', 'chat-'+ lor);
             chat.innerHTML = '<span>'+ message +'</span>';
 
             vrChatbox.appendChild(chat);
+
+            vrChatbox.scrollTop = vrChatbox.scrollHeight;
         }
 
         function clearInput(evt) {
@@ -237,15 +220,70 @@
             document.getElementById('send-message-button').addEventListener('click', function (evt) {
                 chatPrint(false);
             }, false);
+
+            Echo.channel('{{ $chatChannel }}').listen('{{ $chatEventListener }}', function (e) {
+                chatMessage(e.message, 'left');
+            });
         }
 
-        Echo.channel('classroom.{{ $classroom->id }}').listen('ChatNew', function (e) {
-            console.log(e);
-            if (e.from == 'teacher') chatMessage(e.message);
-        });
+        @if ($currentUserType == 'teacher')
+            var drawWhisper = function() {
+                Echo.private('classroom.{{ $classroom->id }}.drawboard').whisper('draw', {
+                    flag: flag,
+                    prevX: prevX,
+                    prevY: prevY,
+                    currX: currX,
+                    currY: currY,
+                    dot_flag: dot_flag
+                });
+            };
+        @endif
+
+        function initDrawingboard() {
+            canvas = document.getElementById('vr-canvas');
+            ctx = canvas.getContext("2d");
+            w = canvas.width;
+            h = canvas.height;
+
+            resizeCanvas();
+            window.addEventListener("resize", _.debounce(function () {
+                resizeCanvas();
+            }, 100));
+
+            @if ($currentUserType == 'teacher')
+                canvas.addEventListener("mousemove", function (e) {
+                    findxy('move', e);
+                }, false);
+                canvas.addEventListener("mousedown", function (e) {
+                    findxy('down', e);
+                }, false);
+                canvas.addEventListener("mouseup", function (e) {
+                    findxy('up', e);
+                }, false);
+                canvas.addEventListener("mouseout", function (e) {
+                    findxy('out', e);
+                }, false);
+            @endif
+            
+            @if ($currentUserType == 'student')
+                Echo.private('classroom.{{ $classroom->id }}.drawboard').listenForWhisper('draw', function (e) {
+                    flag = e.flag;
+                    prevX = e.prevX;
+                    prevY = e.prevY;
+                    currX = e.currX;
+                    currY = e.currY;
+                    dot_flag = e.dot_flag;
+
+                    draw();
+
+                    flag = false;
+                    dot_flag = false;
+                });
+            @endif
+        }
 
         window.onload = function() {
-            init();
+            initDrawingboard();
             initChat();
         }
     </script>

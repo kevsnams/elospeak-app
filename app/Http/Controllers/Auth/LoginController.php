@@ -45,6 +45,11 @@ class LoginController extends Controller
         return view('auth.student.login');
     }
 
+    public function showTeacherLogin()
+    {
+        return view('auth.teacher.login');
+    }
+
     public function authStudentLogin(Request $request)
     {
         $credentials = [
@@ -53,7 +58,21 @@ class LoginController extends Controller
         ];
 
         if (Auth::guard('student')->attempt($credentials, $request->get('remember_me'))) {
-            return redirect()->intended('/student');
+            return redirect()->intended(route('student.index'));
+        }
+
+        return back()->with('loginError', 'Username or password is incorrect');
+    }
+
+    public function authTeacherLogin(Request $request)
+    {
+        $credentials = [
+            'username' => $request->username,
+            'password' => $request->password
+        ];
+
+        if (Auth::guard('teacher')->attempt($credentials, $request->get('remember_me'))) {
+            return redirect()->intended(route('teacher.index'));
         }
 
         return back()->with('loginError', 'Username or password is incorrect');
@@ -70,5 +89,10 @@ class LoginController extends Controller
         }
 
         return '/';
+    }
+
+    public function showLoginForm()
+    {
+        return redirect()->to('/');
     }
 }

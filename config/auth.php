@@ -83,7 +83,7 @@ return [
 
         'teachers' => [
             'driver' => 'eloquent',
-            'table' => App\Teacher::class,
+            'model' => App\Teacher::class,
         ],
     ],
 
@@ -107,7 +107,7 @@ return [
             'provider' => 'users',
             'table' => 'password_resets',
             'expire' => 60,
-        ],
+        ]
     ],
 
 ];

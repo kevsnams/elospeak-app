@@ -4,7 +4,7 @@
 @section('pageContent')
     <div class="uk-flex uk-flex-center">
         <div class="uk-width-large uk-border-rounded uk-box-shadow-large" id="login-container">
-            <span class="uk-text-center font-patrick-hand student-login-header">Welcome!</span>
+            <span class="uk-text-center font-patrick-hand login-header">Student Login</span>
 
             <form class="uk-form-stacked uk-padding uk-padding-remove-top" action="<?php echo route('student.auth') ?>" method="POST" autocomplete="off">
                 @csrf
@@ -53,7 +53,7 @@
 @section('pageCss')
 <style>
 
-.student-login-header {
+.login-header {
     font-size: 4em;
     display: block;
     color: rgba(0, 0, 0, 0.5);
