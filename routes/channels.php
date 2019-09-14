@@ -14,6 +14,7 @@
 Broadcast::channel('classroom.{id}.drawboard', function ($user, $id) {
     return true;
 }, ['guards' => ['student', 'teacher']]);
+
 Broadcast::channel('App.User.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
 });

@@ -215,9 +215,10 @@ input[type=reset].fncy-button {
 }
 
 #virtual-room #vr-sidenav {
-  width: 25%;
+  width: 23%;
   height: 100%;
-  position: absolute;
+  position: fixed;
+  overflow-y: auto;
   top: 0;
   left: 0;
   border-right: 1px solid #c9c9c98a;
@@ -233,7 +234,7 @@ input[type=reset].fncy-button {
   margin: 30px 5% 30px 5%;
 }
 #virtual-room #vr-sidenav #vr-client .full_name {
-  font-size: 1.4em;
+  font-size: 1.2em;
   display: block;
 }
 #virtual-room #vr-sidenav #vr-chats {
@@ -252,7 +253,7 @@ input[type=reset].fncy-button {
   box-shadow: inset 0px 43px 48px -38px rgba(230, 230, 230, 0.5);
   position: relative;
   padding: 10px;
-  overflow-y: scroll;
+  overflow-y: auto;
   margin: 0 10px 10px 10px;
 }
 #virtual-room #vr-sidenav #vr-typebox {
@@ -277,93 +278,106 @@ input[type=reset].fncy-button {
   font-family: inherit;
   font-size: 1em;
   display: table-cell;
-  width: 75%;
+  width: 68%;
+  margin-right: 10px;
   vertical-align: top;
   border: 0;
   outline: 0;
 }
 #virtual-room #vr-board {
-  position: absolute;
-  width: 75%;
+  position: fixed;
+  overflow-y: auto;
+  width: 77%;
   height: 100%;
-  left: 25%;
+  left: 23%;
   top: 0;
   background: #ebebeb66;
 }
-#virtual-room #vr-board #vr-drawingboard {
+#virtual-room #vr-board .vr-drawingboard {
   display: block;
   width: 90%;
-  height: 70%;
+  height: 1000px;
   margin: 5% auto 0 auto;
   background: #fff;
-  border-radius: 10px 10px 10px 10px;
-  -moz-border-radius: 10px 10px 10px 10px;
-  -webkit-border-radius: 10px 10px 10px 10px;
   border: 0px solid #000000;
   box-shadow: 0px 0px 41px -21px #bdbdbd;
 }
-#virtual-room #vr-person {
-  position: absolute;
-  right: 30px;
-  bottom: 50px;
-  background: #0000007d;
-  padding: 10px;
-  border-radius: 10px;
-  cursor: pointer;
-  cursor: hand;
-  opacity: 0.5;
-}
-#virtual-room #vr-person:hover {
-  background: #333;
-  opacity: 1;
-}
-#virtual-room #vr-person span.full_name {
-  display: block;
-  font-size: 1.1em;
-  color: #fff;
-}
-#virtual-room #vr-tools {
-  position: absolute;
-  left: 27.5%;
+#virtual-room #vr-board #vr-board-control {
+  background: rgba(78, 78, 78, 0.7);
+  position: fixed;
   bottom: 20px;
-  display: block;
+  margin: 0 auto;
 }
-#virtual-room #vr-tools ul.tool-nav li {
-  list-style-type: none;
-  display: inline-block;
+#virtual-room #vr-board #vr-board-control:hover {
+  background: rgba(78, 78, 78, 0.9);
+}
+#virtual-room #vr-board #vr-board-control ul.nav {
   margin: 0;
-}
-#virtual-room #vr-tools ul.tool-nav li:not(:last-child) {
-  border-right: 1px solid #eee;
-  padding-right: 20px;
-}
-#virtual-room #vr-tools ul.tool-nav li:not(:first-child) {
-  padding-left: 20px;
-}
-#virtual-room #vr-tools ul.tool-nav li a {
-  color: #afafaf;
-  text-decoration: none;
+  padding: 0;
   display: table;
 }
-#virtual-room #vr-tools ul.tool-nav li a:hover {
-  color: #666;
-}
-#virtual-room #vr-tools ul.tool-nav li a:hover span.icon.emoji {
-  color: #1B9546;
-}
-#virtual-room #vr-tools ul.tool-nav li a:hover span.icon.star {
-  color: #ff8d00;
-}
-#virtual-room #vr-tools ul.tool-nav li a span.icon {
+#virtual-room #vr-board #vr-board-control ul.nav li {
   display: table-cell;
-  vertical-align: top;
+  vertical-align: middle;
+  list-style-type: none;
+  margin: 0;
+  padding: 10px;
+  color: #ffffff;
+  cursor: pointer;
 }
-#virtual-room #vr-tools ul.tool-nav li a span.text {
-  display: table-cell;
-  font-size: 1.8em;
-  vertical-align: top;
-  padding-top: 8px;
-  padding-left: 10px;
+#virtual-room #vr-board #vr-board-control ul.nav li:hover {
+  background: #323e47;
+}
+#virtual-room #vr-board #vr-board-control ul.nav li div.popup {
+  background: rgba(78, 78, 78, 0.7);
+  width: auto !important;
+  padding: 10px !important;
+}
+#virtual-room #vr-board #vr-board-control ul.nav li div.popup:hover {
+  background: rgba(78, 78, 78, 0.9);
+}
+#virtual-room #vr-board #vr-board-control ul.nav li div.popup span {
+  display: inline-block;
+}
+
+span.thickness {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid #e0e0e0;
+  border-radius: 5px;
+}
+span.thickness.thick-1 {
+  background: url("../../img/thick-1.png") no-repeat scroll center;
+}
+span.thickness.thick-2 {
+  background: url("../../img/thick-2.png") no-repeat scroll center;
+}
+span.thickness.thick-3 {
+  background: url("../../img/thick-3.png") no-repeat scroll center;
+}
+
+span.color-display {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid #e0e0e0;
+  border-radius: 5px;
+}
+span.color-display.black {
+  background: #000;
+}
+span.color-display.red {
+  background: #f03;
+}
+span.color-display.white {
+  background: #fff;
+}
+span.color-display.yellow {
+  background: #f6ff00;
+}
+span.color-display.orange {
+  background: #FCB02F;
 }
 
 span.a {
@@ -404,20 +418,4 @@ span.b {
 }
 .chat-right span:hover {
   background: rgba(50, 63, 255, 0.9);
-}
-
-#vr-settings-button {
-  display: block;
-  position: absolute;
-  background: #222;
-  right: 0;
-  top: 20px;
-  color: #fff;
-  padding: 10px;
-  -webkit-border-top-left-radius: 5px;
-  -webkit-border-bottom-left-radius: 5px;
-  -moz-border-radius-topleft: 5px;
-  -moz-border-radius-bottomleft: 5px;
-  border-top-left-radius: 5px;
-  border-bottom-left-radius: 5px;
 }

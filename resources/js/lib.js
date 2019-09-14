@@ -31,7 +31,7 @@ if (token) {
 import Echo from 'laravel-echo';
 
 window.Pusher = require('pusher-js');
-
+/*
 window.Echo = new Echo({
     authEndpoint : process.env.MIX_PUSHER_AUTH_ENDPOINT +'/broadcasting/auth',
     devMode: true,
@@ -42,3 +42,4 @@ window.Echo = new Echo({
     wsHost: window.location.hostname,
     wsPort: 6001
 });
+*/

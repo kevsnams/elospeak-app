@@ -44281,16 +44281,18 @@ if (token) {
 
 
 window.Pusher = __webpack_require__(/*! pusher-js */ "./node_modules/pusher-js/dist/web/pusher.js");
-window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__["default"]({
-  authEndpoint: "http://localhost:81/lego-main/public" + '/broadcasting/auth',
-  devMode: true,
-  broadcaster: 'pusher',
-  key: "kevin",
-  cluster: "mt1",
-  //encrypted: true
-  wsHost: window.location.hostname,
-  wsPort: 6001
+/*
+window.Echo = new Echo({
+    authEndpoint : process.env.MIX_PUSHER_AUTH_ENDPOINT +'/broadcasting/auth',
+    devMode: true,
+    broadcaster: 'pusher',
+    key: process.env.MIX_PUSHER_APP_KEY,
+    cluster: process.env.MIX_PUSHER_APP_CLUSTER,
+    //encrypted: true
+    wsHost: window.location.hostname,
+    wsPort: 6001
 });
+*/
 
 /***/ }),
 

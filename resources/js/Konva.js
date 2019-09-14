@@ -1,0 +1,1 @@
+window.Konva = require('konva');

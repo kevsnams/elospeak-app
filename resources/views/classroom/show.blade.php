@@ -6,7 +6,7 @@
             <div class="logo"><span class="a">ELO</span><span class="b">Speak</span></div>
             <div id="vr-client">
                 <div class="uk-grid" uk-grid>
-                    <div><img src="https://usercontent1.hubstatic.com/13400924.png" width="75" height="75" class="uk-border-circle"></div>
+                    <div><img src="https://usercontent1.hubstatic.com/13400924.png" width="55" height="55" class="uk-border-circle"></div>
                     <div>
                         <span class="full_name">{{ $currentUser->full_name }}</span>
                         <a href="#">View Profile</a>
@@ -26,265 +26,318 @@
             </div>
         </div>
         <div id="vr-board">
-            <div id="vr-drawingboard">
-                <canvas id="vr-canvas"></canvas>
+            <div id="vr-db-0" class="vr-drawingboard"></div>
+            <div id="vr-board-control">
+                <ul class="nav">
+                    <li>
+                        <div style="padding-top: 5px;">
+                            <span class="color-display black" uk-tooltip="Pen Color"></span>
+                            <div class="popup" id="color-picker-drop" uk-drop="mode: click; pos: top-center;">
+                                <span class="color-pick color-display black"></span>
+                                <span class="color-pick color-display white"></span>
+                                <span class="color-pick color-display yellow"></span>
+                                <span class="color-pick color-display orange"></span>
+                                <span class="color-pick color-display red"></span>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li>
+                        <div style="padding-top: 5px;">
+                            <span class="thickness thick-1" uk-tooltip="Pen Thickness"></span>
+                            <div class="popup" id="pen-size-drop" uk-drop="mode: click; pos: top-center;">
+                                <span class="thickness-pick thickness thick-1" data-size="small"></span>
+                                <span class="thickness-pick thickness thick-2" data-size="medium"></span>
+                                <span class="thickness-pick thickness thick-3" data-size="large"></span>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li>
+                        <div>
+                            <span uk-icon="icon: fa-shapes-s; ratio: .9" uk-tooltip="Shapes"></span>
+                            <div class="popup" uk-drop="mode: click; pos: top-center;">
+                                <span data-shape='square' uk-icon="icon: fa-square"></span>
+                                <span data-shape='star' uk-icon="icon: fa-star"></span>
+                                <span data-shape='circle' uk-icon="icon: fa-circle"></span>
+                                <span data-shape='rectangle' uk-icon="icon: file; ratio: 1.1" style="transform: rotate(90deg)"></span>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li>
+                        <span uk-icon="icon: fa-eraser-s; ratio: .9" uk-tooltip="Eraser"></span>
+                    </li>
+
+                    <li>
+                        <span uk-icon="icon: fa-grin-tongue-squint; ratio: .9" uk-tooltip="Emoji"></span>
+                    </li>
+                    <li>
+                        <span uk-icon="icon: fa-file-import-s; ratio: .9" uk-tooltip="Import Lesson"></span>
+                    </li>
+                    <li>
+                        <span uk-icon="icon: fa-cog-s; ratio: .9" uk-tooltip="Settings"></span>
+                    </li>
+                </ul>
             </div>
-        </div>
-
-        <div id="vr-tools">
-            <ul class="tool-nav">
-                <li>
-                    <a href="#" uk-toggle="target: #vr-files">
-                        <span uk-icon="icon: file-text; ratio: 3" class="icon"></span>
-                        <span class="text">Files</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#">
-                        <span uk-icon="icon: star; ratio: 3" class="icon star"></span>
-                        <span class="text">Cheer!</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#" uk-toggle="target: #vr-emojis">
-                        <span uk-icon="icon: happy; ratio: 3" class="icon emoji"></span>
-                        <span class="text">Emoji</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
-
-        <div id="vr-person">
-            <div class="uk-flex" uk-grid>
-                <div><img src="https://images-na.ssl-images-amazon.com/images/I/414uEP5qtwL._SY355_.jpg" width="75" height="75" class="uk-border-circle"></div>
-                <div class="uk-padding-small">
-                    <span class="full_name">{{ $otherUser->full_name }}</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <a href="#" id="vr-settings-button" uk-toggle="target: #vr-settings">
-        <span uk-icon="icon: settings; ratio: 1.4"></span>
-    </a>
-
-    <div id="vr-settings" uk-offcanvas="flip:true;overlay:true;mode:push">
-        <div class="uk-offcanvas-bar">
-            <h1>Settings</h1>
-        </div>
-    </div>
-
-    <div id="vr-files" uk-offcanvas="flip: true;overlay: true;mode">
-        <div class="uk-offcanvas-bar">
-            <span class="uk-text-lead">
-                <span uk-icon="icon: file-text; ratio: 1.5"></span> Files
-            </span>
-        </div>
-    </div>
-
-    <div id="vr-emojis" uk-offcanvas="flip: true;overlay: true;">
-        <div class="uk-offcanvas-bar">
-            <span class="uk-text-lead">
-                <span uk-icon="icon: happy; ratio: 1.5"></span> Emoji
-            </span>
         </div>
     </div>
 @endsection
 
 @section('pageCss')
-
+<style type="text/css">
+::-webkit-scrollbar{width:10px}::-webkit-scrollbar-track{background:#7b7b7b;border-radius:5px}::-webkit-scrollbar-thumb{background:#d8d8d8;border-radius:5px}
+</style>
 @endsection
 
 @section('pageJavascript')
-    <script>
-        var canvas, ctx, flag = false,
-        prevX = 0,
-        currX = 0,
-        prevY = 0,
-        currY = 0,
-        dot_flag = false;
+<script src="{{ asset('/dist/js/Konva.js') }}"></script>
+<script>
+"use strict";
+const DrawingBoardLayer = (function() {
+    let layers = [];
+    let current = 0;
 
-        var x = "#f03",
-            y = 2;
-
-        function draw() {
-            ctx.beginPath();
-            ctx.moveTo(prevX, prevY);
-            ctx.lineTo(currX, currY);
-            ctx.strokeStyle = x;
-            ctx.lineWidth = y;
-            ctx.stroke();
-            ctx.closePath();
-        }
-
-        function findxy(res, e) {
-            if (res == 'down') {
-                prevX = currX;
-                prevY = currY;
-                currX = e.clientX - canvas.getBoundingClientRect().left;
-                currY = e.clientY - canvas.getBoundingClientRect().top;
-                
-                flag = true;
-                dot_flag = true;
-                if (dot_flag) {
-                    ctx.beginPath();
-                    ctx.fillStyle = x;
-                    ctx.fillRect(currX, currY, 2, 2);
-                    ctx.closePath();
-                    dot_flag = false;
-                }
-            }
-            if (res == 'up' || res == "out") {
-                flag = false;
-            }
-            if (res == 'move') {
-                if (flag) {
-                    prevX = currX;
-                    prevY = currY;
-                    currX = e.clientX - canvas.getBoundingClientRect().left;
-                    currY = e.clientY - canvas.getBoundingClientRect().top;
-                    draw();
-
-                    @if ($currentUserType == 'teacher')
-                        drawWhisper();
-                    @endif
-                }
-            }
-        }
-
-        function resizeCanvas() {
-            var prevImgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-
-            var vrDrawingBoard = document.getElementById('vr-drawingboard');
-            canvas.width = vrDrawingBoard.getBoundingClientRect().width;
-            canvas.height = vrDrawingBoard.getBoundingClientRect().height;
-
-            ctx.putImageData(prevImgData, 0, 0);
-        }
-
-        function chatSend(message) {
-            axios.post(url('/classroom/chat'), {
-                id: {{ $classroom->id }},
-                message: message,
-                from: '{{ $currentUserType }}'
-            });
-        }
-
-        function chatPrint(evt) {
-            var chatField = evt.target;
-            var vrChatbox = document.getElementById('vr-chatbox');
-
-            if (evt.keyCode === 13 || evt === false) {
-                if (evt === false) {
-                    chatField = document.getElementById('sender-message');
-                }
-
-                if (!chatField.value.trim().length) {
-                    chatField.value = '';
-                    return;
-                }
-
-                chatMessage(chatField.value.trim(), 'right');
-                chatSend(chatField.value.trim());
-
-                chatField.value = '';
-                chatField.focus();
-                return;
-            }
-        }
-
-        function chatMessage(message, lor) {
-            var vrChatbox = document.getElementById('vr-chatbox');
-            var chat = document.createElement('div');
-            chat.setAttribute('class', 'chat-'+ lor);
-            chat.innerHTML = '<span>'+ message +'</span>';
-
-            vrChatbox.appendChild(chat);
-
-            vrChatbox.scrollTop = vrChatbox.scrollHeight;
-        }
-
-        function clearInput(evt) {
-            if (evt.keyCode === 13) {
-                evt.target.value = '';
-                return;
-            }
-        }
-
-        function initChat() {
-            var chatField = document.getElementById('sender-message');
-            chatField.addEventListener('keypress', chatPrint, false);
-            chatField.addEventListener('keyup', clearInput, false);
-            chatField.addEventListener('keyup', clearInput, false);
-
-            document.getElementById('send-message-button').addEventListener('click', function (evt) {
-                chatPrint(false);
-            }, false);
-
-            Echo.channel('{{ $chatChannel }}').listen('{{ $chatEventListener }}', function (e) {
-                chatMessage(e.message, 'left');
-            });
-        }
-
-        @if ($currentUserType == 'teacher')
-            var drawWhisper = function() {
-                Echo.private('classroom.{{ $classroom->id }}.drawboard').whisper('draw', {
-                    flag: flag,
-                    prevX: prevX,
-                    prevY: prevY,
-                    currX: currX,
-                    currY: currY,
-                    dot_flag: dot_flag
-                });
+    return {
+        current: function () {
+            return {
+                index: current,
+                layer: layers[current]
             };
-        @endif
+        },
 
-        function initDrawingboard() {
-            canvas = document.getElementById('vr-canvas');
-            ctx = canvas.getContext("2d");
-            w = canvas.width;
-            h = canvas.height;
+        add: function () {
+            layers.push(new Konva.Layer());
+        }
+    }
+}());
 
-            resizeCanvas();
-            window.addEventListener("resize", _.debounce(function () {
-                resizeCanvas();
-            }, 100));
+const DrawingBoards = (function() {
+    let boards = [];
+    let current = 0;
 
-            @if ($currentUserType == 'teacher')
-                canvas.addEventListener("mousemove", function (e) {
-                    findxy('move', e);
+    return {
+        init: function () {
+            boards[current] = new DrawingBoard('vr-db-'+ current);
+        },
+
+        current: function() {
+            return boards[current];
+        },
+
+        add: function () {
+            boards.push(new DrawingBoard('vr-db-'+ boards.length));
+        },
+
+        show: function (i) {
+            current = i;
+        }
+    }
+}());
+
+const DrawShapes = (function() {
+    /**
+     * TODO here
+     */
+}());
+
+const BrushSizes = (function() {
+    const SMALL = 5;
+    const MEDIUM = 10;
+    const LARGE = 20;
+
+    let selector = '.thickness-pick';
+    let drop, size;
+
+    function set(v) {
+        size = v;
+    }
+
+    function get() {
+        return size;
+    }
+
+    return {
+        SMALL: SMALL,
+        MEDIUM: MEDIUM,
+        LARGE: LARGE,
+
+        drop: drop,
+
+        set: set,
+        get: get,
+
+        init: function () {
+            drop = document.getElementById('pen-size-drop');
+            _.each(document.querySelectorAll(selector), function (e, i) {
+                if (i === 0) {
+                    set(BrushSizes[e.getAttribute('data-size').toUpperCase()]);
+                }
+
+                e.addEventListener('click', function (evt) {
+                    UIkit.drop(drop).hide();
+                    let s = BrushSizes[evt.target.getAttribute('data-size').toUpperCase()];
+                    set(s);
+
+                    DrawingBoards.current().mode('brush');
                 }, false);
-                canvas.addEventListener("mousedown", function (e) {
-                    findxy('down', e);
-                }, false);
-                canvas.addEventListener("mouseup", function (e) {
-                    findxy('up', e);
-                }, false);
-                canvas.addEventListener("mouseout", function (e) {
-                    findxy('out', e);
-                }, false);
-            @endif
-            
-            @if ($currentUserType == 'student')
-                Echo.private('classroom.{{ $classroom->id }}.drawboard').listenForWhisper('draw', function (e) {
-                    flag = e.flag;
-                    prevX = e.prevX;
-                    prevY = e.prevY;
-                    currX = e.currX;
-                    currY = e.currY;
-                    dot_flag = e.dot_flag;
+            });
+        }
+    }
+}());
 
-                    draw();
+const ColorPicker = (function () {
+    let drop = null;
+    let selector = '.color-pick';
+    let color;
 
-                    flag = false;
-                    dot_flag = false;
-                });
-            @endif
+    function set(v) {
+        color = v;
+    }
+
+    function get() {
+        return color;
+    }
+
+    return {
+        set: set,
+        get: get,
+        drop: drop,
+        init: function () {
+            drop = document.getElementById('color-picker-drop');
+
+            _.each(document.querySelectorAll(selector), function (e, i) {
+                if (i === 0) {
+                    const style = getComputedStyle(e);
+                    set(style.getPropertyValue('background-color'));
+                }
+
+                e.addEventListener('click', function (evt) {
+                    UIkit.drop(drop).hide();
+                    const style = getComputedStyle(evt.target);
+                    set(style.getPropertyValue('background-color'));
+                }, false);
+            });
+        }
+    }
+}());
+
+function DrawingBoard(id) {
+    this.id = id;
+    this.target = document.getElementById(id);
+
+    this.stage = new Konva.Stage({
+        container: this.id,
+        width: this.target.getBoundingClientRect().width,
+        height: this.target.getBoundingClientRect().height
+    });
+
+    DrawingBoardLayer.add();
+    this.layer = DrawingBoardLayer.current().layer;
+
+    /**
+     * This part right here sets the mode for the drawing board
+     * Current supported modes:
+     * - brush
+     * - eraser
+     * - shapes
+     * default: brush
+     * 
+     * Usage:
+     * .mode('brush') sets the mode to 'brush'
+     * .mode() gets the current mode
+     * if parameter value is not in allowedModes, then it doesn't change anything
+     */
+    this._mode = 'brush';
+    let allowedModes = ['brush', 'eraser', 'shapes'];
+    this.mode = function(v) {
+        if (typeof v === 'undefined') {
+            return this._mode;
         }
 
-        window.onload = function() {
-            initDrawingboard();
-            initChat();
+        if (allowedModes.indexOf(v) === -1) {
+            return;
         }
-    </script>
+
+        this._mode = v;
+    };
+
+    this.stage.add(this.layer);
+
+    /**
+     * Stage events
+     */
+
+    // Reference this so we can use it inside event definitions
+    let self = this;
+
+    // Flag for determining if free painting has started
+    this._isFreePaint = false;
+
+    // This private variable is only used on brush mode
+    this._lastLine;
+
+    const freePaintModes = ['brush', 'eraser'];
+
+    this.stage.on('mousedown touchstart', function(e) {
+        if (freePaintModes.indexOf(self.mode()) >= 0) {
+            let operation = self.mode() === 'brush' ? 'source-over' : 'destination-out';
+
+            self._isFreePaint = true;
+
+            const pos = self.stage.getPointerPosition();
+
+            self._lastLine = new Konva.Line({
+                stroke: ColorPicker.get(),
+                strokeWidth: BrushSizes.get(),
+                globalCompositeOperation: operation,
+                lineCap: 'round',
+                points: [pos.x, pos.y]
+            });
+
+            self.layer.add(self._lastLine);
+        }
+    });
+
+    this.stage.on('mouseup touchend', function() {
+        if (freePaintModes.indexOf(self.mode()) >= 0) {
+            self._isFreePaint = false;
+        }
+    });
+
+    this.stage.on('mousemove touchmove', function() {
+        if (freePaintModes.indexOf(self.mode()) >= 0) {
+            if (!self._isFreePaint) return;
+
+            const pos = self.stage.getPointerPosition();
+            let newPoints = self._lastLine.points().concat([pos.x, pos.y]);
+
+            self._lastLine.points(newPoints);
+            self.layer.batchDraw();
+        }
+    });
+}
+
+const board = document.getElementById('vr-board');
+const boardcontrol = document.getElementById('vr-board-control');
+
+let crWindowResize = function(wait) {
+    return _.debounce(function(evt) {
+        let midpos = board.getBoundingClientRect().width / 2;
+        let halfboardcontrol = boardcontrol.getBoundingClientRect().width / 2;
+
+        boardcontrol.style.marginLeft = (midpos - halfboardcontrol) +'px';
+    }, wait);
+};
+
+window.addEventListener('load', function(evt) {
+    crWindowResize(0).call(null);
+
+    ColorPicker.init();
+    BrushSizes.init();
+    DrawingBoards.init();
+}, false);
+
+window.addEventListener('resize', crWindowResize(200), false);
+</script>
 @endsection

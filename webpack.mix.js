@@ -17,6 +17,7 @@ mix.sass('resources/sass/main.scss', 'public/dist/css/', {
     })
     .sass('resources/sass/lib.scss', 'public/dist/css')
     .js('resources/js/lib.js', 'public/dist/js/')
+    .js('resources/js/Konva.js', 'public/dist/js')
     .options({
         processCssUrls: false
     });
