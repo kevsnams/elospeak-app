@@ -12,6 +12,8 @@ let mix = require('laravel-mix');
  */
 
 //mix.js('src/app.js', 'dist/').sass('src/app.scss', 'dist/');
+
+/*
 mix.sass('resources/sass/main.scss', 'public/dist/css/', {
        // outputStyle: 'compressed',
     })
@@ -22,6 +24,14 @@ mix.sass('resources/sass/main.scss', 'public/dist/css/', {
     .options({
         processCssUrls: false
     });
+*/
+
+mix.sass('resources/sass/main.scss', 'public/dist/css')
+.sass('resources/sass/lib.scss', 'public/dist/css')
+.js('resources/js/classroom-v2.js', 'public/dist/js')
+.options({
+    processCssUrls: false
+});
 
 // Full API
 // mix.js(src, output);

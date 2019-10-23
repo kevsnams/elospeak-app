@@ -296,96 +296,93 @@ input[type=reset].fncy-button {
 #virtual-room #vr-board .vr-drawingboard {
   display: block;
   width: 90%;
-  height: 1000px;
-  margin: 5% auto 0 auto;
+  min-height: 1000px;
+  margin: 7% auto 0 auto;
   background: #fff;
   border: 0px solid #000000;
   box-shadow: 0px 0px 41px -21px #bdbdbd;
 }
-#virtual-room #vr-board #vr-board-control {
-  background: rgba(78, 78, 78, 0.7);
+
+#vr-toolbox {
   position: fixed;
-  bottom: 20px;
-  margin: 0 auto;
+  bottom: 0;
+  width: 60%;
 }
-#virtual-room #vr-board #vr-board-control:hover {
-  background: rgba(78, 78, 78, 0.9);
+#vr-toolbox .tool-controls {
+  padding-bottom: 20px;
 }
-#virtual-room #vr-board #vr-board-control ul.nav {
-  margin: 0;
-  padding: 0;
-  display: table;
+#vr-toolbox #brush-preview {
+  width: 50px;
+  height: 50px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-#virtual-room #vr-board #vr-board-control ul.nav li {
-  display: table-cell;
-  vertical-align: middle;
-  list-style-type: none;
-  margin: 0;
-  padding: 10px;
-  color: #ffffff;
-  cursor: pointer;
-}
-#virtual-room #vr-board #vr-board-control ul.nav li:hover {
-  background: #323e47;
-}
-#virtual-room #vr-board #vr-board-control ul.nav li div.popup {
-  background: rgba(78, 78, 78, 0.7);
-  width: auto !important;
-  padding: 10px !important;
-}
-#virtual-room #vr-board #vr-board-control ul.nav li div.popup:hover {
-  background: rgba(78, 78, 78, 0.9);
-}
-#virtual-room #vr-board #vr-board-control ul.nav li div.popup span {
-  display: inline-block;
-}
-
-span.floating-pen {
-  float: left;
-  position: absolute;
-  margin-left: -7px;
-  margin-top: -7px;
-  color: #191919;
-}
-
-span.thickness {
-  display: inline-block;
-  width: 14px;
-  height: 14px;
-  border: 2px solid #e0e0e0;
-  border-radius: 5px;
-}
-span.thickness.thick-1 {
-  background: url("../../img/thick-1.png") no-repeat scroll center;
-}
-span.thickness.thick-2 {
-  background: url("../../img/thick-2.png") no-repeat scroll center;
-}
-span.thickness.thick-3 {
-  background: url("../../img/thick-3.png") no-repeat scroll center;
-}
-
-span.color-display {
-  display: inline-block;
-  width: 14px;
-  height: 14px;
-  border: 2px solid #e0e0e0;
-  border-radius: 5px;
-}
-span.color-display.black {
+#vr-toolbox #brush-preview .dot {
+  width: 5px;
+  height: 5px;
   background: #000;
+  border-radius: 100%;
 }
-span.color-display.red {
-  background: #f03;
+#vr-toolbox #eraser-preview {
+  width: 50px;
+  height: 50px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-span.color-display.white {
-  background: #fff;
+#vr-toolbox #eraser-preview .dot {
+  width: 5px;
+  height: 5px;
+  background: #000;
+  border-radius: 100%;
 }
-span.color-display.yellow {
-  background: #f6ff00;
+#vr-toolbox span.divider {
+  display: block;
+  color: #c5c5c5;
+  font-size: 0.6em;
+  font-weight: bold;
+  letter-spacing: 5px;
+  padding-bottom: 5px;
+  margin-top: 10px;
 }
-span.color-display.orange {
-  background: #FCB02F;
+#vr-toolbox div.tools {
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+#vr-toolbox div.tools a {
+  font-size: 0.8em;
+  color: #c5c5c5;
+  display: inline-block;
+  padding: 5px 10px;
+  background: #000;
+  text-decoration: none;
+  margin-right: -5px;
+}
+#vr-toolbox div.tools a:hover, #vr-toolbox div.tools a.active {
+  background: #c5c5c5;
+  color: #000;
+}
+#vr-toolbox a#toolbox-toggle {
+  background: #1f1f1f;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  display: block;
+  margin-left: 20px;
+  padding: 5px 10px;
+  font-size: 0.8em;
+  text-decoration: none;
+  color: #fff;
+  width: 70px;
+}
+#vr-toolbox .toolbox {
+  background: #1f1f1f;
+  width: 100%;
+  height: 100%;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
 }
 
 span.a {
@@ -426,4 +423,73 @@ span.b {
 }
 .chat-right span:hover {
   background: rgba(50, 63, 255, 0.9);
+}
+
+div#file-dropZone {
+  background: #ffffff;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  opacity: 1;
+  visibility: hidden;
+}
+div#file-dropZone .dropbox {
+  display: block;
+  width: 40%;
+  margin: 200px auto 0 auto;
+  text-align: center;
+  border: 5px dashed #ddd;
+  padding: 100px;
+}
+
+div#vr-tabs {
+  display: block;
+  width: 90%;
+  margin: 0 auto;
+}
+div#vr-tabs ul {
+  margin: 0;
+  padding: 0;
+}
+div#vr-tabs ul li {
+  float: left;
+  list-style-type: none;
+  display: block;
+  cursor: pointer;
+  background: #fff;
+  border-bottom: 1px solid rgba(51, 51, 51, 0.1);
+  border-right: 1px solid rgba(51, 51, 51, 0.1);
+  padding: 10px 15px;
+  font-size: 0.9em;
+  margin: 0;
+}
+div#vr-tabs ul li a.close {
+  display: block;
+  float: right;
+  margin-left: 20px;
+  color: #c5c5c5;
+}
+div#vr-tabs ul li a.close:hover {
+  color: #fff;
+  text-decoration: none;
+}
+div#vr-tabs ul li.active {
+  border-left: 3px solid rgba(51, 51, 51, 0.1);
+  border-right: 3px solid rgba(51, 51, 51, 0.1);
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  padding: 15px;
+  background: #1f1f1f;
+  color: #fff;
+}
+div#vr-tabs ul li:last-child {
+  border-right: 1px solid rgba(51, 51, 51, 0.1);
+  border-bottom-right-radius: 5px;
+}
+div#vr-tabs ul li:hover {
+  background: #323e47;
+  color: #fff;
 }

@@ -26875,8 +26875,6 @@ var Board = function () {
 
   var _stage = Symbol();
 
-  var _layer = Symbol();
-
   var _mode = Symbol();
 
   var _layers = Symbol();
@@ -26897,6 +26895,8 @@ var Board = function () {
 
   var _shapeTools = Symbol();
 
+  var _importFile = Symbol();
+
   var Board =
   /*#__PURE__*/
   function () {
@@ -26913,23 +26913,27 @@ var Board = function () {
         width: targetBoundingClientRect.width,
         height: targetBoundingClientRect.height
       });
-      this[_layers] = new _Layers__WEBPACK_IMPORTED_MODULE_1__["default"]();
-      this.layers.create('main');
-      this[_layer] = this.layers.current().layer;
+      this[_layers] = new _Layers__WEBPACK_IMPORTED_MODULE_1__["default"](this.stage);
+      this.layers.create('main', 'Main');
       this[_mode] = 'brush';
       this[_lastLine] = null;
       this[_isFreePaint] = false;
       this[_freePaintModes] = ['brush', 'eraser'];
       this[_allowedModes] = ['brush', 'eraser', 'shapes', 'select'];
-      this.stage.add(this.layer);
       document.getElementById('brush-tool').addEventListener('click', function (evt) {
         _this.mode('brush');
+
+        _this.toggleChildrenImageDraggable();
       }, false);
       document.getElementById('select-tool').addEventListener('click', function (evt) {
         _this.mode('select');
+
+        _this.toggleChildrenImageDraggable();
       }, false);
       document.getElementById('eraser-tool').addEventListener('click', function (evt) {
         _this.mode('eraser');
+
+        _this.toggleChildrenImageDraggable();
       }, false);
       this.stage.on('mousedown touchstart', function (evt) {
         if (_this[_freePaintModes].indexOf(_this.mode()) >= 0) {
@@ -26946,7 +26950,7 @@ var Board = function () {
             points: [pos.x, pos.y]
           });
 
-          _this.layer.add(_this[_lastLine]);
+          _this.layers.current().layer.add(_this[_lastLine]);
         }
       });
       this.stage.on('mouseup touchend', function (evt) {
@@ -26964,7 +26968,7 @@ var Board = function () {
 
           _this[_lastLine].points(newPoints);
 
-          _this.layer.batchDraw();
+          _this.layers.current().layer.batchDraw();
         }
       });
       this.stage.on('click tap', function (evt) {
@@ -26972,7 +26976,7 @@ var Board = function () {
         if (evt.target === _this.stage) {
           _this.stage.find('Transformer').destroy();
 
-          _this.layer.draw();
+          _this.layers.current().layer.draw();
 
           return;
         } // do nothing if clicked NOT on our rectangles
@@ -26989,15 +26993,28 @@ var Board = function () {
 
         var transformer = new konva__WEBPACK_IMPORTED_MODULE_0___default.a.Transformer();
 
-        _this.layer.add(transformer);
+        _this.layers.current().layer.add(transformer);
 
         transformer.attachTo(evt.target);
 
-        _this.layer.draw();
+        _this.layers.current().layer.draw();
       });
     }
 
     _createClass(Board, [{
+      key: "toggleChildrenImageDraggable",
+      value: function toggleChildrenImageDraggable() {
+        var children = this.layers.current().layer.getChildren(function (node) {
+          return node.getClassName() === 'Image';
+        });
+
+        if (this.mode() === 'select') {
+          children.draggable(true);
+        } else {
+          children.draggable(false);
+        }
+      }
+    }, {
       key: "mode",
       value: function mode(_mode2) {
         if (typeof _mode2 === 'undefined') return this[_mode];
@@ -27013,11 +27030,6 @@ var Board = function () {
       key: "stage",
       get: function get() {
         return this[_stage];
-      }
-    }, {
-      key: "layer",
-      get: function get() {
-        return this[_layer];
       }
     }, {
       key: "layers",
@@ -27048,6 +27060,14 @@ var Board = function () {
       set: function set(o) {
         this[_shapeTools] = o;
       }
+    }, {
+      key: "ImportFile",
+      get: function get() {
+        return this[_importFile];
+      },
+      set: function set(o) {
+        this[_importFile] = o;
+      }
     }]);
 
     return Board;
@@ -27060,10 +27080,351 @@ var Board = function () {
 
 /***/ }),
 
-/***/ "./resources/js/Classroom/BrushSizes.js":
-/*!**********************************************!*\
-  !*** ./resources/js/Classroom/BrushSizes.js ***!
-  \**********************************************/
+/***/ "./resources/js/Classroom/Layers.js":
+/*!******************************************!*\
+  !*** ./resources/js/Classroom/Layers.js ***!
+  \******************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var konva__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! konva */ "./node_modules/konva/lib/index.js");
+/* harmony import */ var konva__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(konva__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(underscore__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _Tabs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tabs */ "./resources/js/Classroom/Tabs.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+
+
+
+
+var Layers = function () {
+  var _layers = Symbol();
+
+  var _current = Symbol();
+
+  var _stage = Symbol();
+
+  var Layers =
+  /*#__PURE__*/
+  function () {
+    function Layers(stage) {
+      _classCallCheck(this, Layers);
+
+      this[_layers] = {};
+      this[_current] = null;
+      this[_stage] = stage;
+      this.tabs = new _Tabs__WEBPACK_IMPORTED_MODULE_2__["default"]();
+    }
+
+    _createClass(Layers, [{
+      key: "create",
+      value: function create(id, label) {
+        var instantShow = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+        this[_layers][id] = new konva__WEBPACK_IMPORTED_MODULE_0___default.a.Layer({
+          id: id
+        });
+        this[_current] = id;
+
+        this[_stage].add(this[_layers][id]);
+
+        this.tabs.add(id, label);
+
+        if (instantShow) {
+          this.show(id);
+        }
+      }
+    }, {
+      key: "current",
+      value: function current() {
+        return {
+          layer: this[_layers][this[_current]],
+          index: this[_current]
+        };
+      }
+    }, {
+      key: "get",
+      value: function get(id) {
+        return this[_layers][id];
+      }
+    }, {
+      key: "show",
+      value: function show(id) {
+        var _this = this;
+
+        underscore__WEBPACK_IMPORTED_MODULE_1___default.a.each(this.layers, function (layer, key) {
+          if (key === id) {
+            _this[_current] = id;
+            layer.show();
+          } else {
+            layer.hide();
+          }
+        });
+      }
+    }, {
+      key: "remove",
+      value: function remove(id) {
+        var newCurrent;
+
+        var keys = underscore__WEBPACK_IMPORTED_MODULE_1___default.a.keys(this[_layers]);
+
+        if (keys.length === 1) {
+          return;
+        }
+
+        var key = keys.indexOf(id);
+
+        if (typeof keys[key - 1] !== 'undefined') {
+          newCurrent = keys[key - 1];
+        } else if (typeof keys[key + 1] !== 'undefined') {
+          newCurrent = keys[key + 1];
+        } else {
+          newCurrent = null;
+        }
+
+        var node = this.current().layer.id(id);
+        node.destroy();
+        this.show(newCurrent);
+        this[_current] = newCurrent;
+        delete this[_layers][id];
+        this.current().layer.draw();
+        this.tabs.setActive(newCurrent);
+        this.tabs.removeTab(id);
+      }
+    }, {
+      key: "layers",
+      get: function get() {
+        return this[_layers];
+      }
+    }]);
+
+    return Layers;
+  }();
+
+  return Layers;
+}();
+
+/* harmony default export */ __webpack_exports__["default"] = (Layers);
+
+/***/ }),
+
+/***/ "./resources/js/Classroom/Tabs.js":
+/*!****************************************!*\
+  !*** ./resources/js/Classroom/Tabs.js ***!
+  \****************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(underscore__WEBPACK_IMPORTED_MODULE_0__);
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+
+
+var Tabs = function () {
+  var _tabsContainer = Symbol();
+
+  var _tabsUL = Symbol();
+
+  var Tabs =
+  /*#__PURE__*/
+  function () {
+    function Tabs() {
+      var _this = this;
+
+      _classCallCheck(this, Tabs);
+
+      this[_tabsContainer] = document.getElementById('vr-tabs');
+      var ul = document.createElement('ul');
+
+      this[_tabsContainer].appendChild(ul);
+
+      this[_tabsUL] = this[_tabsContainer].querySelector('ul');
+
+      this[_tabsUL].addEventListener('click', function (evt) {
+        evt.preventDefault();
+
+        if (evt.target.tagName === 'LI') {
+          var tabId = evt.target.getAttribute('data-tab');
+
+          _this.setActive(tabId);
+
+          ClassroomBoard.layers.show(tabId);
+        }
+      }, false);
+    }
+
+    _createClass(Tabs, [{
+      key: "add",
+      value: function add(id, label) {
+        var active = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+
+        this[_tabsUL].appendChild(this.createTab(id, label, active));
+
+        if (this.count() && active) {
+          this.setActive(id);
+        }
+      }
+    }, {
+      key: "createTab",
+      value: function createTab(id, label, active) {
+        var tab = document.createElement('li');
+
+        var tabClose = this.__createCloseButton(id);
+
+        if (active) {
+          tab.classList.add('active');
+        }
+
+        tab.setAttribute('data-tab', id);
+        tab.innerText = label;
+        tab.appendChild(tabClose);
+        return tab;
+      }
+    }, {
+      key: "__createCloseButton",
+      value: function __createCloseButton(id) {
+        var button = document.createElement('a');
+        button.classList.add('close');
+        button.innerHTML = '<span uk-icon="icon: close; ratio: 0.8;"></span>';
+        button.setAttribute('data-tab-close', id);
+        button.addEventListener('click', this.__closeButtonEvent, false);
+        return button;
+      }
+    }, {
+      key: "__closeButtonEvent",
+      value: function __closeButtonEvent(evt) {
+        evt.preventDefault();
+        evt.stopPropagation();
+        var target = evt.target,
+            found; // Find anchor link
+
+        while (target && !(found = target.tagName === 'A')) {
+          target = target.parentElement;
+        }
+
+        if (found) {
+          var tabId = target.getAttribute('data-tab-close');
+          ClassroomBoard.layers.remove(tabId);
+        }
+      }
+    }, {
+      key: "setActive",
+      value: function setActive(id) {
+        underscore__WEBPACK_IMPORTED_MODULE_0___default.a.each(this[_tabsUL].querySelectorAll('li'), function (e) {
+          e.classList.remove('active');
+
+          if (e.getAttribute('data-tab') === id) {
+            e.classList.add('active');
+          }
+        });
+      }
+    }, {
+      key: "removeTab",
+      value: function removeTab(id) {
+        this[_tabsUL].querySelector('[data-tab="' + id + '"]').remove();
+      }
+    }, {
+      key: "count",
+      value: function count() {
+        return this[_tabsUL].querySelectorAll('li').length;
+      }
+    }]);
+
+    return Tabs;
+  }();
+
+  return Tabs;
+}();
+
+/* harmony default export */ __webpack_exports__["default"] = (Tabs);
+
+/***/ }),
+
+/***/ "./resources/js/Classroom/Tools/BoardHistory.js":
+/*!******************************************************!*\
+  !*** ./resources/js/Classroom/Tools/BoardHistory.js ***!
+  \******************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return BoardHistory; });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var BoardHistory =
+/*#__PURE__*/
+function () {
+  function BoardHistory() {
+    _classCallCheck(this, BoardHistory);
+
+    this.histories = [];
+    this.cursor = 0;
+  }
+
+  _createClass(BoardHistory, [{
+    key: "add",
+    value: function add(value) {
+      this.histories.push(value);
+      this.next();
+    }
+  }, {
+    key: "next",
+    value: function next() {
+      this.cursor += 1;
+
+      if (this.cursor > this.histories.length) {
+        this.prev();
+      }
+
+      return this;
+    }
+  }, {
+    key: "prev",
+    value: function prev() {
+      this.cursor -= 1;
+
+      if (this.cursor < 0) {
+        this.next();
+      }
+
+      return this;
+    }
+  }, {
+    key: "current",
+    get: function get() {
+      return this.histories[this.cursor - 1];
+    }
+  }]);
+
+  return BoardHistory;
+}();
+
+
+
+/***/ }),
+
+/***/ "./resources/js/Classroom/Tools/BrushSizes.js":
+/*!****************************************************!*\
+  !*** ./resources/js/Classroom/Tools/BrushSizes.js ***!
+  \****************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -27085,7 +27446,11 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 var BrushSizes = function () {
   var _drop = Symbol();
 
+  var _tool = Symbol();
+
   var _size = Symbol();
+
+  var _sizes = Symbol();
 
   var _buttonSelector = Symbol();
 
@@ -27095,7 +27460,7 @@ var BrushSizes = function () {
     function BrushSizes() {
       var _this = this;
 
-      var defaultSize = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 5;
+      var defaultSize = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'SMALL';
 
       _classCallCheck(this, BrushSizes);
 
@@ -27106,15 +27471,30 @@ var BrushSizes = function () {
       this._SMALL = 5;
       this._MEDIUM = 10;
       this._LARGE = 20;
-      this[_size] = defaultSize;
+      this[_sizes] = {
+        'SMALL': 'thick-1',
+        'MEDIUM': 'thick-2',
+        'LARGE': 'thick-3'
+      };
+      this[_tool] = document.getElementById('thickness-picker-tool');
       this[_drop] = document.getElementById('pen-size-drop');
       this[_buttonSelector] = '.thickness-pick';
+      this.size(defaultSize);
 
       underscore__WEBPACK_IMPORTED_MODULE_1___default.a.each(document.querySelectorAll(this[_buttonSelector]), function (e) {
+        e.classList.add(_this[_sizes][e.getAttribute('data-size').toUpperCase()]);
         e.addEventListener('click', function (evt) {
           uikit__WEBPACK_IMPORTED_MODULE_0___default.a.drop(_this[_drop]).hide();
+          var size = evt.target.getAttribute('data-size').toUpperCase();
+          var newSize = _this[_sizes][size];
 
-          _this.size(_this[evt.target.getAttribute('data-size').toUpperCase()]);
+          var oldSize = _this[_tool].classList.item(1);
+
+          _this.size(size);
+
+          _this[_tool].classList.remove(oldSize);
+
+          _this[_tool].classList.add(newSize);
 
           ClassroomBoard.mode('brush');
         }, false);
@@ -27128,7 +27508,7 @@ var BrushSizes = function () {
           return this[_size];
         }
 
-        this[_size] = _size2;
+        this[_size] = this["_".concat(_size2)];
       }
     }, {
       key: "SMALL",
@@ -27157,10 +27537,10 @@ var BrushSizes = function () {
 
 /***/ }),
 
-/***/ "./resources/js/Classroom/ColorPicker.js":
-/*!***********************************************!*\
-  !*** ./resources/js/Classroom/ColorPicker.js ***!
-  \***********************************************/
+/***/ "./resources/js/Classroom/Tools/ColorPicker.js":
+/*!*****************************************************!*\
+  !*** ./resources/js/Classroom/Tools/ColorPicker.js ***!
+  \*****************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -27184,7 +27564,11 @@ var ColorPicker = function () {
 
   var _color = Symbol();
 
+  var _colors = Symbol();
+
   var _buttonSelector = Symbol();
+
+  var _tool = Symbol();
 
   var ColorPicker =
   /*#__PURE__*/
@@ -27192,19 +27576,35 @@ var ColorPicker = function () {
     function ColorPicker() {
       var _this = this;
 
-      var defaultColor = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '#000000';
+      var defaultColor = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'black';
 
       _classCallCheck(this, ColorPicker);
 
-      this[_color] = defaultColor;
+      this[_colors] = {
+        'black': '#000000',
+        'white': '#ffffff',
+        'red': '#ff0033',
+        'yellow': '#f6ff00',
+        'orange': '#fcb02f'
+      };
       this[_drop] = document.getElementById('color-picker-drop');
       this[_buttonSelector] = '.color-pick';
+      this[_tool] = document.getElementById('pen-color-tool');
+      this.color(defaultColor);
 
       underscore__WEBPACK_IMPORTED_MODULE_1___default.a.each(document.querySelectorAll(this[_buttonSelector]), function (e, i) {
+        e.classList.add(e.getAttribute('data-color'));
         e.addEventListener('click', function (evt) {
           uikit__WEBPACK_IMPORTED_MODULE_0___default.a.drop(_this[_drop]).hide();
+          var newColor = evt.target.getAttribute('data-color');
 
-          _this.color(getComputedStyle(evt.target).getPropertyValue('background-color'));
+          var oldColor = _this[_tool].classList.item(1);
+
+          _this.color(newColor);
+
+          _this[_tool].classList.remove(oldColor);
+
+          _this[_tool].classList.add(newColor);
         }, false);
       });
     }
@@ -27216,7 +27616,12 @@ var ColorPicker = function () {
           return this[_color];
         }
 
-        this[_color] = _color2;
+        this[_color] = this[_colors][_color2];
+      }
+    }, {
+      key: "colors",
+      value: function colors() {
+        return this[_colors];
       }
     }]);
 
@@ -27230,17 +27635,19 @@ var ColorPicker = function () {
 
 /***/ }),
 
-/***/ "./resources/js/Classroom/Layers.js":
-/*!******************************************!*\
-  !*** ./resources/js/Classroom/Layers.js ***!
-  \******************************************/
+/***/ "./resources/js/Classroom/Tools/ImportFile.js":
+/*!****************************************************!*\
+  !*** ./resources/js/Classroom/Tools/ImportFile.js ***!
+  \****************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var konva__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! konva */ "./node_modules/konva/lib/index.js");
-/* harmony import */ var konva__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(konva__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(underscore__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var konva__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! konva */ "./node_modules/konva/lib/index.js");
+/* harmony import */ var konva__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(konva__WEBPACK_IMPORTED_MODULE_1__);
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -27249,60 +27656,163 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
 
-var Layers = function () {
-  var _layers = Symbol();
 
-  var _current = Symbol();
+var ImportFile = function () {
+  var _tool = Symbol();
 
-  var Layers =
+  var _dropZone = Symbol();
+
+  var _fileInput = Symbol();
+
+  var _allowedExt = Symbol();
+
+  var _imageIndex = Symbol();
+
+  var ImportFile =
   /*#__PURE__*/
   function () {
-    function Layers() {
-      _classCallCheck(this, Layers);
+    function ImportFile() {
+      var _this = this;
 
-      this[_layers] = {};
-      this[_current] = null;
+      _classCallCheck(this, ImportFile);
+
+      this[_imageIndex] = 0;
+      this[_tool] = document.getElementById('file-upload-tool');
+      this[_fileInput] = document.getElementById('file-input');
+      this[_dropZone] = document.getElementById('file-dropZone');
+      this[_allowedExt] = ['image/png', 'image/jpeg', 'image/jpg'];
+
+      underscore__WEBPACK_IMPORTED_MODULE_0___default.a.each(['dragenter', 'dragover', 'dragleave', 'drop'], function (evtName) {
+        window.addEventListener(evtName, function (evt) {
+          evt.preventDefault();
+          evt.stopPropagation();
+        }, false);
+      });
+
+      underscore__WEBPACK_IMPORTED_MODULE_0___default.a.each(['dragenter', 'dragover'], function (evtName) {
+        window.addEventListener(evtName, function (evt) {
+          _this.showDropZone();
+        }, false);
+      });
+
+      underscore__WEBPACK_IMPORTED_MODULE_0___default.a.each(['dragleave', 'drop'], function (evtName) {
+        _this.dropZone.addEventListener(evtName, function (evt) {
+          _this.hideDropZone();
+        }, false);
+      });
+
+      this.dropZone.addEventListener('drop', function (evt) {
+        _this.inputImageEvent(evt.dataTransfer.files);
+      }, false);
+      document.getElementById('file-input').addEventListener('change', function (evt) {
+        _this.inputImageEvent(evt.target.files);
+      }, false);
     }
 
-    _createClass(Layers, [{
-      key: "create",
-      value: function create(id) {
-        var layerId = 'layer-' + id;
-        this[_layers][layerId] = new konva__WEBPACK_IMPORTED_MODULE_0___default.a.Layer();
+    _createClass(ImportFile, [{
+      key: "inputImageEvent",
+      value: function inputImageEvent(files) {
+        var _this2 = this;
 
-        if (this[_current] === null) {
-          this[_current] = layerId;
-        }
+        var filteredFiles = underscore__WEBPACK_IMPORTED_MODULE_0___default.a.filter(files, function (file) {
+          return underscore__WEBPACK_IMPORTED_MODULE_0___default.a.contains(_this2.allowedExtensions(), file.type);
+        });
+
+        this.processImages(filteredFiles);
       }
     }, {
-      key: "current",
-      value: function current() {
-        return {
-          layer: this[_layers][this[_current]],
-          index: this[_current]
+      key: "processImages",
+      value: function processImages(files) {
+        var _this3 = this;
+
+        underscore__WEBPACK_IMPORTED_MODULE_0___default.a.each(files, function (file) {
+          _this3.processImage(file);
+        });
+      }
+    }, {
+      key: "processImage",
+      value: function processImage(file) {
+        var _this4 = this;
+
+        var fr = new FileReader();
+        fr.readAsDataURL(file);
+
+        fr.onerror = function (error) {
+          alert('Failed importing image');
+          console.log(error);
+        };
+
+        fr.onload = function () {
+          _this4[_imageIndex] = _this4[_imageIndex] + 1;
+          var index = _this4[_imageIndex];
+          var tabId = "image-".concat(index);
+          ClassroomBoard.layers.create(tabId, "Tab ".concat(index));
+          var img = new Image();
+
+          img.onload = function () {
+            var kImg = new konva__WEBPACK_IMPORTED_MODULE_1___default.a.Image({
+              width: img.width,
+              height: img.height,
+              x: 0,
+              y: 0,
+              draggable: true
+            });
+            kImg.image(img);
+            ClassroomBoard.mode('select');
+            ClassroomBoard.layers.get(tabId).add(kImg);
+
+            if (ClassroomBoard.stage.height() < img.height) {
+              ClassroomBoard.stage.height(img.height);
+            }
+
+            ClassroomBoard.layers.get(tabId).draw();
+            console.log(tabId);
+          };
+
+          img.src = fr.result;
         };
       }
     }, {
-      key: "layers",
+      key: "allowedExtensions",
+      value: function allowedExtensions() {
+        return this[_allowedExt];
+      }
+    }, {
+      key: "showDropZone",
+      value: function showDropZone() {
+        this.dropZone.style.visibility = 'visible';
+      }
+    }, {
+      key: "hideDropZone",
+      value: function hideDropZone() {
+        this.dropZone.style.visibility = 'hidden';
+      }
+    }, {
+      key: "dropZone",
       get: function get() {
-        return this[_layers];
+        return this[_dropZone];
+      }
+    }, {
+      key: "fileInput",
+      get: function get() {
+        return this[_fileInput];
       }
     }]);
 
-    return Layers;
+    return ImportFile;
   }();
 
-  return Layers;
+  return ImportFile;
 }();
 
-/* harmony default export */ __webpack_exports__["default"] = (Layers);
+/* harmony default export */ __webpack_exports__["default"] = (ImportFile);
 
 /***/ }),
 
-/***/ "./resources/js/Classroom/ShapeTools.js":
-/*!**********************************************!*\
-  !*** ./resources/js/Classroom/ShapeTools.js ***!
-  \**********************************************/
+/***/ "./resources/js/Classroom/Tools/ShapeTools.js":
+/*!****************************************************!*\
+  !*** ./resources/js/Classroom/Tools/ShapeTools.js ***!
+  \****************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -27312,10 +27822,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var uikit__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(uikit__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
 /* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(underscore__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _Shapes_Square__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Shapes/Square */ "./resources/js/Classroom/Shapes/Square.js");
-/* harmony import */ var _Shapes_Rectangle__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Shapes/Rectangle */ "./resources/js/Classroom/Shapes/Rectangle.js");
-/* harmony import */ var _Shapes_Star__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Shapes/Star */ "./resources/js/Classroom/Shapes/Star.js");
-/* harmony import */ var _Shapes_Circle__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Shapes/Circle */ "./resources/js/Classroom/Shapes/Circle.js");
+/* harmony import */ var _Shapes_Square__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Shapes/Square */ "./resources/js/Classroom/Tools/Shapes/Square.js");
+/* harmony import */ var _Shapes_Rectangle__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Shapes/Rectangle */ "./resources/js/Classroom/Tools/Shapes/Rectangle.js");
+/* harmony import */ var _Shapes_Star__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Shapes/Star */ "./resources/js/Classroom/Tools/Shapes/Star.js");
+/* harmony import */ var _Shapes_Circle__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Shapes/Circle */ "./resources/js/Classroom/Tools/Shapes/Circle.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 
@@ -27371,8 +27881,8 @@ var ShapeTools = function () {
           throw new Error('ShapeTools: ' + type + ' object not found');
         }
 
-        ClassroomBoard.layer.add(shape);
-        ClassroomBoard.layer.draw();
+        ClassroomBoard.layers.current().layer.add(shape);
+        ClassroomBoard.layers.current().layer.draw();
       }, false);
     });
   };
@@ -27384,17 +27894,17 @@ var ShapeTools = function () {
 
 /***/ }),
 
-/***/ "./resources/js/Classroom/Shapes/Circle.js":
-/*!*************************************************!*\
-  !*** ./resources/js/Classroom/Shapes/Circle.js ***!
-  \*************************************************/
+/***/ "./resources/js/Classroom/Tools/Shapes/Circle.js":
+/*!*******************************************************!*\
+  !*** ./resources/js/Classroom/Tools/Shapes/Circle.js ***!
+  \*******************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Square; });
-/* harmony import */ var _Shape__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Shape */ "./resources/js/Classroom/Shapes/Shape.js");
+/* harmony import */ var _Shape__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Shape */ "./resources/js/Classroom/Tools/Shapes/Shape.js");
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -27449,17 +27959,17 @@ function (_Shape) {
 
 /***/ }),
 
-/***/ "./resources/js/Classroom/Shapes/Rectangle.js":
-/*!****************************************************!*\
-  !*** ./resources/js/Classroom/Shapes/Rectangle.js ***!
-  \****************************************************/
+/***/ "./resources/js/Classroom/Tools/Shapes/Rectangle.js":
+/*!**********************************************************!*\
+  !*** ./resources/js/Classroom/Tools/Shapes/Rectangle.js ***!
+  \**********************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Rectangle; });
-/* harmony import */ var _Shape__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Shape */ "./resources/js/Classroom/Shapes/Shape.js");
+/* harmony import */ var _Shape__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Shape */ "./resources/js/Classroom/Tools/Shapes/Shape.js");
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -27513,10 +28023,10 @@ function (_Shape) {
 
 /***/ }),
 
-/***/ "./resources/js/Classroom/Shapes/Shape.js":
-/*!************************************************!*\
-  !*** ./resources/js/Classroom/Shapes/Shape.js ***!
-  \************************************************/
+/***/ "./resources/js/Classroom/Tools/Shapes/Shape.js":
+/*!******************************************************!*\
+  !*** ./resources/js/Classroom/Tools/Shapes/Shape.js ***!
+  \******************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -27578,17 +28088,17 @@ function () {
 
 /***/ }),
 
-/***/ "./resources/js/Classroom/Shapes/Square.js":
-/*!*************************************************!*\
-  !*** ./resources/js/Classroom/Shapes/Square.js ***!
-  \*************************************************/
+/***/ "./resources/js/Classroom/Tools/Shapes/Square.js":
+/*!*******************************************************!*\
+  !*** ./resources/js/Classroom/Tools/Shapes/Square.js ***!
+  \*******************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Square; });
-/* harmony import */ var _Shape__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Shape */ "./resources/js/Classroom/Shapes/Shape.js");
+/* harmony import */ var _Shape__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Shape */ "./resources/js/Classroom/Tools/Shapes/Shape.js");
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -27642,17 +28152,17 @@ function (_Shape) {
 
 /***/ }),
 
-/***/ "./resources/js/Classroom/Shapes/Star.js":
-/*!***********************************************!*\
-  !*** ./resources/js/Classroom/Shapes/Star.js ***!
-  \***********************************************/
+/***/ "./resources/js/Classroom/Tools/Shapes/Star.js":
+/*!*****************************************************!*\
+  !*** ./resources/js/Classroom/Tools/Shapes/Star.js ***!
+  \*****************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Star; });
-/* harmony import */ var _Shape__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Shape */ "./resources/js/Classroom/Shapes/Shape.js");
+/* harmony import */ var _Shape__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Shape */ "./resources/js/Classroom/Tools/Shapes/Shape.js");
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -27719,19 +28229,25 @@ function (_Shape) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Classroom_Board__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Classroom/Board */ "./resources/js/Classroom/Board.js");
-/* harmony import */ var _Classroom_ColorPicker__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Classroom/ColorPicker */ "./resources/js/Classroom/ColorPicker.js");
-/* harmony import */ var _Classroom_BrushSizes__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Classroom/BrushSizes */ "./resources/js/Classroom/BrushSizes.js");
-/* harmony import */ var _Classroom_ShapeTools__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Classroom/ShapeTools */ "./resources/js/Classroom/ShapeTools.js");
+/* harmony import */ var _Classroom_Tools_BoardHistory__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Classroom/Tools/BoardHistory */ "./resources/js/Classroom/Tools/BoardHistory.js");
+/* harmony import */ var _Classroom_Tools_ColorPicker__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Classroom/Tools/ColorPicker */ "./resources/js/Classroom/Tools/ColorPicker.js");
+/* harmony import */ var _Classroom_Tools_BrushSizes__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Classroom/Tools/BrushSizes */ "./resources/js/Classroom/Tools/BrushSizes.js");
+/* harmony import */ var _Classroom_Tools_ShapeTools__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Classroom/Tools/ShapeTools */ "./resources/js/Classroom/Tools/ShapeTools.js");
+/* harmony import */ var _Classroom_Tools_ImportFile__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Classroom/Tools/ImportFile */ "./resources/js/Classroom/Tools/ImportFile.js");
 __webpack_require__(/*! es6-symbol/implement */ "./node_modules/es6-symbol/implement.js");
 
 
 
 
 
+
+
 window.ClassroomBoard = new _Classroom_Board__WEBPACK_IMPORTED_MODULE_0__["default"]('vr-db-0');
-ClassroomBoard.ColorPicker = new _Classroom_ColorPicker__WEBPACK_IMPORTED_MODULE_1__["default"]();
-ClassroomBoard.BrushSizes = new _Classroom_BrushSizes__WEBPACK_IMPORTED_MODULE_2__["default"]();
-ClassroomBoard.ShapeTools = new _Classroom_ShapeTools__WEBPACK_IMPORTED_MODULE_3__["default"]();
+ClassroomBoard.ColorPicker = new _Classroom_Tools_ColorPicker__WEBPACK_IMPORTED_MODULE_2__["default"]();
+ClassroomBoard.BrushSizes = new _Classroom_Tools_BrushSizes__WEBPACK_IMPORTED_MODULE_3__["default"]();
+ClassroomBoard.ShapeTools = new _Classroom_Tools_ShapeTools__WEBPACK_IMPORTED_MODULE_4__["default"]();
+ClassroomBoard.ImportFile = new _Classroom_Tools_ImportFile__WEBPACK_IMPORTED_MODULE_5__["default"]();
+ClassroomBoard.BoardHistory = new _Classroom_Tools_BoardHistory__WEBPACK_IMPORTED_MODULE_1__["default"]();
 
 /***/ }),
 

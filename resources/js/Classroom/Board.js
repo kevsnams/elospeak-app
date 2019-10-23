@@ -5,7 +5,6 @@ const Board = (function() {
 
     const _id = Symbol();
     const _stage = Symbol();
-    const _layer = Symbol();
     const _mode = Symbol();
     const _layers = Symbol();
     const _target = Symbol();
@@ -17,6 +16,7 @@ const Board = (function() {
     const _colorPicker = Symbol();
     const _brushSizes = Symbol();
     const _shapeTools = Symbol();
+    const _importFile = Symbol();
 
     class Board {
         constructor(id) {
@@ -31,9 +31,9 @@ const Board = (function() {
                 height: targetBoundingClientRect.height
             });
             
-            this[_layers] = new Layers();
-            this.layers.create('main');
-            this[_layer] = this.layers.current().layer;
+            this[_layers] = new Layers(this.stage);
+
+            this.layers.create('main', 'Main');
 
             this[_mode] = 'brush';
             this[_lastLine] = null;
@@ -41,18 +41,19 @@ const Board = (function() {
             this[_freePaintModes] = ['brush', 'eraser'];
             this[_allowedModes] = ['brush', 'eraser', 'shapes', 'select'];
 
-            this.stage.add(this.layer);
-
             document.getElementById('brush-tool').addEventListener('click', (evt) => {
                 this.mode('brush');
+                this.toggleChildrenImageDraggable();
             }, false);
 
             document.getElementById('select-tool').addEventListener('click', (evt) => {
                 this.mode('select');
+                this.toggleChildrenImageDraggable();
             }, false);
 
             document.getElementById('eraser-tool').addEventListener('click', (evt) => {
                 this.mode('eraser');
+                this.toggleChildrenImageDraggable();
             }, false);
 
             this.stage.on('mousedown touchstart', (evt) => {
@@ -71,7 +72,7 @@ const Board = (function() {
                         points: [pos.x, pos.y]
                     });
 
-                    this.layer.add(this[_lastLine]);
+                    this.layers.current().layer.add(this[_lastLine]);
                 }
             });
     
@@ -89,7 +90,7 @@ const Board = (function() {
                     const newPoints = this[_lastLine].points().concat([pos.x, pos.y]);
 
                     this[_lastLine].points(newPoints);
-                    this.layer.batchDraw();
+                    this.layers.current().layer.batchDraw();
                 }
             });
             
@@ -97,7 +98,7 @@ const Board = (function() {
                 // if click on empty area - remove all transformers
                 if (evt.target === this.stage) {
                     this.stage.find('Transformer').destroy();
-                    this.layer.draw();
+                    this.layers.current().layer.draw();
                     return;
                 }
         
@@ -112,14 +113,26 @@ const Board = (function() {
         
                 // create new transformer
                 var transformer = new Konva.Transformer();
-                this.layer.add(transformer);
+                this.layers.current().layer.add(transformer);
                 transformer.attachTo(evt.target);
     
-                this.layer.draw();
+                this.layers.current().layer.draw();
             });
             
         }
-    
+
+        toggleChildrenImageDraggable() {
+            const children = this.layers.current().layer.getChildren((node) => {
+                return node.getClassName() === 'Image';
+            });
+
+            if (this.mode() === 'select') {
+                children.draggable(true);
+            } else {
+                children.draggable(false);
+            }
+        }
+
         mode(mode) {
             if (typeof mode === 'undefined') return this[_mode];
             if (this[_allowedModes].indexOf(mode) < 0) return;
@@ -129,7 +142,6 @@ const Board = (function() {
     
         get target() { return this[_target]; }
         get stage() { return this[_stage]; }
-        get layer() { return this[_layer]; }
         get layers() { return this[_layers]; }
 
         get ColorPicker() { return this[_colorPicker]; }
@@ -140,6 +152,9 @@ const Board = (function() {
 
         get ShapeTools() { return this[_shapeTools]; }
         set ShapeTools(o) { this[_shapeTools] = o; }
+
+        get ImportFile() { return this[_importFile]; }
+        set ImportFile(o) { this[_importFile] = o; }
     }
 
     return Board;

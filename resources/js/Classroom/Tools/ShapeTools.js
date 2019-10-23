@@ -38,8 +38,8 @@ const ShapeTools = (function() {
                         throw new Error('ShapeTools: '+ type +' object not found');
                     }
 
-                    ClassroomBoard.layer.add(shape);
-                    ClassroomBoard.layer.draw();
+                    ClassroomBoard.layers.current().layer.add(shape);
+                    ClassroomBoard.layers.current().layer.draw();
                 }, false);
             });
         }

@@ -101,115 +101,107 @@ $board-width: 77%;
         .vr-drawingboard {
             display: block;
             width: 90%;
-            height: 1000px;
-            margin: 5% auto 0 auto;
+            min-height: 1000px;
+            margin: 7% auto 0 auto;
             background: #fff;
             border: 0px solid #000000;
             -webkit-box-shadow: 0px 0px 41px -21px rgba(189,189,189,1);
             -moz-box-shadow: 0px 0px 41px -21px rgba(189,189,189,1);
             box-shadow: 0px 0px 41px -21px rgba(189,189,189,1);
         }
+    }
+}
 
-        #vr-board-control {
-            background: rgba(78, 78, 78, 0.7);
-            position: fixed;
-            bottom: 20px;
-            margin: 0 auto;
+#vr-toolbox {
+    position: fixed;
+    bottom: 0;
+    width: 60%;
 
-            &:hover {
-                background: rgba(78, 78, 78, 0.9);
-            }
+    .tool-controls {
+        padding-bottom: 20px;
+    }
 
-            ul.nav {
-                margin: 0;
-                padding:0;
-                display: table;
+    #brush-preview {
+        width: 50px;
+        height: 50px;
+        background: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
 
-                li {
-                    display: table-cell;
-                    vertical-align: middle;
-                    list-style-type: none;
-                    margin: 0;
-                    padding: 10px;
-                    color: #ffffff;
-                    cursor: pointer;
+        .dot {
+            width: 5px;
+            height: 5px;
+            background: #000;
+            border-radius: 100%;
+        }
+    }
 
-                    &:hover {
-                        background: rgb(50, 62, 71);
-                    }
+    #eraser-preview {
+        width: 50px;
+        height: 50px;
+        background: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
 
-                    div.popup {
-                        background: rgba(78, 78, 78, 0.7);
-                        width: auto !important;
-                        padding: 10px !important;
+        .dot {
+            width: 5px;
+            height: 5px;
+            background: #000;
+            border-radius: 100%;
+        }
+    }
 
-                        &:hover {
-                            background: rgba(78, 78, 78, 0.9);
-                        }
+    span.divider {
+        display: block;
+        color: #c5c5c5;
+        font-size: .6em;
+        font-weight: bold;
+        letter-spacing: 5px;
+        padding-bottom: 5px;
+        margin-top: 10px;
+    }
 
-                        span {
-                            display: inline-block;
-                        }
-                    }
-                }
+    div.tools {
+        margin-top: 10px;
+        margin-bottom: 20px;
+
+        a {
+            font-size: .8em;
+            color: #c5c5c5;
+            display: inline-block;
+            padding: 5px 10px;
+            background: #000;
+            text-decoration: none;
+            margin-right: -5px;
+
+            &:hover, &.active {
+                background: #c5c5c5;
+                color: #000;
             }
         }
     }
-}
-
-span.floating-pen {
-    float: left;
-    position: absolute;
-    margin-left: -7px;
-    margin-top: -7px;
-    color: #191919;
-}
-
-span.thickness {
-    display: inline-block;
-    width: 14px;
-    height: 14px;
-    border: 2px solid rgb(224, 224, 224);
-    border-radius: 5px;
-
-    &.thick-1 {
-        background: url("../../img/thick-1.png") no-repeat scroll center;
+    
+    a#toolbox-toggle {
+        background: #1f1f1f;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        display: block;
+        margin-left: 20px;
+        padding: 5px 10px;
+        font-size: 0.8em;
+        text-decoration: none;
+        color: #fff;
+        width: 70px;
     }
 
-    &.thick-2 {
-        background: url("../../img/thick-2.png") no-repeat scroll center;
-    }
-
-    &.thick-3 {
-        background: url("../../img/thick-3.png") no-repeat scroll center;
-    }
-}
-
-span.color-display {
-    display: inline-block;
-    width: 14px;
-    height: 14px;
-    border: 2px solid rgb(224, 224, 224);
-    border-radius: 5px;
-
-    &.black {
-        background: #000;
-    }
-
-    &.red {
-        background: #f03;
-    }
-
-    &.white {
-        background: #fff;
-    }
-
-    &.yellow {
-        background: #f6ff00;
-    }
-
-    &.orange {
-        background: #FCB02F;
+    .toolbox {
+        background: #1f1f1f;
+        width: 100%;
+        height: 100%;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
     }
 }
 
@@ -256,6 +248,83 @@ span {
 
         &:hover {
             background: $color-chat-blue;
+        }
+    }
+}
+
+div#file-dropZone {
+    background: #ffffff;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    opacity: 1;
+    visibility: hidden;
+
+    .dropbox {
+        display: block;
+        width: 40%;
+        margin: 200px auto 0 auto;
+        text-align: center;
+        border: 5px dashed #ddd;
+        padding: 100px;
+    }
+}
+
+
+div#vr-tabs {
+    display: block;
+    width: 90%;
+    margin: 0 auto;
+    ul {
+        margin: 0;
+        padding: 0;
+
+        li {
+            float: left;
+            list-style-type: none;
+            display: block;
+            cursor: pointer;
+            background: #fff;
+            border-bottom: 1px solid rgba(51, 51, 51, 0.1);
+            border-right: 1px solid rgba(51, 51, 51, 0.1);
+            padding: 10px 15px;
+            font-size: 0.9em;
+            margin: 0;
+
+            a.close {
+                display: block;
+                float: right;
+                margin-left: 20px;
+                color: #c5c5c5;
+
+                &:hover {
+                    color: #fff;
+                    text-decoration: none;
+                }
+            }
+
+            &.active {
+                border-left: 3px solid rgba(51, 51, 51, 0.1);
+                border-right: 3px solid rgba(51, 51, 51, 0.1);
+                border-bottom-left-radius: 5px;
+                border-bottom-right-radius: 5px;
+                padding: 15px;
+                background: #1f1f1f;
+                color: #fff;
+            }
+
+            &:last-child {
+                border-right: 1px solid rgba(51, 51, 51, 0.1);
+                border-bottom-right-radius: 5px;
+            }
+
+            &:hover {
+                background: rgb(50, 62, 71);
+                color: #fff;
+            }
         }
     }
 }
