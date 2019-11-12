@@ -80,13 +80,18 @@ export default class Layers {
      * @param {*} id Integer The layer ID to remove
      * @returns this
      */
-    remove(id)
+    remove(id, destroy = true)
     {
-        // Destroy the layer node
-        this.layers[id].destroy();
+        if (destroy) {
+            // Destroy the layer node
+            this.layers[id].destroy();
 
-        // Delete the element on layers array
-        delete this.layers[id];
+            // Delete the element on layers array
+            delete this.layers[id];
+        } else {
+            // Just remove the node
+            this.layers[id].remove();
+        }
 
         // Get the last id after deleting
         const last = _.last(_.keys(this.layers));

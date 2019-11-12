@@ -9,6 +9,8 @@ export default class Tabs {
         this.container.appendChild(this.ul);
 
         this.layers = null;
+
+        this.History = null;
     }
 
     setLayers(layers)
@@ -121,5 +123,15 @@ export default class Tabs {
         });
 
         return this;
+    }
+
+    setHistory(History)
+    {
+        this.History = History;
+    }
+
+    getHistory()
+    {
+        return this.History;
     }
 }

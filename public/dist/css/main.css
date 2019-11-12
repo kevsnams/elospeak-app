@@ -231,14 +231,52 @@ input[type=reset].fncy-button {
   text-align: center;
 }
 #virtual-room #vr-sidenav #vr-client {
-  margin: 30px 5% 30px 5%;
+  margin: 10px 5%;
 }
-#virtual-room #vr-sidenav #vr-client .full_name {
-  font-size: 1.2em;
+#virtual-room #vr-sidenav #vr-client .label {
+  font-size: 0.8em;
+  color: #888;
+}
+#virtual-room #vr-sidenav #vr-client .client-card {
+  border: 1px solid #e3e3e3;
+  border-radius: 5px;
+}
+#virtual-room #vr-sidenav #vr-client .client-card .type {
+  font-size: 1.4em;
+  font-family: "Patrick Hand";
+  color: #fff;
+  padding: 10px;
+}
+#virtual-room #vr-sidenav #vr-client .client-card .details {
+  background: #fff;
+  padding: 10px;
+}
+#virtual-room #vr-sidenav #vr-client .client-card .details img {
+  margin-top: -40px;
+  margin-left: auto;
+  margin-right: auto;
   display: block;
+  border: 3px solid #fff;
+  box-shadow: 0px 1px 3px 1px #ebebeb;
 }
-#virtual-room #vr-sidenav #vr-chats {
-  margin-top: 20px;
+#virtual-room #vr-sidenav #vr-client .client-card .details .full-name {
+  display: block;
+  margin: 5px auto;
+  text-align: center;
+}
+#virtual-room #vr-sidenav #vr-client .client-card .details .full-name a {
+  color: #969696;
+  text-decoration: none;
+  font-size: 1.2em;
+}
+#virtual-room #vr-sidenav #vr-client .client-card .details .full-name a:hover {
+  color: #666;
+}
+#virtual-room #vr-sidenav #vr-client .student {
+  background: url("../../img/green-bg.png") repeat scroll;
+}
+#virtual-room #vr-sidenav #vr-client .teacher {
+  background: url("../../img/blue-bg.png") repeat scroll;
 }
 #virtual-room #vr-sidenav #vr-chats span.title {
   display: block;
@@ -249,7 +287,9 @@ input[type=reset].fncy-button {
 }
 #virtual-room #vr-sidenav #vr-chats #vr-chatbox {
   background: #fff;
-  height: 400px;
+  min-height: 320px;
+  max-height: 600px;
+  height: auto;
   box-shadow: inset 0px 43px 48px -38px rgba(230, 230, 230, 0.5);
   position: relative;
   padding: 10px;
@@ -277,10 +317,9 @@ input[type=reset].fncy-button {
   resize: none;
   font-family: inherit;
   font-size: 1em;
-  display: table-cell;
-  width: 75%;
-  margin-right: 10px;
-  vertical-align: top;
+  display: block;
+  width: 100%;
+  margin: 0 auto;
   border: 0;
   outline: 0;
 }
@@ -365,6 +404,11 @@ input[type=reset].fncy-button {
   background: #c5c5c5;
   color: #000;
 }
+#vr-toolbox div.tools #zoom-value {
+  padding-left: 15px;
+  color: #c5c5c5;
+  font-weight: bold;
+}
 #vr-toolbox a#toolbox-toggle {
   background: #1f1f1f;
   border-top-left-radius: 10px;
@@ -406,6 +450,11 @@ span.b {
 }
 .chat-left span:hover {
   background: #f1f0f0;
+}
+.chat-left .error {
+  font-size: 0.8em;
+  color: #ff1616;
+  margin-left: 5px;
 }
 
 .chat-right {
@@ -492,4 +541,13 @@ div#vr-tabs ul li:last-child {
 div#vr-tabs ul li:hover {
   background: #323e47;
   color: #fff;
+}
+
+.info-mute {
+  display: block;
+  margin-left: 10px;
+  font-size: 0.7em;
+  color: #a2a2a2;
+  margin-top: 5px;
+  margin-bottom: 5px;
 }

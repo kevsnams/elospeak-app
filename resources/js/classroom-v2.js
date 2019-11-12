@@ -1,13 +1,59 @@
-import _ from 'underscore';
-import Konva from 'konva';
+window._ = require('underscore');
 
+window.UIkit = require('uikit');
+window.Icons = require('uikit/dist/js/uikit-icons');
+window.moment = require('moment');
+
+UIkit.use(Icons);
+
+import Konva from 'konva';
+import Echo from 'laravel-echo';
+
+/**
+ * Register Pusher
+ */
+window.Pusher = require('pusher-js');
+
+/**
+ * Register Echo
+ */
+window.Echo = new Echo({
+    authEndpoint : process.env.MIX_PUSHER_AUTH_ENDPOINT +'/broadcasting/auth',
+    devMode: true,
+    broadcaster: 'pusher',
+    key: process.env.MIX_PUSHER_APP_KEY,
+    cluster: process.env.MIX_PUSHER_APP_CLUSTER,
+    //encrypted: true
+    wsHost: window.location.hostname,
+    wsPort: 6001
+});
+
+/**
+ * Register AXIOS
+ */
+window.axios = require('axios');
+
+window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+
+let token = document.head.querySelector('meta[name="csrf-token"]');
+
+if (token) {
+    window.axios.defaults.headers.common['X-CSRF-TOKEN'] = token.content;
+}
+
+
+/**
+ * Import classroom modules
+ */
 import Layers from './Classroom-v2/Layers';
 import DrawMode from './Classroom-v2/DrawMode';
 import ImportImage from './Classroom-v2/ImportImage';
 import Tabs from './Classroom-v2/Tabs';
-
+import History from './Classroom-v2/History';
+import Chat from './Classroom-v2/Chat';
+import BoardViewer from './Classroom-v2/BoardViewer';
 /**
- * Tools
+ * Import classroom tools
  */
 import Brush from './Classroom-v2/Tools/Brush';
 import Eraser from './Classroom-v2/Tools/Eraser';
@@ -62,6 +108,7 @@ function init() {
         DrawMode: new DrawMode(),
         Tabs: new Tabs(),
         ImportImage: new ImportImage(),
+        History: new History(),
 
         Tools: {
             Brush: new Brush('tool-brush'),
@@ -70,8 +117,25 @@ function init() {
             Select: new Select('tool-select')
         },
 
+        Chat: new Chat(),
+
         targetElement,
     };
+
+    /**
+     * Introduce Tabs to History
+     */
+    ELOSpeakClassroom.History.setTabs(ELOSpeakClassroom.Tabs);
+
+    /**
+     * Introduce Layers to History
+     */
+    ELOSpeakClassroom.History.setLayers(ELOSpeakClassroom.Layers);
+
+    /**
+     * Introduce Stage to History
+     */
+    ELOSpeakClassroom.History.setStage(ELOSpeakClassroom.Stage);
 
     /**
      * Introduce stage to layers
@@ -82,6 +146,11 @@ function init() {
      * Introduce layers to tabs
      */
     ELOSpeakClassroom.Tabs.setLayers(ELOSpeakClassroom.Layers);
+
+    /**
+     * Introduce History to Tabs
+     */
+    ELOSpeakClassroom.Tabs.setHistory(ELOSpeakClassroom.History);
 
     /**
      * Start off by creating a new layer. This will be the main layer
@@ -113,18 +182,31 @@ function init() {
     /**
      * Toolbox toggle button
      */
-    toolbox.style.bottom = '-152.5px';
+    function toggleToolbox()
+    {
+        const toolboxToggleIcon = document.getElementById('toolbox-toggle-icon');
+
+        const toolboxStyles = window.getComputedStyle(toolbox);
+        const toolboxHeight = parseFloat((toolboxStyles.height).replace('px', ''));
+
+        const toolboxTogglerStyles = window.getComputedStyle(toolboxToggle);
+        const togglerHeight = parseFloat((toolboxTogglerStyles.height).replace('px', '')) + 10;
+
+        if (toolboxStyles.bottom === '0px') {
+            toolbox.style.bottom = -(toolboxHeight - togglerHeight) +'px';
+            toolboxToggleIcon.setAttribute('uk-icon', 'triangle-up');
+        } else {
+            toolbox.style.bottom = '0px';
+            toolboxToggleIcon.setAttribute('uk-icon', 'triangle-down');
+        }
+    }
+
+    toggleToolbox();
     toolboxToggle.addEventListener('click', (evt) => {
         evt.preventDefault();
         evt.stopPropagation();
 
-        const style = window.getComputedStyle(toolbox);
-
-        if (style.bottom === '0px') {
-            toolbox.style.bottom = '-152.5px';
-        } else {
-            toolbox.style.bottom = '0px';
-        }
+        toggleToolbox();
     }, false);
 
     /**
@@ -134,8 +216,13 @@ function init() {
     ELOSpeakClassroom.Stage.on('mousedown touchstart', (evt) => {
         if (ELOSpeakClassroom.DrawMode.isPaintingMode()) {
             ELOSpeakClassroom.DrawMode.doPaintMode();
-
+            
+            const currentScale = ELOSpeakClassroom.Stage.scaleX();
             const pointerPosition = ELOSpeakClassroom.Stage.getPointerPosition();
+            const mousePointTo = {
+                x: pointerPosition.x / currentScale - ELOSpeakClassroom.Stage.x() / currentScale,
+                y: pointerPosition.y / currentScale - ELOSpeakClassroom.Stage.y() / currentScale
+            };
             const strokeWidth = ELOSpeakClassroom.DrawMode.get() === 'brush' ? ELOSpeakClassroom.Tools.Brush.getSize() : ELOSpeakClassroom.Tools.Eraser.getSize();
 
             lastLine = new Konva.Line({
@@ -144,16 +231,23 @@ function init() {
 
                 globalCompositeOperation: ELOSpeakClassroom.DrawMode.getPaintOperation(),
                 lineCap: 'round',
-                points: [pointerPosition.x, pointerPosition.y]
+                points: [mousePointTo.x, mousePointTo.y]
             });
+            lastLine.id(ELOSpeakClassroom.History.createId());
 
             ELOSpeakClassroom.Layers.current().add(lastLine);
+
+            sendEventData();
         }
     });
 
     ELOSpeakClassroom.Stage.on('mouseup touchend', (evt) => {
         if (ELOSpeakClassroom.DrawMode.isPaintingMode()) {
             ELOSpeakClassroom.DrawMode.undoPaintMode();
+
+            ELOSpeakClassroom.History.add('new', lastLine);
+
+            sendEventData();
         }
     });
 
@@ -163,11 +257,18 @@ function init() {
                 return;
             }
 
+            const currentScale = ELOSpeakClassroom.Stage.scaleX();
             const pointerPosition = ELOSpeakClassroom.Stage.getPointerPosition();
-            const newPoints = lastLine.points().concat([pointerPosition.x, pointerPosition.y]);
+            const mousePointTo = {
+                x: pointerPosition.x / currentScale - ELOSpeakClassroom.Stage.x() / currentScale,
+                y: pointerPosition.y / currentScale - ELOSpeakClassroom.Stage.y() / currentScale
+            };
+            const newPoints = lastLine.points().concat([mousePointTo.x, mousePointTo.y]);
 
             lastLine.points(newPoints);
             ELOSpeakClassroom.Layers.current().batchDraw();
+
+            sendEventData();
         }
     });
     /**
@@ -191,8 +292,6 @@ function init() {
             return node.getClassName() === 'Image';
         });
 
-        console.log(ELOSpeakClassroom.DrawMode.get());
-
         if (ELOSpeakClassroom.DrawMode.get() === 'select') {
             children.draggable(true);
         } else {
@@ -200,14 +299,16 @@ function init() {
         }
     }
 
+    function toolButtonClickEvent(evt) {
+        const mode = this.getAttribute('data-tool');
+        ELOSpeakClassroom.DrawMode.set(mode);
+
+        toggleChildrenImageDraggable();
+    }
+
     for (let key in ELOSpeakClassroom.Tools) {
         if (ELOSpeakClassroom.Tools.hasOwnProperty(key)) {
-            ELOSpeakClassroom.Tools[key].button.addEventListener('click', function (evt) {
-                const mode = this.getAttribute('data-tool');
-                ELOSpeakClassroom.DrawMode.set(mode);
-
-                toggleChildrenImageDraggable();
-            }, false);
+            ELOSpeakClassroom.Tools[key].button.addEventListener('click', toolButtonClickEvent, false);
         }
     }
 
@@ -215,12 +316,34 @@ function init() {
      * Add shape event
      */
     _.each(ELOSpeakClassroom.Tools.Shapes.shapes, (shape) => {
-        shape.button.addEventListener('click', (evt) => {
-            evt.preventDefault();
+        shape.button.addEventListener('click', (event) => {
+            event.preventDefault();
 
             const shapeObject = shape.createShape(ELOSpeakClassroom.Stage, ELOSpeakClassroom.Tools.Shapes.getColor());
+            shapeObject.id(ELOSpeakClassroom.History.createId());
+
+            /**
+             * NO RESIZE HISTORY YET
+             */
+            shapeObject.on('transformstart transformend', (evt) => {
+                // const target = evt.type === 'transformstart' ? evt.currentTarget : evt.target;
+                // ELOSpeakClassroom.History.add('resize', target, shape.shapeName);
+                sendEventData();
+            });
+
+            shapeObject.on('dragstart dragend', (evt) => {
+                const target = evt.type === 'dragstart' ? evt.currentTarget : evt.target;
+                ELOSpeakClassroom.History.add('move', evt.currentTarget);
+
+                sendEventData();
+            });
+
             ELOSpeakClassroom.Layers.current().add(shapeObject);
             ELOSpeakClassroom.Layers.current().batchDraw();
+
+            ELOSpeakClassroom.History.add('new', shapeObject);
+
+            sendEventData();
         }, false);
     });
 
@@ -232,6 +355,9 @@ function init() {
         if (evt.target === ELOSpeakClassroom.Stage) {
             ELOSpeakClassroom.Stage.find('Transformer').destroy();
             ELOSpeakClassroom.Layers.current().batchDraw();
+
+            sendEventData();
+
             return;
         }
 
@@ -250,6 +376,8 @@ function init() {
         transformer.attachTo(evt.target);
 
         ELOSpeakClassroom.Layers.current().draw();
+
+        sendEventData();
     });
 
     /**
@@ -263,6 +391,8 @@ function init() {
 
             ELOSpeakClassroom.Tabs.setActive(tabId);
             ELOSpeakClassroom.Layers.use(tabId);
+
+            sendEventData();
         }
     }, false);
 
@@ -272,12 +402,29 @@ function init() {
     function imagesToKonva(pic) {
         const id = `image-${pic.image.getAttribute('data-index')}`;
 
+        pic.kImage.id(id);
+
+        pic.kImage.on('dragend dragstart', (evt) => {
+            const target = evt.type === 'dragstart' ? evt.currentTarget : evt.target;
+            ELOSpeakClassroom.History.add('move', evt.target);
+
+            sendEventData();
+        });
+
         ELOSpeakClassroom.Layers.set(id, new Konva.Layer({
             id
-        })).use(id).get(id).add(pic.kImage);
+        }))
+        .use(id)
+        .get(id)
+        .add(pic.kImage);
+
+        ELOSpeakClassroom.Tabs.createTab(id, `Tab ${pic.image.getAttribute('data-index')}`).setActive(id);
+        ELOSpeakClassroom.History.add('createtab', id);
 
         ELOSpeakClassroom.Layers.current().draw();
-        ELOSpeakClassroom.Tabs.createTab(id, `Tab ${pic.image.getAttribute('data-index')}`).setActive(id);
+        ELOSpeakClassroom.History.add('new', pic.kImage);
+
+        sendEventData();
     }
 
     function importImageEvent(evt) {
@@ -293,6 +440,71 @@ function init() {
 
     ELOSpeakClassroom.ImportImage.fileDropZone.addEventListener('drop', importImageEvent, false);
     ELOSpeakClassroom.ImportImage.fileInput.addEventListener('change', importImageEvent, false);
+
+
+    /**
+     * Zoom event
+     */
+    const scaleBy = 2;
+    const zoomValue = document.getElementById('zoom-value');
+    const zoomReset = document.getElementById('zoom-reset');
+
+    zoomReset.addEventListener('click', (evt) => {
+        evt.preventDefault();
+
+        ELOSpeakClassroom.Stage.scale({
+            x: 1,
+            y: 1
+        });
+
+        ELOSpeakClassroom.Stage.position({
+            x: 1,
+            y: 1
+        });
+
+        ELOSpeakClassroom.Stage.batchDraw();
+        zoomValue.innerHTML = '100%';
+    });
+
+    ELOSpeakClassroom.Stage.on('wheel', (e) => {
+        e.evt.preventDefault();
+        if (e.evt.ctrlKey) {
+            const oldScale = ELOSpeakClassroom.Stage.scaleX();
+
+            const mousePointTo = {
+                x: ELOSpeakClassroom.Stage.getPointerPosition().x / oldScale - ELOSpeakClassroom.Stage.x() / oldScale,
+                y: ELOSpeakClassroom.Stage.getPointerPosition().y / oldScale - ELOSpeakClassroom.Stage.y() / oldScale
+            };
+
+            const newScale = e.evt.deltaY > 0 ? oldScale * scaleBy : oldScale / scaleBy;
+            const scalePercent = newScale * 100;
+
+            // Stop at less than 12.5% scale or greater than 800%
+            if (scalePercent < 12.5 || scalePercent > 800) {
+                return;
+            }
+
+            zoomValue.innerHTML = scalePercent +'%';
+            ELOSpeakClassroom.Stage.scale({ x: newScale, y: newScale });
+
+            const newPos = {
+                x: -(mousePointTo.x - ELOSpeakClassroom.Stage.getPointerPosition().x / newScale) * newScale,
+                y: -(mousePointTo.y - ELOSpeakClassroom.Stage.getPointerPosition().y / newScale) * newScale
+            };
+
+            ELOSpeakClassroom.Stage.position(newPos);
+            ELOSpeakClassroom.Stage.batchDraw();
+
+            sendEventData();
+        }
+    });
 }
 
-init();
+if (ELOSpeak.currentUserType === 'teacher') {
+    init();
+} else {
+    ELOSpeakClassroom = {
+        BoardViewer: new BoardViewer(),
+        Chat: new Chat()
+    };
+}

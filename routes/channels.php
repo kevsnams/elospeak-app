@@ -10,11 +10,22 @@
 | used to check if an authenticated user can listen to the channel.
 |
 */
+use App\Classroom;
 
 Broadcast::channel('classroom.{id}.drawboard', function ($user, $id) {
     return true;
 }, ['guards' => ['student', 'teacher']]);
 
-Broadcast::channel('App.User.{id}', function ($user, $id) {
-    return (int) $user->id === (int) $id;
-});
+Broadcast::channel('classroom.{id}.chat', function ($user, $id) {
+    $classroom = Classroom::findOrFail($id);
+
+    if ($user->user_type === 'student') {
+        return $user->id == $classroom->student_id;
+    }
+
+    if ($user->user_type === 'teacher') {
+        return $user->id == $classroom->teacher_id;
+    }
+
+    return false;
+}, ['guards' => ['student', 'teacher']]);

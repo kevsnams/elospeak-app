@@ -22,16 +22,67 @@ $board-width: 77%;
         }
 
         #vr-client {
-            margin: 30px 5% 30px 5%;
+            margin: 10px 5%;
 
-            .full_name {
-                font-size: 1.2em;
-                display: block;
+            .label {
+                font-size: 0.8em;
+                color:#888;
+            }
+
+            .client-card {
+                border: 1px solid#e3e3e3;
+                border-radius: 5px;
+
+                .type {
+                    font-size: 1.4em;
+                    font-family: "Patrick Hand";
+                    color:#fff;
+                    padding: 10px;
+                }
+
+                .details {
+                    background: #fff;
+                    padding: 10px;
+
+                    img {
+                        margin-top: -40px;
+                        margin-left: auto;
+                        margin-right: auto;
+                        display: block;
+                        border: 3px solid #fff;
+                        -webkit-box-shadow: 0px 1px 3px 1px #ebebeb;
+                        -moz-box-shadow: 0px 1px 3px 1px #ebebeb;
+                        box-shadow: 0px 1px 3px 1px #ebebeb;
+                    }
+
+                    .full-name {
+                        display: block;
+                        margin: 5px auto;
+                        text-align: center;
+
+                        a {
+                            color:#969696;
+                            text-decoration: none;
+                            font-size: 1.2em;
+
+                            &:hover {
+                                color: #666;
+                            }
+                        }
+                    }
+                }
+            }
+
+            .student {
+                background: url("../../img/green-bg.png") repeat scroll;
+            }
+
+            .teacher {
+                background: url("../../img/blue-bg.png") repeat scroll;
             }
         }
 
         #vr-chats {
-            margin-top: 20px;
 
             span {
                 &.title {
@@ -45,7 +96,9 @@ $board-width: 77%;
 
             #vr-chatbox {
                 background: #fff;
-                height: 400px;
+                min-height: 320px;
+                max-height: 600px;
+                height: auto;
                 -webkit-box-shadow: inset 0px 43px 48px -38px rgba(230,230,230, .5);
                 -moz-box-shadow: inset 0px 43px 48px -38px rgba(230,230,230,.5);
                 box-shadow: inset 0px 43px 48px -38px rgba(230,230,230, .5);
@@ -79,10 +132,9 @@ $board-width: 77%;
                 resize: none;
                 font-family: inherit;
                 font-size: 1em;
-                display: table-cell;
-                width: 75%;
-                margin-right: 10px;
-                vertical-align: top;
+                display: block;
+                width: 100%;
+                margin: 0 auto;
                 border: 0;
                 outline: 0;
             }
@@ -181,6 +233,12 @@ $board-width: 77%;
                 color: #000;
             }
         }
+
+        #zoom-value {
+            padding-left: 15px;
+            color:#c5c5c5;
+            font-weight: bold;
+        }
     }
     
     a#toolbox-toggle {
@@ -230,6 +288,12 @@ span {
         &:hover {
             background: $color-chat-gray;
         }
+    }
+
+    .error {
+        font-size: 0.8em;
+        color:#ff1616;
+        margin-left: 5px;
     }
 }
 
@@ -327,4 +391,13 @@ div#vr-tabs {
             }
         }
     }
+}
+
+.info-mute {
+    display: block;
+    margin-left: 10px;
+    font-size: 0.7em;
+    color:#a2a2a2;
+    margin-top: 5px;
+    margin-bottom: 5px;
 }

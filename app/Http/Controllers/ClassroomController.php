@@ -18,52 +18,56 @@ class ClassroomController extends Controller
     {
         $classroom = Classroom::with('teacher', 'student')->findOrFail($id);
         $currentAuthModel = Auth::guard()->getProvider()->getModel();
-        
-        $currentUserRel = $otherUserRel = $chatEventListener = $chatChannel = null;
-        $chatChannel = 'classroom.'. $classroom->id;
+        $currentUserType = $currentUser = $otherUser = null;
 
         switch ($currentAuthModel) {
             case 'App\Teacher':
-                $currentUserRel = 'teacher';
-                $otherUserRel = 'student';
-                $chatEventListener = 'TeacherChatNew';
-                $chatChannel .= '.teacher';
+                $currentUserType = 'teacher';
+                $currentUser = $classroom->teacher;
+                $otherUser = $classroom->student;
             break;
             case 'App\Student':
-                $currentUserRel = 'student';
-                $otherUserRel = 'teacher';
-                $chatEventListener = 'StudentChatNew';
-                $chatChannel .= '.student';
+                $currentUserType = 'student';
+                $currentUser = $classroom->student;
+                $otherUser = $classroom->teacher;
             break;
         }
-        
-        $currentUser = $classroom->{$currentUserRel};
-        $otherUser = $classroom->{$otherUserRel};
+
+        $chatChannel = 'classroom.'. $classroom->id .'.chat';
 
         return view('classroom.show', [
             'classroom' => $classroom,
             'currentUser' => $currentUser,
             'otherUser' => $otherUser,
-            'currentUserType' => $currentUserRel,
-            'chatEventListener' => $chatEventListener,
+            'currentUserType' => $currentUserType,
             'chatChannel' => $chatChannel
         ]);
     }
 
-    public function chat(Request $request)
+    public function chatSend(Request $request)
     {
-        $classroomId = $request->input('id');
-        $message = $request->input('message');
-        $from = $request->input('from');
+        $currentAuthModel = Auth::guard()->getProvider()->getModel();
 
-        $classroom = Classroom::findOrFail($classroomId);
+        $from = null;
 
-        if ($from == 'student') {
-            event(new \App\Events\TeacherChatNew($message, $from, $classroom->id));
-        } else if ($from == 'teacher') {
-            event(new \App\Events\StudentChatNew($message, $from, $classroom->id));
+        switch ($currentAuthModel) {
+            case 'App\Teacher':
+                $from = 'teacher';
+            break;
+
+            case 'App\Student':
+                $from = 'student';
+            break;
         }
 
-        return response()->json(['success' => true]);
+        $message = $request->message;
+        $classroomId = $request->classroom_id;
+
+        event(new \App\Events\NewChat($message, $from, $classroomId));
+
+        return response()->json([
+            'message' => $message,
+            'classroom_id' => $classroomId
+        ]);
     }
 }

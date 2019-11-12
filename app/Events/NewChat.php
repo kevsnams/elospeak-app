@@ -13,7 +13,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use App\Classroom;
 use App\ChatLog;
 
-class TeacherChatNew implements ShouldBroadcast
+class NewChat implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -34,8 +34,9 @@ class TeacherChatNew implements ShouldBroadcast
         $this->classroomId = $classroomId;
         $this->from = $from;
         $this->classroom = Classroom::findOrFail($this->classroomId);
-        $this->channelId = 'classroom.'. $this->classroom->id .'.teacher';
+        $this->channelId = 'classroom.'. $this->classroom->id .'.chat';
 
+        /** @TODO Queue this, also TeacherChatNew event */
         $chatLog = new ChatLog();
         $chatLog->from = $this->from;
         $chatLog->message = $this->message;
@@ -52,7 +53,6 @@ class TeacherChatNew implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        #return new PrivateChannel('classroom.'. $this->classroom->id);
-        return new Channel($this->channelId);
+        return new PrivateChannel($this->channelId);
     }
 }

@@ -58,6 +58,8 @@ class LoginController extends Controller
         ];
 
         if (Auth::guard('student')->attempt($credentials, $request->get('remember_me'))) {
+            $request->session()->put('user_type', 'student');
+
             return redirect()->intended(route('student.index'));
         }
 
@@ -72,6 +74,8 @@ class LoginController extends Controller
         ];
 
         if (Auth::guard('teacher')->attempt($credentials, $request->get('remember_me'))) {
+            $request->session()->put('user_type', 'teacher');
+
             return redirect()->intended(route('teacher.index'));
         }
 
