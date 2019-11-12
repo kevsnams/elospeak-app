@@ -39,6 +39,8 @@ export default class Chat {
         // div.appendChild(chatStatus);
 
         this.chatbox.appendChild(div);
+
+        this.chatbox.scrollTop = this.chatbox.scrollHeight;
     }
 
     createResendLink()
@@ -61,7 +63,6 @@ export default class Chat {
 
         ajax.then((response) => {
             this.printMessage(response.data.message, false);
-            this.chatbox.scrollTop = this.chatbox.scrollHeight;
         });
     }
 
