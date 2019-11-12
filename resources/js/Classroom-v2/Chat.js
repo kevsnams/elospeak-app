@@ -61,6 +61,7 @@ export default class Chat {
 
         ajax.then((response) => {
             this.printMessage(response.data.message, false);
+            this.chatbox.scrollTop = this.chatbox.scrollHeight;
         });
     }
 
