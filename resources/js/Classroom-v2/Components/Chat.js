@@ -1,8 +1,11 @@
+import Component from './Component';
 import axios from "axios";
 
-export default class Chat {
-    constructor()
+export default class Chat extends Component {
+    constructor(Classroom)
     {
+        super(Classroom);
+        
         this.chatbox = document.getElementById('vr-chatbox');
         this.chatMessage = document.getElementById('sender-message');
         this.chatMessageButton = document.getElementById('send-message-button');
@@ -36,11 +39,13 @@ export default class Chat {
         chatStatus.className = 'chat-status';
 
         div.appendChild(span);
-        // div.appendChild(chatStatus);
+        div.appendChild(chatStatus);
 
         this.chatbox.appendChild(div);
 
         this.chatbox.scrollTop = this.chatbox.scrollHeight;
+
+        return div;
     }
 
     createResendLink()
@@ -58,11 +63,13 @@ export default class Chat {
     {
         let ajax = axios.post(url('/classroom/chat/send'), {
             message: this.getInput(),
-            classroom_id: ELOSpeak.ClassroomID
+            classroom_id: this.getClassroomInfo().id
         });
 
-        ajax.then((response) => {
-            this.printMessage(response.data.message, false);
+        const message = this.printMessage(this.getInput(), false);
+
+        ajax.catch((response) => {
+            message.querySelector('.chat-status').append(this.createResendLink());
         });
     }
 

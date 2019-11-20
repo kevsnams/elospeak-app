@@ -1,6 +1,10 @@
-export default class Layers {
-    constructor()
+import Component from './Component';
+
+export default class Layers extends Component {
+    constructor(Classroom)
     {
+        super(Classroom);
+        
         /**
          * @var layers The container for all the layers
          */
@@ -11,10 +15,18 @@ export default class Layers {
          */
         this.using = null;
 
+        // @TODO Instead of saying this.stage, use this.getStage()
+        this.stage = this.getStage();
+        
+
+        this.MIN_STAGE_HEIGHT = 1000;
+
         /**
-         * @var stage The current stage being used
+         * Start off by creating a new layer. This will be the main layer
          */
-        this.stage = null;
+        this.set('main', new Konva.Layer({
+            id: 'main'
+        })).use('main');
     }
 
     /**
@@ -44,10 +56,21 @@ export default class Layers {
      * @param {*} value Object Konva.Layer instance
      * @returns this
      */
-    set(id, value)
+    set(id, value, additionalProperties = null)
     {
-        this.layers[id] = value;
-        this.stage.add(value);
+        const newObject = additionalProperties === null ? value : _.extend(value, additionalProperties);
+
+        this.layers[id] = newObject;
+        this.stage.add(newObject);
+
+        // Do not create 'main' layer as it is already created on constructor
+        if (id !== 'main') {
+            this.getLaravelEcho().sendEventData({
+                event: 'setLayer',
+                layer: newObject.toJSON(),
+                additional_properties: additionalProperties
+            });
+        }
 
         return this;
     }
@@ -66,9 +89,20 @@ export default class Layers {
             layer.hide();
 
             if (layer.id() === this.using) {
+                try {
+                    if (layer.classroom.height > this.MIN_STAGE_HEIGHT) {
+                        layer.getStage().height(layer.classroom.height);
+                    }
+                } catch (e) {}
+
                 layer.show();
                 layer.draw();
             }
+        });
+
+        this.getLaravelEcho().sendEventData({
+            event: 'useLayer',
+            layer_id: id
         });
 
         return this;
@@ -102,6 +136,12 @@ export default class Layers {
         // Draw the last layer to update canvas
         this.get(last).draw();
 
+        this.getLaravelEcho().sendEventData({
+            event: 'removeLayer',
+            layer_id: id,
+            destroy
+        });
+
         return this;
     }
 
@@ -113,17 +153,5 @@ export default class Layers {
     current()
     {
         return this.using === null ? null : this.layers[this.using];
-    }
-
-    setStage(stage)
-    {
-        this.stage = stage;
-
-        return this;
-    }
-
-    getStage()
-    {
-        return this.stage;
     }
 }

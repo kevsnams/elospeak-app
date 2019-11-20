@@ -114,13 +114,18 @@
 
 @section('pageJavascript')
 <script>
-    ELOSpeak.ClassroomID = {{ $classroom->id }};
-    ELOSpeak.currentUserType = '{{ $currentUserType }}';
+    window.ClassroomDetails = {
+        channel: '{{ $chatChannel }}',
+        classroom: {!! $classroom->toJson() !!},
+        currentUser: {!! $currentUser->toJson() !!},
+        otherUser: {!! $otherUser->toJson() !!}
+    };
 </script>
 
 <script src="{{ asset('/dist/js/classroom-v2.js') }}"></script>
 
 <script>
+    <?php /*
     Echo.private('{{ $chatChannel }}').listen('NewChat', (chat) => {
         if (ELOSpeak.currentUserType !== chat.from) {
             ELOSpeakClassroom.Chat.printMessage(chat.message, true);
@@ -140,5 +145,6 @@
             })
         }, 500);
     @endif
+    */ ?>
 </script>
 @endsection

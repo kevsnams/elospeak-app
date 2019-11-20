@@ -1,28 +1,33 @@
-import _ from 'underscore';
+import Component from './Component';
 
-export default class Tabs {
-    constructor()
+export default class Tabs extends Component {
+    constructor(Classroom)
     {
+        super(Classroom);
+
         this.container = document.getElementById('vr-tabs');
 
         this.ul = document.createElement('ul');
         this.container.appendChild(this.ul);
 
-        this.layers = null;
-
-        this.History = null;
+        /**
+         * Start off by creating the main tab, without close and set to active
+         */
+        this.createTab('main', 'Main', false);
     }
 
-    setLayers(layers)
+    run()
     {
-        this.layers = layers;
-
-        return this;
-    }
-
-    getLayers()
-    {
-        return this.layers;
+        this.ul.addEventListener('click', (evt) => {
+            evt.preventDefault();
+            
+            if (evt.target.tagName === 'LI') {
+                const tabId = evt.target.getAttribute('data-tab');
+    
+                this.setActive(tabId);
+                this.getLayers().use(tabId);
+            }
+        }, false);
     }
 
     createTab(id, label, addCloseButton = true, active = true)
@@ -123,15 +128,5 @@ export default class Tabs {
         });
 
         return this;
-    }
-
-    setHistory(History)
-    {
-        this.History = History;
-    }
-
-    getHistory()
-    {
-        return this.History;
     }
 }

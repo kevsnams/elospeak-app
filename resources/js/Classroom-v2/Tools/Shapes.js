@@ -1,7 +1,7 @@
 import '@simonwep/pickr/dist/themes/nano.min.css';
 
 import Pickr from '@simonwep/pickr';
-import ToolButton from "./ToolButton";
+import ToolButton from './ToolButton';
 
 /**
  * Import Shapes

@@ -1,13 +1,17 @@
-export default class DrawMode {
-    constructor()
+import Component from './Component';
+
+export default class DrawMode extends Component {
+    constructor(Classroom)
     {
+        super(Classroom);
+        
         /**
          * @var modes The allowed modes
          */
         this.modes = ['brush', 'eraser', 'shapes', 'select'];
 
         /**
-         * @var using The current mode
+         * @var using The current mode. Default 'brush'
          */
         this.using = 'brush';
 

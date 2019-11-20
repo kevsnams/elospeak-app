@@ -1,15 +1,14 @@
-import _ from 'underscore';
+import Component from './Component';
 
-export default class History {
-    constructor()
+export default class History extends Component {
+    constructor(Classroom)
     {
+        super(Classroom);
+
         this.actions = [];
         this.current = null;
 
         this.counter = 0;
-        this.Tabs = null;
-        this.Layers = null;
-        this.Stage = null;
 
         this.unusedLayers = {};
 
@@ -162,8 +161,6 @@ export default class History {
         if (this.current < 0) {
             this.current = null;
         }
-
-        sendEventData();
     }
 
     forward()
@@ -210,38 +207,6 @@ export default class History {
             this.getStage().add(this.unusedLayers[current.target]);
             this.getLayers().use(current.target);
         }
-
-        sendEventData();
-    }
-
-    setStage(Stage)
-    {
-        this.Stage = Stage;
-    }
-
-    getStage()
-    {
-        return this.Stage;
-    }
-
-    setLayers(Layers)
-    {
-        this.Layers = Layers;
-    }
-
-    getLayers()
-    {
-        return this.Layers;
-    }
-
-    setTabs(Tabs)
-    {
-        this.Tabs = Tabs;
-    }
-
-    getTabs()
-    {
-        return this.Tabs;
     }
     
     createId()

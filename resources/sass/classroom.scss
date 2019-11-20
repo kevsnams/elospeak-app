@@ -289,12 +289,6 @@ span {
             background: $color-chat-gray;
         }
     }
-
-    .error {
-        font-size: 0.8em;
-        color:#ff1616;
-        margin-left: 5px;
-    }
 }
 
 .chat-right {
@@ -313,6 +307,12 @@ span {
         &:hover {
             background: $color-chat-blue;
         }
+    }
+
+    .error {
+        font-size: 0.8em;
+        color:#ff1616;
+        margin-left: 5px;
     }
 }
 
