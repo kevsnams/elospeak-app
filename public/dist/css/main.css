@@ -451,11 +451,6 @@ span.b {
 .chat-left span:hover {
   background: #f1f0f0;
 }
-.chat-left .error {
-  font-size: 0.8em;
-  color: #ff1616;
-  margin-left: 5px;
-}
 
 .chat-right {
   bottom: 20px;
@@ -472,6 +467,11 @@ span.b {
 }
 .chat-right span:hover {
   background: rgba(50, 63, 255, 0.9);
+}
+.chat-right .error {
+  font-size: 0.8em;
+  color: #ff1616;
+  margin-left: 5px;
 }
 
 div#file-dropZone {
