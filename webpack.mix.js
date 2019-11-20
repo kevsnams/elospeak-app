@@ -28,8 +28,7 @@ mix.sass('resources/sass/main.scss', 'public/dist/css/', {
 
 mix.sass('resources/sass/main.scss', 'public/dist/css')
 .sass('resources/sass/lib.scss', 'public/dist/css')
-.js('resources/js/classroom-init.js', 'public/dist/js')
-//.js('resources/js/classroom-v2.js', 'public/dist/js')
+.js('resources/js/classroom-v2.js', 'public/dist/js')
 .sourceMaps()
 .options({
     processCssUrls: false
