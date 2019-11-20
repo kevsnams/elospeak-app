@@ -122,6 +122,7 @@
     };
 </script>
 
+<script src="{{ asset('/dist/js/classroom-init.js') }}"></script>
 <script src="{{ asset('/dist/js/classroom-v2.js') }}"></script>
 
 <script>
