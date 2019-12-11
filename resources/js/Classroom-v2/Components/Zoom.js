@@ -1,10 +1,9 @@
-import Component from './Component';
+import Users from '../Users';
+import KonvaStage from '../KonvaStage';
 
-export default class Zoom extends Component {
-    constructor(Classroom)
+class Zoom {
+    constructor()
     {
-        super(Classroom);
-
         this.scaleBy = 2;
         this.zoomValue = document.getElementById('zoom-value');
         this.zoomReset = document.getElementById('zoom-reset');
@@ -13,9 +12,11 @@ export default class Zoom extends Component {
         this.maxScalePercent = 800;
     }
 
-    run()
+    start()
     {
-        this.registerZoomEvents();
+        if (Users.current.user_type === 'teacher') {
+            this.registerZoomEvents();
+        }
     }
 
     registerZoomEvents()
@@ -31,28 +32,30 @@ export default class Zoom extends Component {
                 x: 1, y: 1
             };
 
-            this.getStage().scale(scale);
-            this.getStage().position(position);
+            KonvaStage.Stage.scale(scale);
+            KonvaStage.Stage.position(position);
     
-            this.getStage().batchDraw();
+            KonvaStage.Stage.batchDraw();
 
+            /*
             this.getLaravelEcho().sendEventData({
                 event: 'setScale',
                 scale,
                 position
             });
+            */
 
             this.zoomValue.innerHTML = '100%';
         });
 
-        this.getStage().on('wheel', (e) => {
+        KonvaStage.Stage.on('wheel', (e) => {
             e.evt.preventDefault();
             if (e.evt.ctrlKey) {
-                const oldScale = this.getStage().scaleX();
+                const oldScale = KonvaStage.Stage.scaleX();
     
                 const mousePointTo = {
-                    x: this.getStage().getPointerPosition().x / oldScale - this.getStage().x() / oldScale,
-                    y: this.getStage().getPointerPosition().y / oldScale - this.getStage().y() / oldScale
+                    x: KonvaStage.Stage.getPointerPosition().x / oldScale - KonvaStage.Stage.x() / oldScale,
+                    y: KonvaStage.Stage.getPointerPosition().y / oldScale - KonvaStage.Stage.y() / oldScale
                 };
     
                 const newScale = e.evt.deltaY > 0 ? oldScale * this.scaleBy : oldScale / this.scaleBy;
@@ -67,22 +70,28 @@ export default class Zoom extends Component {
 
                 const xyScale = { x: newScale, y: newScale };
 
-                this.getStage().scale({ x: newScale, y: newScale });
+                KonvaStage.Stage.scale({ x: newScale, y: newScale });
     
                 const newPos = {
-                    x: -(mousePointTo.x - this.getStage().getPointerPosition().x / newScale) * newScale,
-                    y: -(mousePointTo.y - this.getStage().getPointerPosition().y / newScale) * newScale
+                    x: -(mousePointTo.x - KonvaStage.Stage.getPointerPosition().x / newScale) * newScale,
+                    y: -(mousePointTo.y - KonvaStage.Stage.getPointerPosition().y / newScale) * newScale
                 };
     
-                this.getStage().position(newPos);
-                this.getStage().batchDraw();
+                KonvaStage.Stage.position(newPos);
+                KonvaStage.Stage.batchDraw();
 
+                /*
                 this.getLaravelEcho().sendEventData({
                     event: 'setScale',
                     scale: xyScale,
                     position: newPos
                 });
+                */
             }
         });
     }
 }
+
+const ComponentZoom = new Zoom();
+
+export default ComponentZoom;

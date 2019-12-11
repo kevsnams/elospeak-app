@@ -1,5 +1,3 @@
-window._ = require('underscore');
-
 window.UIkit = require('uikit');
 window.Icons = require('uikit/dist/js/uikit-icons');
 window.moment = require('moment');
@@ -15,7 +13,7 @@ window.Pusher = require('pusher-js');
 
 /**
  * Register Echo
- */
+ *
 window.Echo = new Echo({
     authEndpoint : process.env.MIX_PUSHER_AUTH_ENDPOINT +'/broadcasting/auth',
     devMode: true,
@@ -25,7 +23,7 @@ window.Echo = new Echo({
     //encrypted: true
     wsHost: window.location.hostname,
     wsPort: 6001
-});
+});*/
 
 /**
  * Register AXIOS
@@ -40,9 +38,7 @@ if (token) {
     window.axios.defaults.headers.common['X-CSRF-TOKEN'] = token.content;
 }
 
-import Classroom from './Classroom-v2/Classroom';
+import ELOSpeakClassroom from './Classroom-v2/Classroom';
+ELOSpeakClassroom.start();
 
-window.ELOSpeakClassroom = null;
-window.addEventListener('load', (evt) => {
-    ELOSpeakClassroom = new Classroom('vr-db-0');
-});
+window.__ELOSpeakClassroom = ELOSpeakClassroom;

@@ -1,10 +1,8 @@
-import Component from './Component';
+import Tools from '../Components/Tools';
 
-export default class DrawMode extends Component {
-    constructor(Classroom)
+class DrawMode {
+    constructor()
     {
-        super(Classroom);
-        
         /**
          * @var modes The allowed modes
          */
@@ -36,9 +34,13 @@ export default class DrawMode extends Component {
     {
         if (this.modes.indexOf(mode) >= 0) {
             this.using = mode;
-        }
 
-        return this;
+            const modeToolset = mode.charAt(0).toUpperCase() + mode.slice(1);
+
+            if (typeof Tools.ToolSet[modeToolset] !== 'undefined') {
+                Tools.ToolSet[modeToolset].setActive();
+            }
+        }
     }
 
     /**
@@ -84,3 +86,7 @@ export default class DrawMode extends Component {
         return null;
     }
 }
+
+const ComponentDrawMode = new DrawMode();
+
+export default ComponentDrawMode;

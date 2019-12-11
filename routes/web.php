@@ -38,4 +38,6 @@ Route::name('student.')->group(function () {
 Route::name('classroom.')->group(function() {
     Route::get('/classroom/{id}', 'ClassroomController@show')->name('show');
     Route::post('/classroom/chat/send', 'ClassroomController@chatSend')->name('chat.send');
+
+    Route::post('/classroom/image-upload', 'ClassroomController@imageUpload')->name('image.upload');
 });

@@ -332,6 +332,18 @@ input[type=reset].fncy-button {
   top: 0;
   background: #ebebeb66;
 }
+#virtual-room #vr-board #vr-curtain {
+  position: absolute;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.2);
+  display: none;
+  width: 100%;
+}
+#virtual-room #vr-board #vr-curtain .title, #virtual-room #vr-board #vr-curtain .content {
+  display: block;
+  margin: 0 auto;
+  width: 400px;
+}
 #virtual-room #vr-board .vr-drawingboard {
   display: block;
   width: 90%;

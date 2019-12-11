@@ -1,11 +1,11 @@
-import Component from './Component';
+import _ from 'underscore';
 import axios from "axios";
 
-export default class Chat extends Component {
-    constructor(Classroom)
-    {
-        super(Classroom);
-        
+import ClassroomInfo from '../ClassroomInfo';
+
+class Chat {
+    constructor()
+    {   
         this.chatbox = document.getElementById('vr-chatbox');
         this.chatMessage = document.getElementById('sender-message');
         this.chatMessageButton = document.getElementById('send-message-button');
@@ -63,7 +63,7 @@ export default class Chat extends Component {
     {
         let ajax = axios.post(url('/classroom/chat/send'), {
             message: this.getInput(),
-            classroom_id: this.getClassroomInfo().id
+            classroom_id: ClassroomInfo.classroom.id
         });
 
         const message = this.printMessage(this.getInput(), false);
@@ -83,3 +83,7 @@ export default class Chat extends Component {
         this.chatMessage.value = '';
     }
 }
+
+const ComponentChat = new Chat();
+
+export default ComponentChat;

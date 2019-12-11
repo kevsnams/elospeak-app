@@ -1,78 +1,82 @@
-/**
- * Import classroom Components
- */
-import KonvaStage from './Components/KonvaStage';
-import Layers from './Components/Layers';
-import LaravelEcho from './Components/LaravelEcho';
-import Chat from './Components/Chat';
+import _ from 'underscore';
+import Users from './Users';
+import KonvaStage from './KonvaStage';
+import Layers from './Layers';
+import DOMElements from './DOMElements';
+import ClassroomInfo from './ClassroomInfo';
+import History from './History';
+import Curtain from './Curtain';
 
+import Chat from './Components/Chat';
+import Tabs from './Components/Tabs';
+import Zoom from './Components/Zoom';
+import Tools from './Components/Tools';
 import DrawMode from './Components/DrawMode';
 import ImportImage from './Components/ImportImage';
-import Tabs from './Components/Tabs';
-import History from './Components/History';
-import Tools from './Components/Tools';
-import Zoom from './Components/Zoom';
-import BoardViewer from './Components/BoardViewer';
+import CopyPasta from './Components/CopyPasta';
 
-export default class Classroom {
-    constructor(container)
+class Classroom {
+    constructor()
     {
-        this.registerClassroomAndUserDetails();
-
-        this.container = document.getElementById(container);
-
-        // this this.board is a flawed naming, fuck this shit, remove this once all is settled
-        this.board = document.getElementById('vr-board');
-
-        this.toolbox = document.getElementById('vr-toolbox');
-        this.toolboxToggle = document.getElementById('toolbox-toggle');
-
-        this.bind(LaravelEcho);
-        this.bind(KonvaStage);
-        this.bind(Layers);
-        this.bind(Chat);
-
-        if (this.Details.Users.current.user_type === 'teacher') {
-            this.bind(Tabs);
-            this.bind(History);
-            this.bind(DrawMode);
-            this.bind(ImportImage);
-            this.bind(Tools);
-            this.bind(Zoom);
-
-            this.registerToggleToolboxEvent();
-            this.registerAdjustToolboxEvent();
-        } else {
-            this.bind(BoardViewer);
-        }
-
-        this.runAllBoundedObjects();
+        this.container = DOMElements.container;
+        this.drawingboard = DOMElements.drawingboard;
     }
 
-    bind(instance)
+    start()
     {
-        if (typeof this._bounds === 'undefined') {
-            this._bounds = [];
+        Users.setCurrent(window.ClassroomDetails.currentUser);
+        Users.setOther(window.ClassroomDetails.otherUser);
+        this.Users = Users;
+
+        ClassroomInfo.setChannel(window.ClassroomDetails.channel);
+        ClassroomInfo.setClassroom(window.ClassroomDetails.classroom);
+        this.ClassroomInfo = ClassroomInfo;
+
+        this.KonvaStage = KonvaStage;
+        this.History = History;
+        this.Layers = Layers;
+        this.Curtain = Curtain;
+        this.Components = {};
+
+        if (Users.current.user_type === 'teacher') {
+            this.toolbox = document.getElementById('vr-toolbox');
+            this.toolboxToggle = document.getElementById('toolbox-toggle');
+
+            this.defineAdjustToolboxEvent();
+            this.defineToggleToolboxEvent();
+
+            // Set Coms
+            // Coms.setChannel(classroomDetails.channel)
+
+            // Set classroom details
+            // this.Details = classroomDetails.classroom
+            this.Components = _.extend(this.Components, {
+                Tabs,
+                Tools,
+                DrawMode,
+                ImportImage,
+                Zoom,
+                CopyPasta
+            });
         }
 
-        const name = instance.name;
+        this.Components = _.extend(this.Components, {
+            Chat
+        });
 
-        if (typeof this[name] === 'undefined') {
-            this[name] = new instance(this);
-
-            this._bounds.push(name);
-        }
+        this.startComponents();
     }
 
-    runAllBoundedObjects()
+    startComponents()
     {
-        _.each(this._bounds, (obj) => {
-            const bind = this[obj];
-            bind.run();
+        _.each(this.Components, (c) => {
+            if (typeof c.start === 'function') {
+                c.start();
+            }
         });
     }
 
-    registerToggleToolboxEvent()
+    defineToggleToolboxEvent()
     {
         const toggleEvent = () => {
             const icon = document.getElementById('toolbox-toggle-icon');
@@ -101,30 +105,17 @@ export default class Classroom {
         }, false);
     }
 
-    registerAdjustToolboxEvent()
+    defineAdjustToolboxEvent()
     {
         const adjustToolbox = (evt) => {
-            const dim = this.board.getBoundingClientRect();
+            const dim = this.drawingboard.getBoundingClientRect();
             this.toolbox.style.left = (dim.x  + ((dim.width / 2) - (this.toolbox.scrollWidth / 2))) + 'px';
         };
 
         adjustToolbox();
         window.addEventListener('resize', _.debounce(adjustToolbox, 200), false);
     }
-
-    registerClassroomAndUserDetails()
-    {
-        if (typeof window.ClassroomDetails === 'undefined') {
-            throw new Error('window.ClassroomDetails is undefined');
-        }
-
-        this.Details = {
-            Classroom: window.ClassroomDetails.classroom,
-            Users: {
-                current: window.ClassroomDetails.currentUser,
-                other: window.ClassroomDetails.otherUser
-            },
-            channel: window.ClassroomDetails.channel
-        };
-    }
 }
+
+const ELOSpeakClassroom = new Classroom();
+export default ELOSpeakClassroom;

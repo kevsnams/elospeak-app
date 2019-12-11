@@ -1,10 +1,20 @@
-import Component from './Component';
+import _ from 'underscore';
+import axios from 'axios';
 import Konva from 'konva';
 
-export default class ImportImage extends Component {
-    constructor(Classroom)
+import Users from '../Users';
+import Layers from '../Layers';
+import History from '../History';
+
+import Tabs from './Tabs';
+import DrawMode from './DrawMode';
+import Tools from './Tools';
+import Registry from '../Registry';
+import Curtain from '../Curtain';
+
+class ImportImage {
+    constructor()
     {
-        super(Classroom);
         
         this.allowedExtensions = ['image/png', 'image/jpeg', 'image/jpg'];
         this.counter = 0;
@@ -13,10 +23,12 @@ export default class ImportImage extends Component {
         this.fileInput = document.getElementById('file-input');
     }
 
-    run()
+    start()
     {
-        this.registerDragImageEvents();
-        this.registerImageUploadEvents();
+        if (Users.current.user_type === 'teacher') {
+            this.registerDragImageEvents();
+            this.registerImageUploadEvents();
+        }
     }
 
     registerDragImageEvents()
@@ -60,29 +72,58 @@ export default class ImportImage extends Component {
 
         pic.kImage.on('dragend dragstart', (evt) => {
             const target = evt.type === 'dragstart' ? evt.currentTarget : evt.target;
-            this.getHistory().add('move', evt.target);
+            const regid = `kimg-${target.id()}-from`;
 
+            if (evt.type === 'dragstart') {
+                Registry.set(regid, {
+                    x: target.x(),
+                    y: target.y()
+                });
+            } else if (evt.type === 'dragend') {
+                const coords = Registry.get(regid);
+
+                History.add('move', {
+                    node: target,
+                    from: {
+                        x: coords.x,
+                        y: coords.y
+                    },
+
+                    to: {
+                        x: target.x(),
+                        y: target.y()
+                    }
+                });
+
+                Registry.delete(regid);
+            }
+            
+
+            /*
             this.getLaravelEcho().sendEventData({
                 event: 'newPosition',
                 node_id: evt.target.id(),
                 layer_id: evt.target.getLayer().id(),
                 x: evt.target.x(),
                 y: evt.target.y()
-            });
+            });*/
         });
 
-        this.getLayers().set(id, new Konva.Layer({
-            id,
+        const previousLayer = Layers.current().id();
+
+
+        Layers.set(id, new Konva.Layer({
+            id
         }), {
             classroom: {
                 height: pic.image.height
             }
-        })
-        .use(id)
-        .get(id)
-        .add(pic.kImage);
+        });
 
+        Layers.use(id);
+        Layers.get(id).add(pic.kImage);
 
+        /*
         this.getLaravelEcho().sendEventData({
             event: 'newNode',
             node: pic.kImage.toJSON(),
@@ -95,24 +136,56 @@ export default class ImportImage extends Component {
             src: pic.image.getAttribute('src'),
             layer_id: id
         });
+        */
 
-        this.getTabs().createTab(id, `Tab ${pic.image.getAttribute('data-index')}`).setActive(id);
-        this.getHistory().add('createtab', id);
+        const tabLabel = `Tab ${pic.image.getAttribute('data-index')}`;
+        Tabs.create(id, tabLabel).setActive();
 
-        this.getLayers().current().draw();
-        this.getHistory().add('new', pic.kImage);
+        Layers.get(id).draw();
+        History.add('newImage', {
+            node: pic.kImage,
+            node_id: pic.kImage.id(),
+            layer_id: id,
+            layer_id_previous: previousLayer,
+            tab_id: id,
+            tab_label: tabLabel,
+            stage_height: pic.image.height
+        });
     }
 
     importImageEvent(evt)
     {
         const files = typeof evt.dataTransfer !== 'undefined' ? evt.dataTransfer.files : evt.target.files;
 
+        const config = {
+            onUploadProgress: function(progressEvent) {
+                let percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                
+            },
+
+            onDownloadProgress: function(progressEvent) {
+                let percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            }
+        };
+
+        _.each(files, (file) => {
+            const data = new FormData();
+            data.set('image', file);
+
+            const xhr = axios.post(url('/classroom/image-upload'), data, config);
+            
+            xhr.then((res) => {
+                console.log(res);
+            });
+        });
+
+        /*
         this.processImages(files, (image) => {
             this.imagesToKonva(image);
         });
 
-        this.getDrawMode().set('select');
-        this.getTools().Select.setActive();
+        DrawMode.set('select');
+        */
     }
 
     getImages()
@@ -193,3 +266,7 @@ export default class ImportImage extends Component {
         this.fileDropZone.style.visibility = 'hidden';
     }
 }
+
+const ComponentImportImage = new ImportImage();
+
+export default ComponentImportImage;

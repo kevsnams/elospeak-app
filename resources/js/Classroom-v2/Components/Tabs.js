@@ -1,52 +1,83 @@
-import Component from './Component';
+import _ from 'underscore';
+import Layers from '../Layers';
+import History from '../History';
+import Tab from './Tabs/Tab';
 
-export default class Tabs extends Component {
-    constructor(Classroom)
+class Tabs {
+    constructor()
     {
-        super(Classroom);
-
         this.container = document.getElementById('vr-tabs');
+
+        this.tabs = [];
 
         this.ul = document.createElement('ul');
         this.container.appendChild(this.ul);
+    }
 
+    start()
+    {
         /**
          * Start off by creating the main tab, without close and set to active
          */
-        this.createTab('main', 'Main', false);
+        this.create('main', 'Main', false);
     }
 
-    run()
+    create(id, label, addCloseButton = true, active = true)
     {
-        this.ul.addEventListener('click', (evt) => {
-            evt.preventDefault();
-            
-            if (evt.target.tagName === 'LI') {
-                const tabId = evt.target.getAttribute('data-tab');
-    
-                this.setActive(tabId);
-                this.getLayers().use(tabId);
+        const tab = new Tab(id, label, {
+            closeButton: addCloseButton,
+            active,
+
+            onClick: (evt) => {
+                evt.preventDefault();
+
+                let target = evt.target, found;
+
+                const previousTab = this.getActive();
+
+                // Find anchor link
+                while (target && !(found = target.tagName === 'LI')) {
+                    target = target.parentElement;
+                }
+
+                if (found) {
+                    const tabId = target.getAttribute('data-tab');
+
+                    this.get(tabId).setActive();
+                    Layers.use(tabId);
+
+                    History.add('tabSwitch', {
+                        from: previousTab.getAttribute('data-tab'),
+                        to: tabId
+                    });
+                }
+            },
+
+            onClose: (evt) => {
+                evt.preventDefault();
+
+                let target = evt.target, found;
+
+                // Find anchor link
+                while (target && !(found = target.tagName === 'A')) {
+                    target = target.parentElement;
+                }
+
+                if (found) {
+                    const tabId = target.getAttribute('data-tab-close');
+                    
+                    Layers.remove(tabId, false);
+                    this.remove(tabId);
+
+                    Layers.current().draw();
+                }
             }
-        }, false);
-    }
+        });
 
-    createTab(id, label, addCloseButton = true, active = true)
-    {
-        const li = document.createElement('li');
-        li.setAttribute('data-tab', id);
-        li.innerText = label;
-
-        if (addCloseButton) {
-            li.appendChild(this.createCloseButton(id));
-        }
-
-        if (active) {
-            li.className = 'active';
-        }
-
-        this.ul.appendChild(li);
-
-        return this;
+        this.ul.appendChild(tab.element);
+        this.tabs.push(tab);
+        
+        return tab;
     }
 
     /**
@@ -55,78 +86,41 @@ export default class Tabs extends Component {
      * @param {*} id Integer The tab id
      * @returns this
      */
-    remove(id)
+    remove(id, setActiveLast = true)
     {
-        // Remove the li element
-        _.each(this.ul.querySelectorAll('li'), (li) => {
-            if (li.getAttribute('data-tab') === id) {
-                li.remove();
+        _.each(this.tabs, (tab, index) => {
+            if (tab.id === id) {
+                tab.removeElement();
+
+                this.tabs[index] = null;
             }
         });
 
-        // Get the last li after removal
-        const last = _.last(this.ul.querySelectorAll('li'));
-
-        // Set the last li to active
-        this.setActive(last.getAttribute('data-tab'));
-
-        return this;
-    }
-
-    /**
-     * Creates close button that will be attached to the tab
-     * 
-     * @param {*} id Integer The tab id
-     */
-    createCloseButton(id) {
-        // Create the close button element
-        const button = document.createElement('a');
-
-        // Add the close button details
-        button.classList.add('close');
-        button.innerHTML = '<span uk-icon="icon: close; ratio: 0.8;"></span>';
-        button.setAttribute('data-tab-close', id);
-
-        // Close button event
-        button.addEventListener('click', (evt) => {
-            evt.preventDefault();
-            let target = evt.target, found;
-
-            // Find anchor link
-            while (target && !(found = target.tagName === 'A')) {
-                target = target.parentElement;
-            }
-
-            if (found) {
-                const tabId = target.getAttribute('data-tab-close');
-
-                // Remove the layer
-                this.getLayers().remove(tabId);
-
-                // Then, remove the tab
-                this.remove(tabId);
-            }
-        }, false);
-
-        return button;
-    }
-
-    /**
-     * Sets the tab as active/Highlights the tab
-     * 
-     * @param {*} id Integer The id of the tab which we want to set as active (highlight)
-     * @returns this
-     */
-    setActive(id)
-    {
-        _.each(this.ul.querySelectorAll('li'), (e) => {
-            e.classList.remove('active');
-
-            if (e.getAttribute('data-tab') === id) {
-                e.classList.add('active');
-            }
+        this.tabs = this.tabs.filter((tab) => {
+            return tab !== null;
         });
 
-        return this;
+        if (setActiveLast) {
+            const last = _.last(this.tabs);
+            last.setActive();
+        }
+    }
+
+    getActive()
+    {
+        return _.find(this.ul.querySelectorAll('li'), (li) => {
+            return li.className === 'active';
+        });
+    }
+
+    get(id)
+    {
+        return _.find(this.tabs, (tab) => {
+            return tab.id === id;
+        });
     }
 }
+
+const ClassroomTabs = new Tabs();
+
+export default ClassroomTabs;

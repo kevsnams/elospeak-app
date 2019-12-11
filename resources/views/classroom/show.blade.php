@@ -40,8 +40,9 @@
         </div>
 
         <div id="vr-board">
+            <div id="vr-curtain"></div>
             <div id="vr-tabs"></div>
-            <div id="vr-db-0" class="vr-drawingboard"></div>
+            <div id="vr-drawingboard" class="vr-drawingboard"></div>
         </div>
     </div>
 

@@ -150,6 +150,20 @@ $board-width: 77%;
         top: 0;
         background: #ebebeb66;
 
+        #vr-curtain {
+            position: absolute;
+            z-index: 9999;
+            background: rgba(0, 0, 0, 0.2);
+            display: none;
+            width: 100%;
+
+            .title, .content {
+                display: block;
+                margin: 0 auto;
+                width: 400px;
+            }
+        }
+
         .vr-drawingboard {
             display: block;
             width: 90%;
