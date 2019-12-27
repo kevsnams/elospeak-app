@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Storage;
 
 use App\Classroom;
 use App\ClassroomFileUpload;
+use App\ChatLog;
 
 use Auth;
 
@@ -47,6 +48,39 @@ class ClassroomController extends Controller
         ]);
     }
 
+    public function info(Request $request)
+    {
+        $classroom = Classroom::with('teacher', 'student')->findOrFail($request->id);
+        $currentAuthModel = Auth::guard()->getProvider()->getModel();
+        $currentUser = $otherUser = null;
+
+        switch ($currentAuthModel) {
+            case 'App\Teacher':
+                $currentUser = $classroom->teacher;
+                $otherUser = $classroom->student;
+            break;
+            case 'App\Student':
+                $currentUser = $classroom->student;
+                $otherUser = $classroom->teacher;
+            break;
+        }
+
+        $classroomTrimmed = $classroom->toArray();
+        unset($classroomTrimmed['teacher']);
+        unset($classroomTrimmed['student']);
+        
+        $chatChannel = 'classroom.'. $classroom->id .'.chat';
+
+        return response()->json([
+            'classroom' => $classroomTrimmed,
+            'users' => [
+                'current' => $currentUser,
+                'other' => $otherUser
+            ],
+            'channel' => $chatChannel
+        ]);
+    }
+
     public function chatSend(Request $request)
     {
         $currentAuthModel = Auth::guard()->getProvider()->getModel();
@@ -81,8 +115,8 @@ class ClassroomController extends Controller
         $classroomFileUpload = new ClassroomFileUpload();
 
         $newFilename = implode('_', [
-            md5($file->hashName()),
-            date('Y_m_d_H_i'),
+            md5(microtime()),
+            date('Y_m_d_H_i_s'),
             Auth::guard('teacher')->id()
         ]);
 
@@ -90,19 +124,25 @@ class ClassroomController extends Controller
         $classroomFileUpload->path = ClassroomFileUpload::UPLOAD_DIR;
         $classroomFileUpload->save();
 
-        $classroomFileUpload->filename = $classroomFileUpload->filename . '_'. $classroomFileUpload->id;
+        $classroomFileUpload->filename = $classroomFileUpload->filename . '_'. $classroomFileUpload->id .'.'. $file->extension();
         $classroomFileUpload->save();
-        
-        $newFilename = $classroomFileUpload->filename . '.' . $file->extension();
 
         $response = [
             'success' => false
         ];
 
-        if ($file->storeAs($classroomFileUpload->path, $newFilename)) {
+        if ($file->storeAs($classroomFileUpload->path, $classroomFileUpload->filename)) {
             $response['success'] = true;
+            $response['image'] = $classroomFileUpload->toArray();
         }
 
         return response()->json($response);
+    }
+
+    public function chatLoad(Request $request)
+    {
+        $chatLogs = ChatLog::where('classroom_id', $request->id)->orderBy('created_at', 'ASC')->get();
+
+        return response()->json($chatLogs);
     }
 }

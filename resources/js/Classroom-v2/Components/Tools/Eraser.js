@@ -26,6 +26,7 @@ export default class Eraser extends ToolButton {
         const preview = document.getElementById('eraser-preview');
         const dot = preview.querySelector('.dot');
         const sizer = document.getElementById('eraser-size');
+        
         sizer.addEventListener('input', (evt) => {
             dot.style.width = sizer.value +'px';
             dot.style.height = sizer.value +'px';

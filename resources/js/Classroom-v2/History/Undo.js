@@ -117,4 +117,13 @@ export default class Undo extends BaseHistory {
         Tabs.get(from).setActive();
         Layers.use(from);
     }
+
+    action_remove()
+    {
+        const node = this.action.data.node;
+        const layer = Layers.get(this.action.data.layer_id);
+
+        node.show();
+        layer.draw();
+    }
 }

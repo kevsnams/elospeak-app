@@ -10,8 +10,10 @@ export default class BaseHistory {
     {
         const transformers = KonvaStage.Stage.find('Transformer');
         
-        if (transformers) {
-            transformers.destroy();
+        if (transformers.length) {
+            transformers.each((node) => {
+                node.destroy();
+            });
         }
     }
 

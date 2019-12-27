@@ -8,12 +8,17 @@ import History from '../History';
 import Users from '../Users';
 import Registry from '../Registry';
 
+import DataTransmitter from '../Components/DataTransmitter';
+
+import Classroom from '../Classroom';
+
 import IDGenerator from '../Utils/IDGenerator';
 
 import Brush from './Tools/Brush';
 import Eraser from './Tools/Eraser';
 import Shapes from './Tools/Shapes';
 import Select from './Tools/Select';
+import Clear from './Tools/Clear';
 
 class Tools {
     start()
@@ -24,13 +29,15 @@ class Tools {
             Brush: new Brush('tool-brush'),
             Eraser: new Eraser('tool-eraser'),
             Shapes: new Shapes('tool-shapes'),
-            Select: new Select('tool-select')
+            Select: new Select('tool-select'),
+            Clear: new Clear('tool-clear')
         };
 
         this.Brush = this.ToolSet.Brush;
         this.Eraser = this.ToolSet.Eraser;
         this.Shapes = this.ToolSet.Shapes;
         this.Select = this.ToolSet.Select;
+        this.Clear = this.ToolSet.Clear;
 
         // Set Brush as default
         this.ToolSet.Brush.setActive();
@@ -60,9 +67,14 @@ class Tools {
 
         for (let key in this.ToolSet) {
             if (this.ToolSet.hasOwnProperty(key)) {
-                this.ToolSet[key].button.addEventListener('click', (evt) => {
+                let tool = this.ToolSet[key];
+                tool.button.addEventListener('click', (evt) => {
                     const mode = evt.target.getAttribute('data-tool');
                     DrawMode.set(mode);
+
+                    if (typeof tool['onClickEvent'] == 'function') {
+                        tool.onClickEvent(this.selectedNode);
+                    }
         
                     toggleChildrenImageDraggable();
                 }, false);
@@ -109,6 +121,8 @@ class Tools {
                     if (DrawMode.get() === 'select' || DrawMode.get() === 'shapes') {
                         this.selectedNode = evt.target;
                     }
+
+                    DrawMode.set('select');
                 });
 
                 shapeObject.on('transformstart transformend', (evt) => {
@@ -140,6 +154,16 @@ class Tools {
 
                         Registry.delete(regid);
                     }
+
+                    DataTransmitter.send({
+                        event: 'newSize',
+                        node_id: target.id(),
+                        x: target.x(),
+                        y: target.y(),
+                        scaleX: target.scaleX(),
+                        scaleY: target.scaleY(),
+                        rotation: target.rotation()
+                    });
                 });
     
                 shapeObject.on('dragstart dragend', (evt) => {
@@ -166,18 +190,24 @@ class Tools {
                         Registry.delete(regid);
                     }
 
-                    /*
-                    this.getLaravelEcho().sendEventData({
+                    DataTransmitter.send({
                         event: 'newPosition',
-                        node_id: evt.currentTarget.id(),
-                        layer_id: evt.currentTarget.getLayer().id(),
-                        x: evt.currentTarget.x(),
-                        y: evt.currentTarget.y()
-                    });
-                    */
+                        node_id: target.id(),
+                        layer_id: target.getLayer().id(),
+                        x: target.x(),
+                        y: target.y()
+                    }, true);
                 });
-    
+
+                KonvaStage.Stage.find('Transformer').destroy();
+
+                const transformer = new Konva.Transformer();
+                
+                Layers.current().add(transformer);
                 Layers.current().add(shapeObject);
+
+                transformer.attachTo(shapeObject);
+
                 Layers.current().batchDraw();
     
                 History.add('new', {
@@ -186,13 +216,17 @@ class Tools {
                     layer_id: Layers.current().id()
                 });
                 
-                /*
-                this.getLaravelEcho().sendEventData({
+
+                Classroom.triggerToggleEvent();
+
+                this.selectedNode = shapeObject;
+                DrawMode.set('select');
+
+                DataTransmitter.send({
                     event: 'newNode',
                     node: shapeObject.toJSON(),
                     layer_id: Layers.current().id()
                 });
-                */
             }, false);
         });
     
@@ -202,31 +236,30 @@ class Tools {
         KonvaStage.Stage.on('click tap', (evt) => {
             // if click on empty area - remove all transformers
             if (evt.target === KonvaStage.Stage) {
+
+                if (typeof this.ToolSet.Select['onUnSelected'] == 'function') {
+                    this.ToolSet.Select.onUnSelected(evt);
+                }
+
                 KonvaStage.Stage.find('Transformer').destroy();
                 Layers.current().batchDraw();
     
                 return;
             }
 
-            const isLine = evt.target.getClassName() === 'Line';
             const isShape = evt.target.hasName('shapes');
     
             // do nothing if clicked NOT on our rectangles
-            if (isShape || isLine) {
+            if (isShape) {
                 // remove old transformers
                 // TODO: we can skip it if current rect is already selected
                 KonvaStage.Stage.find('Transformer').destroy();
-        
-                // create new transformer
-                let config = {};
-                if (isLine) {
-                    config = {
-                        resizeEnabled: false,
-                        rotateEnabled: false
-                    };
+
+                if (typeof this.ToolSet.Select['onShapeSelect'] == 'function') {
+                    this.ToolSet.Select.onShapeSelect(evt);
                 }
 
-                const transformer = new Konva.Transformer(config);
+                const transformer = new Konva.Transformer();
                 
                 Layers.current().add(transformer);
                 transformer.attachTo(evt.target);

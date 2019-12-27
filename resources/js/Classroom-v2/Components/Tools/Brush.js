@@ -11,6 +11,7 @@ import Layers from '../../Layers';
 import KonvaStage from '../../KonvaStage';
 import Users from '../../Users';
 import History from '../../History';
+import DataTransmitter from '../DataTransmitter';
 
 import IDGenerator from '../../Utils/IDGenerator';
 
@@ -97,7 +98,9 @@ export default class Brush extends ToolButton {
                     x: pointerPosition.x / currentScale - KonvaStage.Stage.x() / currentScale,
                     y: pointerPosition.y / currentScale - KonvaStage.Stage.y() / currentScale
                 };
+
                 const strokeWidth = DrawMode.get() === 'brush' ? Tools.Brush.getSize() : Tools.Eraser.getSize();
+                const nodeId = IDGenerator.create();
 
                 lastLine = new Konva.Line({
                     stroke: Tools.Brush.getColor(),
@@ -107,9 +110,16 @@ export default class Brush extends ToolButton {
                     lineCap: 'round',
                     points: [mousePointTo.x, mousePointTo.y]
                 });
-                lastLine.id(IDGenerator.create());
+                lastLine.id(nodeId);
 
                 Layers.current().add(lastLine);
+
+                DataTransmitter.send({
+                    event: 'newNode',
+                    node: lastLine.toJSON(),
+                    node_id: nodeId,
+                    layer_id: Layers.current().id()
+                });
             }
         });
 
@@ -141,14 +151,12 @@ export default class Brush extends ToolButton {
                 lastLine.points(newPoints);
                 Layers.current().batchDraw();
 
-                /*
-                this.getLaravelEcho().sendEventData({
+                DataTransmitter.send({
                     event: 'newPoints',
                     points: newPoints,
                     node_id: lastLine.id(),
                     layer_id: Layers.current().id()
                 }, true);
-                */
             }
         });
     }

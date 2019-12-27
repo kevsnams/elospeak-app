@@ -5,7 +5,6 @@ import Layers from './Layers';
 import DOMElements from './DOMElements';
 import ClassroomInfo from './ClassroomInfo';
 import History from './History';
-import Curtain from './Curtain';
 
 import Chat from './Components/Chat';
 import Tabs from './Components/Tabs';
@@ -14,6 +13,7 @@ import Tools from './Components/Tools';
 import DrawMode from './Components/DrawMode';
 import ImportImage from './Components/ImportImage';
 import CopyPasta from './Components/CopyPasta';
+import DataTransmitter from './Components/DataTransmitter';
 
 class Classroom {
     constructor()
@@ -31,11 +31,9 @@ class Classroom {
         ClassroomInfo.setChannel(window.ClassroomDetails.channel);
         ClassroomInfo.setClassroom(window.ClassroomDetails.classroom);
         this.ClassroomInfo = ClassroomInfo;
-
         this.KonvaStage = KonvaStage;
         this.History = History;
         this.Layers = Layers;
-        this.Curtain = Curtain;
         this.Components = {};
 
         if (Users.current.user_type === 'teacher') {
@@ -44,19 +42,15 @@ class Classroom {
 
             this.defineAdjustToolboxEvent();
             this.defineToggleToolboxEvent();
-
-            // Set Coms
-            // Coms.setChannel(classroomDetails.channel)
-
-            // Set classroom details
-            // this.Details = classroomDetails.classroom
+            
             this.Components = _.extend(this.Components, {
                 Tabs,
                 Tools,
                 DrawMode,
                 ImportImage,
                 Zoom,
-                CopyPasta
+                CopyPasta,
+                DataTransmitter
             });
         }
 
@@ -96,12 +90,12 @@ class Classroom {
             }
         };
 
-        toggleEvent();
+        this.triggerToggleEvent();
         this.toolboxToggle.addEventListener('click', (evt) => {
             evt.preventDefault();
             evt.stopPropagation();
 
-            toggleEvent();
+            this.triggerToggleEvent();
         }, false);
     }
 
@@ -114,6 +108,25 @@ class Classroom {
 
         adjustToolbox();
         window.addEventListener('resize', _.debounce(adjustToolbox, 200), false);
+    }
+
+    triggerToggleEvent()
+    {
+        const icon = document.getElementById('toolbox-toggle-icon');
+
+        const toolboxStyles = window.getComputedStyle(this.toolbox);
+        const toolboxHeight = parseFloat((toolboxStyles.height).replace('px', ''));
+
+        const toolboxTogglerStyles = window.getComputedStyle(this.toolboxToggle);
+        const togglerHeight = parseFloat((toolboxTogglerStyles.height).replace('px', '')) + 10;
+
+        if (toolboxStyles.bottom === '0px') {
+            this.toolbox.style.bottom = -(toolboxHeight - togglerHeight) +'px';
+            icon.setAttribute('uk-icon', 'triangle-up');
+        } else {
+            this.toolbox.style.bottom = '0px';
+            icon.setAttribute('uk-icon', 'triangle-down');
+        }
     }
 }
 

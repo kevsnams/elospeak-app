@@ -1,12 +1,46 @@
 @extends('layouts.blank_nolibjs')
 
 @section('pageContent')
+    <div id="classroom"></div>
+@endsection
+
+@section('pageCss')
+    <style type="text/css">
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background:#7b7b7b;
+            border-radius:5px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background:#d8d8d8;
+            border-radius:5px;
+        }
+    </style>
+@endsection
+
+@section('pageJavascript')
+    <script src="{{ asset('/dist/js/classroom-v3.js') }}"></script>
+@endsection
+
+    <?php /**
+@section('pageContent')
     @if ($currentUserType === 'teacher')
         <div id="file-dropZone" class="file-upload" uk-form-custom>
             <input type="file" multiple>
             <div class="dropbox">
                 <h3>Drop Files Here</h3>
                 <span>Allowed extensions are: jpg/jpeg and png</span>
+            </div>
+        </div>
+
+        <div id="file-upload-progress">
+            <div class="progressbox">
+                <h3>Uploading <span class="current"></span> of <span class="total"></span> image(s)</h3>
+                <progress class="progress uk-progress" value="" max=""></progress>
             </div>
         </div>
     @endif
@@ -40,7 +74,6 @@
         </div>
 
         <div id="vr-board">
-            <div id="vr-curtain"></div>
             <div id="vr-tabs"></div>
             <div id="vr-drawingboard" class="vr-drawingboard"></div>
         </div>
@@ -59,6 +92,9 @@
                                 <a href="#" id="tool-eraser" data-tool="eraser" class="tool-button">Eraser</a>
                                 <a href="#" id="tool-shapes" data-tool="shapes" class="tool-button">Shapes</a>
                                 <a href="#" id="tool-select" data-tool="select" class="tool-button">Select</a>
+                            </div>
+                            <div class="tools">
+                                <a href="#" id="tool-clear" data-tool="brush" class="tool-button">Clear</a>
                             </div>
                             <div class="undo-redo">
                                 <span class="divider">HISTORY</span>
@@ -146,6 +182,6 @@
             })
         }, 500);
     @endif
-    */ ?>
+    
 </script>
-@endsection
+@endsection*/ ?>

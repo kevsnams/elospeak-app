@@ -4,6 +4,7 @@ import Tools from './Tools';
 import Layers from '../Layers';
 import History from '../History';
 import IDGenerator from '../Utils/IDGenerator';
+import DataTransmitter from '../Components/DataTransmitter';
 
 class CopyPasta {
     constructor()
@@ -39,25 +40,7 @@ class CopyPasta {
 
             // DELETE
             if (evt.keyCode === 46) {
-                if (transformers && transformers.isTransforming()) {
-                    transformers.destroy();
-                }
-
-                let node = Tools.getSelectedNode();
-
-                if (node) {
-                    let node_id = node.id();
-                    node = node.clone();
-
-                    Tools.removeSelectedNode();
-                    Layers.current().draw();
-
-                    History.add('remove', {
-                        node: node,
-                        node_id,
-                        layer_id: Layers.current().id()
-                    });
-                }
+                this.delete();
             }
         }, false);
     }
@@ -96,6 +79,43 @@ class CopyPasta {
 
             History.add('new', {
                 node,
+                node_id: node.id(),
+                layer_id: Layers.current().id()
+            });
+
+            DataTransmitter.send({
+                event: 'newNode',
+                node,
+                node_id: node.id(),
+                layer_id: Layers.current().id()
+            });
+        }
+    }
+
+    delete()
+    {
+        const transformers = KonvaStage.Stage.find('Transformer');
+
+        if (transformers.length) {
+            transformers.each((node) => {
+                node.destroy();
+            });
+        }
+
+        let node = Tools.getSelectedNode();
+
+        if (node) {
+            node.hide();
+            Layers.current().draw();
+
+            History.add('remove', {
+                node,
+                node_id: node.id(),
+                layer_id: Layers.current().id()
+            });
+
+            DataTransmitter.send({
+                event: 'removeNode',
                 node_id: node.id(),
                 layer_id: Layers.current().id()
             });

@@ -1,84 +1,90 @@
-import Component from "./Component";
+import DataTransmitter from './DataTransmitter';
+import ClassroomInfo from '../ClassroomInfo';
+import Layers from '../Layers';
+import KonvaStage from '../KonvaStage';
 import Konva from 'konva';
 
-export default class BoardViewer extends Component {
-    constructor(Classroom)
+class BoardViewer {
+    constructor()
     {
-        super(Classroom);
+        this.promiseMethods = ['event_newImage'];
     }
 
-    run()
+    start()
     {
-        Echo.private(this.getEchoChannel()).listenForWhisper('draw', (draw) => {
-            this.applyEventData(draw);
+        DataTransmitter.Echo.private(ClassroomInfo.channel).listenForWhisper('draw', (draw) => {
+            this.dispatchEvent(draw);
         });
     }
-    applyEventData(data)
+
+    async dispatchEvent(params)
     {
-        this[`event_${data.event}`](data);
+        const fn = `event_${params.event}`;
+
+        if (this.promiseMethods.indexOf(fn) >= 0) {
+            await this[fn](params.data);
+        } else {
+            this[fn](params.data);
+        }
     }
 
-    event_setLayer(data)
+    event_newImage(data)
     {
-        const node = Konva.Node.create(data.layer);
-        this.getLayers().set(node.id(), node, data.additional_properties);
+        return new Promise((resolve, reject) => {
+            // Create new layer
+            Layers.set(data.layer_id, new Konva.Layer({
+                id: data.layer_id
+            }), {
+                classroom: {
+                    height: data.stage_height
+                }
+            });
+
+            // Create image object
+            const image = new Image();
+
+            image.onload = () => {
+
+                // Create konva image object
+                const node = new Konva.Image({
+                    width: image.width,
+                    height: image.height,
+                    x: 0,
+                    y: 0,
+                    draggable: true,
+                    name: 'images'
+                });
+
+                node.id(data.node_id);
+                node.image(image);
+
+                Layers.get(data.layer_id).add(node);
+                Layers.use(data.layer_id);
+
+                Layers.get(data.layer_id).draw();
+
+                resolve({success: true});
+            };
+
+            image.onerror = () => {
+                reject({success: false});
+            };
+
+            image.src = data.image_URL;
+        });
     }
 
-    event_useLayer(data)
+    event_reposNode(data)
     {
-        this.getLayers().use(data.layer_id);
-    }
-
-    event_removeLayer(data)
-    {
-        this.getLayers().remove(data.layer_id, data.destroy);
-    }
-
-    event_newNode(data)
-    {
-        const node = Konva.Node.create(data.node);
-        this.getLayers().get(data.layer_id).add(node);
-
-        node.getLayer().draw();
-    }
-
-    event_newPoints(data)
-    {
-        const layer = this.getLayers().get(data.layer_id);
-
-        layer.find(`#${data.node_id}`).points(data.points);
-        layer.batchDraw();
-    }
-
-    event_imageSrc(data)
-    {
-        const layer = this.getLayers().get(data.layer_id);
-        const node = layer.find(`#${data.node_id}`);
-
-        const img = new Image();
-        img.src = data.src;
-
-        node.image(img);
-
-        layer.batchDraw();
-    }
-    
-    event_newPosition(data)
-    {
-        const layer = this.getLayers().get(data.layer_id);
-        const node = layer.find(`#${data.node_id}`);
+        const node = KonvaStage.Stage.find(`#${data.node_id}`);
 
         node.x(data.x);
         node.y(data.y);
 
-        layer.draw();
-    }
-
-    event_setScale(data)
-    {
-        this.getStage().scale(data.scale);
-        this.getStage().position(data.position);
-
-        this.getStage().batchDraw();
+        node.getLayer().draw();
     }
 }
+
+const ComponentBoardViewer = new BoardViewer();
+
+export default ComponentBoardViewer;

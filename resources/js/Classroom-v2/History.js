@@ -1,39 +1,42 @@
 import Undo from './History/Undo';
 import Redo from './History/Redo';
+import Users from './Users';
 
 class History {
     constructor()
     {
         this.actions = [];
         this.current = null;
+        
+        if (Users.current.user_type == 'teacher') {
+            this.buttonUndo = document.getElementById('history-undo');
+            this.buttonRedo = document.getElementById('history-redo');
 
-        this.buttonUndo = document.getElementById('history-undo');
-        this.buttonRedo = document.getElementById('history-redo');
-
-        this.buttonUndo.addEventListener('click', (evt) => {
-            evt.preventDefault();
-            this.undo();
-        }, false);
-
-        this.buttonRedo.addEventListener('click', (evt) => {
-            evt.preventDefault();
-            this.redo();
-        }, false);
-
-        /**
-         * Ctrl + Z and Ctrl + Y events
-         */
-        document.addEventListener('keydown', (evt) => {
-            var evtObj = window.event ? event : evt;
-
-            if (evtObj.keyCode === 90 && evtObj.ctrlKey) {
+            this.buttonUndo.addEventListener('click', (evt) => {
+                evt.preventDefault();
                 this.undo();
-            }
+            }, false);
 
-            if (evtObj.keyCode === 89 && evtObj.ctrlKey) {
+            this.buttonRedo.addEventListener('click', (evt) => {
+                evt.preventDefault();
                 this.redo();
-            }
-        }, false);
+            }, false);
+
+            /**
+             * Ctrl + Z and Ctrl + Y events
+             */
+            document.addEventListener('keydown', (evt) => {
+                var evtObj = window.event ? event : evt;
+
+                if (evtObj.keyCode === 90 && evtObj.ctrlKey) {
+                    this.undo();
+                }
+
+                if (evtObj.keyCode === 89 && evtObj.ctrlKey) {
+                    this.redo();
+                }
+            }, false);
+        }
     }
 
     getAction(index)

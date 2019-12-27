@@ -5,22 +5,28 @@ import Konva from 'konva';
 import Users from '../Users';
 import Layers from '../Layers';
 import History from '../History';
+import DataTransmitter from '../Components/DataTransmitter';
 
 import Tabs from './Tabs';
 import DrawMode from './DrawMode';
-import Tools from './Tools';
 import Registry from '../Registry';
-import Curtain from '../Curtain';
+import IDGenerator from '../Utils/IDGenerator';
 
 class ImportImage {
     constructor()
     {
-        
         this.allowedExtensions = ['image/png', 'image/jpeg', 'image/jpg'];
         this.counter = 0;
 
         this.fileDropZone = document.getElementById('file-dropZone');
         this.fileInput = document.getElementById('file-input');
+        this.fileProgress = document.getElementById('file-upload-progress');
+
+        this.elements = {
+            current: this.fileProgress.querySelector('.current'),
+            total: this.fileProgress.querySelector('.total'),
+            progress: this.fileProgress.querySelector('.progress')
+        };
     }
 
     start()
@@ -46,6 +52,7 @@ class ImportImage {
             }, false);
         });
 
+        
         _.each(['dragleave', 'drop'], (evtName) => {
             this.fileDropZone.addEventListener(evtName, (evt) => {
                 this.hideDropZone();
@@ -64,13 +71,15 @@ class ImportImage {
         }, false);
     }
 
-    imagesToKonva(pic)
+    drawNode(data)
     {
-        const id = `image-${pic.image.getAttribute('data-index')}`;
+        const node = data.node;
+        const image = data.image;
+        const id = `image-${image.getAttribute('data-node-id')}`;
 
-        pic.kImage.id(id);
+        node.id(id);
 
-        pic.kImage.on('dragend dragstart', (evt) => {
+        node.on('dragend dragstart', (evt) => {
             const target = evt.type === 'dragstart' ? evt.currentTarget : evt.target;
             const regid = `kimg-${target.id()}-from`;
 
@@ -99,14 +108,14 @@ class ImportImage {
             }
             
 
-            /*
-            this.getLaravelEcho().sendEventData({
-                event: 'newPosition',
-                node_id: evt.target.id(),
-                layer_id: evt.target.getLayer().id(),
-                x: evt.target.x(),
-                y: evt.target.y()
-            });*/
+            DataTransmitter.send({
+                event: 'reposNode',
+                data: {
+                    node_id: target.id(),
+                    x: target.x(),
+                    y: target.y()
+                }
+            }, true);
         });
 
         const previousLayer = Layers.current().id();
@@ -116,40 +125,37 @@ class ImportImage {
             id
         }), {
             classroom: {
-                height: pic.image.height
+                height: image.height
             }
         });
 
         Layers.use(id);
-        Layers.get(id).add(pic.kImage);
+        Layers.get(id).add(node);
 
-        /*
-        this.getLaravelEcho().sendEventData({
-            event: 'newNode',
-            node: pic.kImage.toJSON(),
-            layer_id: id
-        });
-
-        this.getLaravelEcho().sendEventData({
-            event: 'imageSrc',
-            node_id: pic.kImage.id(),
-            src: pic.image.getAttribute('src'),
-            layer_id: id
-        });
-        */
-
-        const tabLabel = `Tab ${pic.image.getAttribute('data-index')}`;
+        const tabLabel = `Tab ${image.getAttribute('data-index')}`;
         Tabs.create(id, tabLabel).setActive();
 
         Layers.get(id).draw();
+
         History.add('newImage', {
-            node: pic.kImage,
-            node_id: pic.kImage.id(),
+            node,
+            node_id: node.id(),
+            image_URL: image.image_URL,
             layer_id: id,
             layer_id_previous: previousLayer,
             tab_id: id,
             tab_label: tabLabel,
-            stage_height: pic.image.height
+            stage_height: image.height
+        });
+
+        DataTransmitter.send({
+            event: 'newImage',
+            data: {
+                node_id: node.id(),
+                image_url: image.getAttribute('src'),
+                layer_id: id,
+                stage_height: image.height
+            }
         });
     }
 
@@ -168,24 +174,40 @@ class ImportImage {
             }
         };
 
-        _.each(files, (file) => {
+        this.showUploadProgress();
+        this.elements.total.innerText = files.length;
+        this.elements.current.innerText = 0;
+
+        this.elements.progress.setAttribute('max', files.length);
+
+        _.each(files, (file, index) => {
             const data = new FormData();
             data.set('image', file);
 
-            const xhr = axios.post(url('/classroom/image-upload'), data, config);
+            const upload = axios.post(url('/classroom/image-upload'), data, config);
             
-            xhr.then((res) => {
-                console.log(res);
+            upload.then((res) => {
+                const current = parseInt(this.elements.current.innerText) + 1;
+                const total = parseInt(this.elements.total.innerText);
+
+                this.elements.current.innerText = current;
+                this.elements.progress.setAttribute('value', current);
+
+                const handler = this.handleResponse(res);
+
+                handler.then((data) => {
+                    this.drawNode(data);
+                });
+
+                if (current === total) {
+                    setTimeout(() => {
+                        this.hideUploadProgress();
+                    }, 1500);
+                }
             });
         });
 
-        /*
-        this.processImages(files, (image) => {
-            this.imagesToKonva(image);
-        });
-
         DrawMode.set('select');
-        */
     }
 
     getImages()
@@ -193,67 +215,56 @@ class ImportImage {
         return this.images;
     }
 
-    processImages(files, onAfterResolve)
+    handleResponse(response)
     {
-        const filteredFiles = _.filter(files, (file) => {
-            return _.contains(this.allowedExtensions, file.type);
-        });
+        const image = new Image();
+        return new Promise((resolve, reject) => {
 
-        _.each(filteredFiles, (file) => {
+            this.counter += 1;
 
-            this.counter++;
+            image.setAttribute('data-index', this.counter);
+            image.setAttribute('data-node-id', IDGenerator.create());
+            image.setAttribute('data-image-id', response.data.image.id);
 
-            const handleImageTransfer = async (file, counter) => {
-                try {
-                    const img = await this.processImage(file, counter);
-
-                    onAfterResolve(img);
-                } catch(e) {
-                    console.warn(e.message);
-                }
+            image.onerror = () => {
+                reject({
+                    success: false,
+                    image
+                });
             };
 
-            handleImageTransfer(file, this.counter);
-        });
+            image.onload = () => {
+                const node = new Konva.Image({
+                    width: image.width,
+                    height: image.height,
+                    x: 0,
+                    y: 0,
+                    draggable: true,
+                    name: 'images'
+                });
 
-        return this;
+                node.id(image.getAttribute('data-node-id'));
+                node.image(image);
+
+                resolve({
+                    success: true,
+                    image,
+                    node
+                });
+            };
+
+            image.src = response.data.image.image_URL;
+        });
     }
 
-    processImage(file, index)
+    showUploadProgress()
     {
-        const fr = new FileReader();
+        this.fileProgress.style.visibility = 'visible';
+    }
 
-        return new Promise((resolve, reject) => {
-            fr.onerror = () => {
-                fr.abort();
-                reject(new DOMException("Problem parsing image file. Please report to admin"));
-            };
-
-            fr.onload = () => {
-                const img = new Image();
-                img.onload = () => {
-                    const kImg = new Konva.Image({
-                        width: img.width,
-                        height: img.height,
-                        x: 0,
-                        y: 0,
-                        draggable: true,
-                        name: 'images'
-                    });
-                    kImg.image(img);
-
-                    resolve({
-                        kImage: kImg,
-                        image: img
-                    });
-                };
-
-                img.src = fr.result;
-                img.setAttribute('data-index', index);
-            };
-
-            fr.readAsDataURL(file);
-        });
+    hideUploadProgress()
+    {
+        this.fileProgress.style.visibility = 'hidden';
     }
 
     showDropZone()

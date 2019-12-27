@@ -1,5 +1,6 @@
 import Users from '../Users';
 import KonvaStage from '../KonvaStage';
+import DataTransmitter from '../Components/DataTransmitter';
 
 class Zoom {
     constructor()
@@ -37,13 +38,11 @@ class Zoom {
     
             KonvaStage.Stage.batchDraw();
 
-            /*
-            this.getLaravelEcho().sendEventData({
+            DataTransmitter.send({
                 event: 'setScale',
                 scale,
                 position
             });
-            */
 
             this.zoomValue.innerHTML = '100%';
         });
@@ -80,13 +79,11 @@ class Zoom {
                 KonvaStage.Stage.position(newPos);
                 KonvaStage.Stage.batchDraw();
 
-                /*
-                this.getLaravelEcho().sendEventData({
+                DataTransmitter.send({
                     event: 'setScale',
                     scale: xyScale,
                     position: newPos
                 });
-                */
             }
         });
     }

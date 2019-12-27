@@ -36,9 +36,14 @@ class DrawMode {
             this.using = mode;
 
             const modeToolset = mode.charAt(0).toUpperCase() + mode.slice(1);
+            const tool = Tools.ToolSet[modeToolset];
 
-            if (typeof Tools.ToolSet[modeToolset] !== 'undefined') {
-                Tools.ToolSet[modeToolset].setActive();
+            if (typeof tool !== 'undefined') {
+                tool.setActive();
+
+                if (typeof tool['onModeSet'] == 'function') {
+                    tool.onModeSet(Tools.selectedNode);
+                }
             }
         }
     }

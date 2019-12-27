@@ -125,4 +125,13 @@ export default class Redo extends BaseHistory {
         Tabs.get(to).setActive();
         Layers.use(to);
     }
+
+    action_remove()
+    {
+        const node = this.action.data.node;
+        const layer = Layers.get(this.action.data.layer_id);
+
+        node.hide();
+        layer.draw();
+    }
 }
