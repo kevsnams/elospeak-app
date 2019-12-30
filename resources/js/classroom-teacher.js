@@ -276,7 +276,7 @@ function makeid()
                 const debounce = evt.type == 'transform';
 
                 transmit({
-
+                    event: 'node_transform'
                 });
             });
 
