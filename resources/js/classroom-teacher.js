@@ -112,6 +112,12 @@ function makeid()
 
     Layers = new StageLayers(Stage);
     Components.TabGroup.bindLayers(Layers);
+    Components.TabGroup.switchTransmit = (id) => {
+        transmit({
+            event: 'tab_switch',
+            id
+        });
+    };
 
     /**
      * Create the first tab, which is 'main'
@@ -276,8 +282,17 @@ function makeid()
                 const debounce = evt.type == 'transform';
 
                 transmit({
-                    event: 'node_transform'
-                });
+                    event: 'node_transform',
+                    node: {
+                        id: target.id(),
+                        x: target.x(),
+                        y: target.y(),
+                        scaleX: target.scaleX(),
+                        scaleY: target.scaleY(),
+                        rotation: target.rotation()
+                    },
+                    layer: Layers.current().id()
+                }, debounce);
             });
 
             const midpoint = getStageMidPoint(node);

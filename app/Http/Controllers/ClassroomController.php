@@ -139,6 +139,15 @@ class ClassroomController extends Controller
         return response()->json($response);
     }
 
+    public function imageURL(Request $request)
+    {
+        $file = ClassroomFileUpload::findOrFail($request->id);
+
+        return response()->json([
+            'url' => $file->image_URL
+        ]);
+    }
+
     public function chatLoad(Request $request)
     {
         $chatLogs = ChatLog::where('classroom_id', $request->id)->orderBy('created_at', 'ASC')->get();

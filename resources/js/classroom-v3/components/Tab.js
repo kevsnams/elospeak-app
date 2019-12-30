@@ -45,6 +45,10 @@ export default class Tab {
                 if (this.TabGroup.isLayersBonded()) {
                     this.TabGroup.Layers.use(this.id);
                 }
+
+                if ('switchTransmit' in this.TabGroup) {
+                    this.TabGroup.switchTransmit(this.id);
+                }
             }, false);
         }
     }

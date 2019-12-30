@@ -88,4 +88,150 @@ import {fetchClassroomInfo, fetchChatMessages} from './classroom-v3/functions/fe
         id: 'main',
         label: 'Main'
     });
+
+    const dispatchDef = {
+        'node_new': (data) => {
+            const node = Konva.Node.create(data.node.def);
+            node.id(data.node.id);
+
+            Layers.get(data.layer).add(node);
+            Layers.get(data.layer).batchDraw();
+        },
+
+        'node_points': (data) => {
+            const node = Stage.find(`#${data.node.id}`);
+            node.points(data.node.points);
+
+            Layers.get(data.layer).draw();
+        },
+
+        'node_drag': (data) => {
+            const node = Stage.find(`#${data.node.id}`);
+            node.x(data.node.x);
+            node.y(data.node.y);
+
+            Layers.get(data.layer).draw();
+        },
+
+        'node_transform': (data) => {
+            const node = Stage.find(`#${data.node.id}`);
+            node.x(data.node.x);
+            node.y(data.node.y);
+            node.scaleX(data.node.scaleX);
+            node.scaleY(data.node.scaleY);
+            node.rotation(data.node.rotation);
+            
+            Layers.get(data.layer).draw();
+        },
+
+        'node_remove': (data) => {
+            const node = Stage.find(`#${data.node.id}`);
+            node.destroy();
+
+            Layers.get(data.layer).draw();
+        },
+
+        'shape_stroke': (data) => {
+            const node = Stage.find(`#${data.node.id}`);
+            node.stroke(data.node.color);
+
+            Layers.get(data.layer).draw();
+        },
+
+        'transformer_remove': (data) => {
+            Stage.find('Transformer').destroy();
+        },
+
+        'transformer_new': (data) => {
+            const node = Stage.find(`#${data.node.id}`);
+            const transformer = new Konva.Transformer();
+
+            Layers.get(data.layer).add(transformer);
+            transformer.attachTo(node);
+
+            Layers.get(data.layer).batchDraw();
+        },
+
+        'image_new': async (data) => {
+            const fetchImageURL = await axios.post(url('/classroom/image'), {
+                id: data.image.id
+            });
+            const imageURL = fetchImageURL.data.url;
+            const imageNode = await createImage(imageURL, data);
+
+            if (imageNode.success) {
+                Components.TabGroup.add({
+                    id: data.layer,
+                    label: data.image.label,
+                    layer: {
+                        height: imageNode.image.height
+                    }
+                });
+
+                Layers.get(data.layer).add(imageNode.node);
+                Layers.get(data.layer).batchDraw();
+            }
+        },
+
+        'tab_switch': (data) => {
+            Layers.use(data.id);
+            Components.TabGroup.get(data.id).setActive();
+        },
+
+        'layer_clear': (data) => {
+            Layers.get(data.layer).destroyChildren();
+            Layers.get(data.layer).batchDraw();
+        },
+
+        'scale': (data) => {
+            Stage.scale(data.scale);
+            Stage.position(data.position);
+
+            Stage.batchDraw();
+        }
+    };
+
+    function createImage(imageURL, data)
+    {
+        return new Promise((resolve, reject) => {
+            const image = new Image();
+
+            image.onerror = () => {
+                reject({
+                    success: false,
+                    image_id: data.image.id
+                });
+            };
+
+            image.onload = () => {
+                const node = new Konva.Image({
+                    width: image.width,
+                    height: image.height,
+                    x: 0,
+                    y: 0,
+                    draggable: true,
+                    name: 'images',
+                    id: data.layer
+                });
+                node.image(image);
+
+                resolve({
+                    success: true,
+                    image,
+                    node
+                });
+            };
+    
+            image.src = imageURL;
+        });
+    }
+
+    function dispatcher(data)
+    {
+        dispatchDef[data.event](data);
+    }
+
+    LaravelEcho.private(ChatChannel).listenForWhisper('draw', (data) => {
+        dispatcher(data);
+    });
 })();

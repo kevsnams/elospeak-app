@@ -38,6 +38,7 @@ Route::name('student.')->group(function () {
 Route::name('classroom.')->group(function() {
     Route::get('/classroom/{id}', 'ClassroomController@show')->name('show');
     Route::post('/classroom/info', 'ClassroomController@info')->name('info');
+    Route::post('/classroom/image', 'ClassroomController@imageURL')->name('imageURL');
     Route::post('/classroom/chat/send', 'ClassroomController@chatSend')->name('chat.send');
     Route::post('/classroom/chat/load', 'ClassroomController@chatLoad')->name('chat.load');
 

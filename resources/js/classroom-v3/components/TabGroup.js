@@ -13,6 +13,7 @@ export default class TabGroup {
         this.Layers = null;
 
         this.Components.board.appendChild(this.container);
+        this.switchTransmit = null;
     }
 
     add(config)
