@@ -23,7 +23,14 @@
 @endsection
 
 @section('pageJavascript')
-    <script src="{{ asset('/dist/js/classroom-v3.js') }}"></script>
+    <script>
+        window.ELOSpeakClassroomID = {{ $classroom->id }};
+    </script>
+    @if ($currentUserType === 'teacher')
+        <script src="{{ asset('/dist/js/classroom-teacher.js') }}"></script>
+    @else
+        <script src="{{ asset('/dist/js/classroom-student.js') }}"></script>
+    @endif
 @endsection
 
     <?php /**

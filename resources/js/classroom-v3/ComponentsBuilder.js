@@ -30,14 +30,13 @@ export default class ComponentsBuilder {
         this.addChatbox();
 
         // Drawboard components
-        if (this.isTeacher()) {
-            this.addTabGroup();
-        }
+        this.addTabGroup();
         this.addDrawingBoard();
 
         // ToolBox components
         if (this.isTeacher()) {
             this.addToolBox();
+            this.addImageUpload();
         }
     }
 
@@ -75,12 +74,12 @@ export default class ComponentsBuilder {
 
         const template = `
             <span class="label">You're having a class with:</span>
-            <div class="client-card ${this.User.user_type}">
-                <div class="type">${this.User.uc_user_type}</div>
+            <div class="client-card ${this.User.other.user_type}">
+                <div class="type">${this.User.other.uc_user_type}</div>
                 <div class="details">
                     <img src="https://usercontent1.hubstatic.com/13400924.png" width="80" height="80" class="uk-border-circle">
                     <div class="full-name">
-                        <a href="#">${this.User.full_name}</a>
+                        <a href="#">${this.User.other.full_name}</a>
                     </div>
                 </div>
             </div>`;
@@ -94,8 +93,7 @@ export default class ComponentsBuilder {
 
     addTabGroup()
     {
-        this.TabGroup = new TabGroup();
-        this.TabGroup.appendTo(this.board);
+        this.TabGroup = new TabGroup(this);
     }
 
     addDrawingBoard()
@@ -112,16 +110,72 @@ export default class ComponentsBuilder {
     addToolBox()
     {
         this.ToolBox = new ToolBox(this);
+    }
 
+    addImageUpload()
+    {
+        const fileDropZone = document.createElement('div');
+        fileDropZone.setAttribute('uk-form-custom', '');
+        fileDropZone.setAttribute('id', 'file-dropZone');
+        fileDropZone.innerHTML = `
+            <input type="file" multiple>
+            <div class="dropbox">
+                <h3>Drop Files Here</h3>
+                <span>Allowed extensions are: jpg/jpeg and png</span>
+            </div>
+        `;
+
+        const fileUploadProgress = document.createElement('div');
+        fileUploadProgress.setAttribute('id', 'file-upload-progress');
+        fileUploadProgress.innerHTML = `
+            <div class="progressbox">
+                <h3>Uploading <span class="current"></span> of <span class="total"></span> image(s)</h3>
+                <progress class="progress uk-progress" value="" max=""></progress>
+            </div>
+        `;
+
+        this.container.insertAdjacentElement('afterend', fileDropZone);
+        fileDropZone.insertAdjacentElement('afterend', fileUploadProgress);
+
+        this.ImageImport = {
+            dropZone: fileDropZone,
+
+            /**
+             * This DOM is already inserted on ToolBox
+             */
+            inputField: document.getElementById('file-input'),
+            upload: {
+                wrapper: fileUploadProgress,
+                progress: fileUploadProgress.querySelector('.progress'),
+                total: fileUploadProgress.querySelector('.total'),
+                current: fileUploadProgress.querySelector('.current')
+            }
+        };
+
+        this.ImageImport['showUploadProgress'] = () => {
+            this.ImageImport.upload.wrapper.style.visibility = 'visible'
+        };
+
+        this.ImageImport['hideUploadProgress'] = () => {
+            this.ImageImport.upload.wrapper.style.visibility = 'hidden';
+        }
+
+        this.ImageImport['showDropZone'] = () => {
+            this.ImageImport.dropZone.style.visibility = 'visible';
+        };
+
+        this.ImageImport['hideDropZone'] = () => {
+            this.ImageImport.dropZone.style.visibility = 'hidden';
+        };
     }
 
     isTeacher()
     {
-        return this.User.user_type == 'teacher';
+        return this.User.current.user_type == 'teacher';
     }
 
     isStudent()
     {
-        return this.User.user_type == 'student';
+        return this.User.current.user_type == 'student';
     }
 }

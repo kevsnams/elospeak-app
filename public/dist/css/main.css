@@ -336,6 +336,30 @@ input[type=reset].fncy-button {
   outline: 0;
 }
 
+#vr-tabs {
+  display: block;
+  width: 90%;
+  margin: 3% auto 0 auto;
+}
+#vr-tabs a.tab {
+  text-decoration: none;
+  display: inline-block;
+  padding: 5px 15px;
+  font-size: 0.9em;
+  font-weight: bold;
+  color: #acacac;
+}
+#vr-tabs a.tab.active {
+  -webkit-border-top-left-radius: 10px;
+  -webkit-border-top-right-radius: 10px;
+  -moz-border-radius-topleft: 10px;
+  -moz-border-radius-topright: 10px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  color: #2483e8;
+  background: #fff;
+}
+
 #virtual-room #vr-sidenav {
   width: 23%;
   height: 100%;
@@ -458,23 +482,11 @@ input[type=reset].fncy-button {
   top: 0;
   background: #ebebeb66;
 }
-#virtual-room #vr-board #vr-curtain {
-  position: absolute;
-  z-index: 9999;
-  background: rgba(0, 0, 0, 0.2);
-  display: none;
-  width: 100%;
-}
-#virtual-room #vr-board #vr-curtain .title, #virtual-room #vr-board #vr-curtain .content {
-  display: block;
-  margin: 0 auto;
-  width: 400px;
-}
 #virtual-room #vr-board .vr-drawingboard {
   display: block;
   width: 90%;
   min-height: 1000px;
-  margin: 7% auto 0 auto;
+  margin: 0 auto;
   background: #fff;
   border: 0px solid #000000;
   box-shadow: 0px 0px 41px -21px #bdbdbd;
@@ -655,55 +667,6 @@ div#file-upload-progress .progressbox {
   text-align: center;
   border: 5px dashed #ddd;
   padding: 100px;
-}
-
-div#vr-tabs {
-  display: block;
-  width: 90%;
-  margin: 0 auto;
-}
-div#vr-tabs ul {
-  margin: 0;
-  padding: 0;
-}
-div#vr-tabs ul li {
-  float: left;
-  list-style-type: none;
-  display: block;
-  cursor: pointer;
-  background: #fff;
-  border-bottom: 1px solid rgba(51, 51, 51, 0.1);
-  border-right: 1px solid rgba(51, 51, 51, 0.1);
-  padding: 10px 15px;
-  font-size: 0.9em;
-  margin: 0;
-}
-div#vr-tabs ul li a.close {
-  display: block;
-  float: right;
-  margin-left: 20px;
-  color: #c5c5c5;
-}
-div#vr-tabs ul li a.close:hover {
-  color: #fff;
-  text-decoration: none;
-}
-div#vr-tabs ul li.active {
-  border-left: 3px solid rgba(51, 51, 51, 0.1);
-  border-right: 3px solid rgba(51, 51, 51, 0.1);
-  border-bottom-left-radius: 5px;
-  border-bottom-right-radius: 5px;
-  padding: 15px;
-  background: #1f1f1f;
-  color: #fff;
-}
-div#vr-tabs ul li:last-child {
-  border-right: 1px solid rgba(51, 51, 51, 0.1);
-  border-bottom-right-radius: 5px;
-}
-div#vr-tabs ul li:hover {
-  background: #323e47;
-  color: #fff;
 }
 
 .info-mute {

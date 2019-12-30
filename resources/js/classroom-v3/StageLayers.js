@@ -5,20 +5,22 @@ export default class StageLayers {
     constructor(Stage)
     {
         this.Stage = Stage;
-        this.current = 'main';
-        this.previous = this.current;
+        this.currentLayer = null;
+        this.previous = this.currentLayer;
         this.layers = {};
-
-        this.create({
-            id: this.current
-        });
-
-        this.use(this.current);
+        this.widthHeight = {};
     }
 
     create(options)
     {
+        const width = options.width;
+        const height = options.height;
+
+        delete options.width;
+        delete options.height;
+
         this.layers[options.id] = new Konva.Layer(options);
+        this.widthHeight[options.id] = {width, height};
 
         this.Stage.add(this.layers[options.id]);
 
@@ -32,28 +34,35 @@ export default class StageLayers {
 
     use(id)
     {
-        this.previous = this.current;
-        this.current = id;
+        this.previous = this.currentLayer;
+        this.currentLayer = id;
+
+        const widthHeight = this.widthHeight[id];
 
         _.each(this.layers, (layer) => {
             if (layer.isVisible()) {
                 layer.hide();
             }
 
-            if (layer.id() === this.current) {
+            if (layer.id() === this.currentLayer) {
+                if (widthHeight.height) {
+                    this.Stage.height(widthHeight.height);
+                }
+
+                if (widthHeight.width) {
+                    this.Stage.height(widthHeight.width);
+                }
+                
                 layer.show();
-                layer.getStage().height(layer.height());
             }
         });
 
         this.Stage.batchDraw();
-
-        return this.layers[this.current];
     }
 
     current()
     {
-        return this.layers[this.current];
+        return this.layers[this.currentLayer];
     }
 
     delete(id)

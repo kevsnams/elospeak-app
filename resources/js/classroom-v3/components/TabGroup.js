@@ -1,15 +1,44 @@
+import Tab from './Tab';
+
 export default class TabGroup {
-    constructor()
+    constructor(Components)
     {
+        this.Components = Components;
+
         const container = document.createElement('div');
         container.setAttribute('id', 'vr-tabs');
 
         this.container = container;
+        this.Tabs = {};
+        this.Layers = null;
+
+        this.Components.board.appendChild(this.container);
     }
 
-    appendTo(parent)
+    add(config)
     {
-        this.parent = parent;
-        this.parent.appendChild(this.container);
+        const tab = new Tab(config, this);
+
+        this.container.appendChild(tab.button);
+        this.Tabs[config.id] = tab;
+    }
+
+    get(id)
+    {
+        if (typeof this.Tabs[id] == 'undefined') {
+            return null;
+        }
+
+        return this.Tabs[id];
+    }
+
+    bindLayers(Layers)
+    {
+        this.Layers = Layers;
+    }
+
+    isLayersBonded()
+    {
+        return this.Layers !== null;
     }
 }

@@ -1,10 +1,13 @@
 import _ from 'underscore';
 
 import Brush from './tools/Brush';
-//import Eraser from './tools/Eraser';
-//import Select from './tools/Select';
-//import Shapes from './tools/Shapes';
-//import Clear from './tools/Clear';
+import Eraser from './tools/Eraser';
+import Shapes from './tools/Shapes';
+import Select from './tools/Select';
+import Clear from './tools/Clear';
+import ZoomReset from './tools/ZoomReset';
+import HistoryUndo from './tools/HistoryUndo';
+import HistoryRedo from './tools/HistoryRedo';
 
 export default class ToolBox {
     constructor(Components)
@@ -56,8 +59,25 @@ export default class ToolBox {
 
     use(tool)
     {
-        this.selectedTool = tool;
-        this.Tool[tool.charAt(0).toUpperCase() + tool.slice(1)].use();
+        const splitClassName = tool.split('-');
+        let className = '';
+
+        splitClassName.forEach((word) => {
+            className += word.charAt(0).toUpperCase() + word.slice(1);
+        });
+
+        this.selectedTool = className;
+        this.Tool[className].use();
+    }
+
+    getSelectedTool()
+    {
+        return this.Tool[this.selectedTool];
+    }
+
+    getSelectedToolName()
+    {
+        return this.getSelectedTool().className;
     }
 
     registerTools()
@@ -65,16 +85,19 @@ export default class ToolBox {
         this.selectedTool = null;
         this.Tool = {
             Brush: new Brush(this),
-            //Eraser: new Eraser(this),
-            //Shapes: new Shapes(this),
-            //Select: new Select(this),
-            //Clear: new Clear(this)
+            Eraser: new Eraser(this),
+            Shapes: new Shapes(this),
+            Select: new Select(this),
+            Clear: new Clear(this),
+            ZoomReset: new ZoomReset(this),
+            HistoryUndo: new HistoryUndo(this),
+            HistoryRedo: new HistoryRedo(this)
         };
 
         this.tools = this.wrapper.querySelectorAll('[data-tool]');
         this.tools.forEach((element) => {
             element.addEventListener('click', (evt) => {
-                this.use(evt.target.getAttribute('data-tool'));
+                this.use(element.getAttribute('data-tool'));
             }, false);
         });
     }
@@ -92,31 +115,37 @@ export default class ToolBox {
 
     togglerEvent()
     {
-        const toggle = () => {
-            const icon = document.getElementById('toolbox-toggle-icon');
-
-            const toolboxStyles = getComputedStyle(this.wrapper);
-            const toolboxHeight = parseFloat((toolboxStyles.height).replace('px', ''));
-
-            const toolboxTogglerStyles = getComputedStyle(this.toggler);
-            const togglerHeight = parseFloat((toolboxTogglerStyles.height).replace('px', '')) + 10;
-
-            if (toolboxStyles.bottom === '0px') {
-                this.wrapper.style.bottom = -(toolboxHeight - togglerHeight) +'px';
-                icon.setAttribute('uk-icon', 'triangle-up');
-            } else {
-                this.wrapper.style.bottom = '0px';
-                icon.setAttribute('uk-icon', 'triangle-down');
-            }
-        };
-
-        toggle();
+        this.toggle();
         this.toggler.addEventListener('click', (evt) => {
             evt.preventDefault();
             evt.stopPropagation();
 
-            toggle();
+            this.toggle();
         }, false);
+    }
+
+    isHidden()
+    {
+        return getComputedStyle(this.wrapper).bottom != '0px'
+    }
+
+    toggle()
+    {
+        const icon = document.getElementById('toolbox-toggle-icon');
+
+        const toolboxStyles = getComputedStyle(this.wrapper);
+        const toolboxHeight = parseFloat((toolboxStyles.height).replace('px', ''));
+
+        const toolboxTogglerStyles = getComputedStyle(this.toggler);
+        const togglerHeight = parseFloat((toolboxTogglerStyles.height).replace('px', '')) + 10;
+
+        if (toolboxStyles.bottom === '0px') {
+            this.wrapper.style.bottom = -(toolboxHeight - togglerHeight) +'px';
+            icon.setAttribute('uk-icon', 'triangle-up');
+        } else {
+            this.wrapper.style.bottom = '0px';
+            icon.setAttribute('uk-icon', 'triangle-down');
+        }
     }
 
     templateLeft()
@@ -136,8 +165,8 @@ export default class ToolBox {
                 <div class="undo-redo">
                     <span class="divider">HISTORY</span>
                     <div class="tools">
-                        <a href="#" id="history-undo"><span uk-icon="history"></span></a>
-                        <a href="#" id="history-redo"><span uk-icon="future"></span></a>
+                        <a href="#" data-tool="history-undo" class="tool-button"><span uk-icon="history"></span></a>
+                        <a href="#" data-tool="history-redo" class="tool-button"><span uk-icon="future"></span></a>
                     </div>
                 </div>
             </div>
@@ -159,7 +188,7 @@ export default class ToolBox {
 
             <span class="divider">ZOOM</span>
             <div class="tools">
-                <a href="#" id="zoom-reset">Reset</a>
+                <a href="#" data-tool="zoom-reset">Reset</a>
                 <span id="zoom-value">100%</span>
             </div>
         `;

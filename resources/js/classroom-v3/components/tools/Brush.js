@@ -6,10 +6,7 @@ import Tool from './Tool';
 export default class Brush extends Tool {
     constructor(ToolBox)
     {
-        super(ToolBox);
-
-        this.name = 'brush';
-        this.button = this.ToolBox.wrapper.querySelector(`[data-tool="${this.name}"]`);
+        super('brush', ToolBox);
 
         this.minSize = 5;
         this.maxSize = 20;
@@ -19,10 +16,7 @@ export default class Brush extends Tool {
 
         this.isPainting = false;
 
-        this.content = document.createElement('div');
-        this.content.setAttribute('data-tool-content', this.name);
-        this.content.style.display = 'none';
-        this.content.innerHTML = `
+        this.setContent(`
             <span class="divider">BRUSH SIZE</span>
             <input type="range" id="brush-size" min="${this.minSize}" max="${this.maxSize}" value="${this.size()}" class="uk-range brush-size">
             <div class="uk-grid" uk-grid>
@@ -37,11 +31,9 @@ export default class Brush extends Tool {
                     </div>
                 </div>
             </div>
-        `;
-
-        this.ToolBox.controls.appendChild(this.content);
-
-        const dot = this.content.querySelector('.dot');
+        `);
+        
+        const dot = this.content.querySelector('#brush-preview .dot');
         const sizer = this.content.querySelector('#brush-size');
 
         sizer.addEventListener('input', (evt) => {
@@ -82,32 +74,21 @@ export default class Brush extends Tool {
         this.Pickr = colorPicker;
     }
 
-    use()
-    {
-        this.ToolBox.tools.forEach((tool) => {
-            tool.classList.remove('active');
-        });
-
-        this.button.classList.add('active');
-
-        this.displayContent();
-    }
-
     color(color = null)
     {
         if (color === null) {
             return this.colorValue;
-        } else {
-            this.colorValue = color;
         }
+        
+        this.colorValue = color;
     }
 
     size(size = null)
     {
         if (size === null) {
             return this.sizeValue;
-        } else {
-            this.sizeValue = size;
         }
+
+        this.sizeValue = size;
     }
 }

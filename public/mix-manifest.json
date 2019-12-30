@@ -1,4 +1,5 @@
 {
-    "/dist/js/classroom-v3.js": "/dist/js/classroom-v3.js",
+    "/dist/js/classroom-student.js": "/dist/js/classroom-student.js",
+    "/dist/js/classroom-teacher.js": "/dist/js/classroom-teacher.js",
     "/dist/css/main.css": "/dist/css/main.css"
 }
