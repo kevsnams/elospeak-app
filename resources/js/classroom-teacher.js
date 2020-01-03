@@ -39,6 +39,21 @@ function makeid()
     let ClassroomInfo, Users, Components, ChatChannel, ChatHandler, Stage, Layers, LaravelEcho, PreviousDrawstate;
     let isFromPreviousDrawstate = false, UploadedImages = [], UploadCounter = 1;
 
+    function imageShapeBound(pos)
+    {
+        const newPos = {x: pos.x, y: pos.y};
+
+        if (pos.x < 0) {
+            newPos.x = 0;
+        }
+
+        if (pos.y < 0) {
+            newPos.y = 0;
+        }
+
+        return newPos;
+    }
+
     function transmit(data, isDebounce = false)
     {
         if (isDebounce) {
@@ -264,7 +279,7 @@ function makeid()
                 }, debounce);
             });
 
-            shape.on('transfromstart transformend transform', (evt) => {
+            shape.on('transfromstart transformend', (evt) => {
                 const target = evt.type === 'transformstart' ? evt.currentTarget : evt.target;
                 const debounce = evt.type == 'transform';
 
@@ -281,6 +296,8 @@ function makeid()
                     layer: Layers.current().id()
                 }, debounce);
             });
+
+            shape.dragBoundFunc(imageShapeBound);
         });
 
         Stage.find('.images').each((image) => {
@@ -296,9 +313,11 @@ function makeid()
                     layer: target.getLayer().id()
                 });
             });
+
+            image.dragBoundFunc(imageShapeBound);
         });
 
-        if (Components.ToolBox.getSelectedToolName() === 'Brush') {
+        if (['Brush', 'Eraser', 'Shapes'].indexOf(Components.ToolBox.getSelectedToolName()) >= 0) {
             Stage.find('.images').each((node) => {
                 node.draggable(false);
             });
@@ -425,6 +444,9 @@ function makeid()
 
             const node = shape.use();
 
+            // @TODO Bug. Shapes don't respect dragBoundFunc?
+            node.dragBoundFunc(imageShapeBound);
+
             node.on('dragstart dragmove dragend', (evt) => {
                 const target = evt.type === 'dragstart' ? evt.currentTarget : evt.target;
 
@@ -447,7 +469,7 @@ function makeid()
                 }, debounce);
             });
 
-            node.on('transformstart transform transformend', (evt) => {
+            node.on('transformstart transformend', (evt) => {
                 const target = evt.type === 'transformstart' ? evt.currentTarget : evt.target;
 
                 if (evt.type == 'transformstart') {
@@ -478,7 +500,13 @@ function makeid()
             node.y(midpoint.y);
             node.id(makeid());
 
+            Stage.find('Transformer').destroy();
+
+            const transformer = new Konva.Transformer();
+            transformer.attachTo(node);
+
             Layers.current().add(node);
+            Layers.current().add(transformer);
             Layers.current().draw();
 
             transmit({
@@ -841,6 +869,7 @@ function makeid()
 
                 node.id(id);
                 node.image(image);
+                image.dragBoundFunc(imageShapeBound);
 
                 resolve({
                     success: true,
@@ -916,7 +945,7 @@ function makeid()
         uploadImage(evt);
     }, false);
 
-    // [START FIX] Prevent image drag and brush from doing the same thing
+    // [START FIX] Prevent image drag and brush/eraser/shapes from doing the same thing
     Components.ToolBox.Tool.Select.button.addEventListener('click', (evt) => {
         const children = Layers.current().getChildren((node) => {
             return node.getClassName() === 'Image';
@@ -925,13 +954,16 @@ function makeid()
         children.draggable(true);
     }, false);
 
-    Components.ToolBox.Tool.Brush.button.addEventListener('click', (evt) => {
-        const children = Layers.current().getChildren((node) => {
-            return node.getClassName() === 'Image';
-        });
+    ['Brush', 'Eraser', 'Shapes'].forEach((tool) => {
+        Components.ToolBox.Tool[tool].button.addEventListener('click', (evt) => {
+            const children = Layers.current().getChildren((node) => {
+                return node.getClassName() === 'Image';
+            });
 
-        children.draggable(false);
-    }, false);
+            children.draggable(false);
+        }, false);
+    });
+        
     // [END FIX] Prevent image drag and brush from doing the same thing
     /**
      * [END] ImageUpload
