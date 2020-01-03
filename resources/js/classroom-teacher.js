@@ -14,6 +14,7 @@ import InitLoader from './classroom-v3/InitLoader';
 import ComponentsBuilder from './classroom-v3/ComponentsBuilder';
 import Chat from './classroom-v3/Chat';
 import StageLayers from './classroom-v3/StageLayers';
+import RandomQuote from './classroom-v3/RandomQuotes';
 
 import {fetchClassroomInfo, fetchChatMessages, fetchDrawstate} from './classroom-v3/functions/fetchers';
 
@@ -206,7 +207,7 @@ function makeid()
             Layers = new StageLayers(Stage);
         }
 
-        init.setSubheaderText('Heart Shaker by TWICE is my favorite song');
+        init.setSubheaderText(RandomQuote);
         setTimeout(() => {
             init.end();
         }, 500);
