@@ -15,7 +15,7 @@ class CreateClassroomDrawstatesTable extends Migration
     {
         Schema::create('classroom_drawstates', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->mediumText('json')->default('')->nullable();
+            $table->mediumText('json')->nullable();
             $table->bigInteger('classroom_id');
             $table->timestamps();
         });
