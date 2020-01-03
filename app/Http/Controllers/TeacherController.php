@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Auth;
+use Session;
 
 class TeacherController extends Controller
 {
@@ -20,6 +21,7 @@ class TeacherController extends Controller
     public function logout()
     {
         Auth::guard('teacher')->logout();
+        Session::flush();
 
         return redirect(route('teacher.login'));
     }

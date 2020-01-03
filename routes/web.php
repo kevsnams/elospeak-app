@@ -41,6 +41,6 @@ Route::name('classroom.')->group(function() {
     Route::post('/classroom/image', 'ClassroomController@imageURL')->name('imageURL');
     Route::post('/classroom/chat/send', 'ClassroomController@chatSend')->name('chat.send');
     Route::post('/classroom/chat/load', 'ClassroomController@chatLoad')->name('chat.load');
-
+    Route::post('/classroom/drawstate', 'ClassroomController@drawstate')->name('drawstate');
     Route::post('/classroom/image-upload', 'ClassroomController@imageUpload')->name('image.upload');
 });

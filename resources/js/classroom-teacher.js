@@ -15,7 +15,7 @@ import ComponentsBuilder from './classroom-v3/ComponentsBuilder';
 import Chat from './classroom-v3/Chat';
 import StageLayers from './classroom-v3/StageLayers';
 
-import {fetchClassroomInfo, fetchChatMessages} from './classroom-v3/functions/fetchers';
+import {fetchClassroomInfo, fetchChatMessages, fetchDrawstate} from './classroom-v3/functions/fetchers';
 
 function makeid()
 {
@@ -30,11 +30,75 @@ function makeid()
     return result;
 }
 
+
 (async function () {
     const container = document.getElementById('classroom');
     const init = new InitLoader(container);
 
-    let ClassroomInfo, Users, Components, ChatChannel, ChatHandler, Stage, Layers, LaravelEcho;
+    let ClassroomInfo, Users, Components, ChatChannel, ChatHandler, Stage, Layers, LaravelEcho, PreviousDrawstate;
+    let isFromPreviousDrawstate = false, UploadedImages = [], UploadCounter = 1;
+
+    function transmit(data, isDebounce = false)
+    {
+        if (isDebounce) {
+            if (typeof window.__sendEventData === 'undefined') {
+                window.__sendEventData = _.debounce((_data) => {
+                    LaravelEcho.private(ChatChannel).whisper('draw', _data);
+                }, 100);
+            }
+
+            window.__sendEventData(data);
+        } else {
+            LaravelEcho.private(ChatChannel).whisper('draw', data);
+        }
+    }
+
+    function saveDrawState()
+    {
+        let Tabs = [];
+
+        _.each(Components.TabGroup.Tabs, (tab, key) => {
+            Tabs.push({
+                id: key,
+                label: tab.label
+            });
+        });
+
+        let data = {
+            Stage: Stage.toJSON(),
+            Tabs,
+            UploadCounter,
+            UploadedImages,
+            currentLayer: Layers.current().id(),
+            currentSelectedTool: Components.ToolBox.getSelectedToolName()
+        };
+
+        return axios.post(url('/classroom/drawstate'), {
+            id: window.ELOSpeakClassroomID,
+            data,
+            mode: 'save'
+        });
+    }
+
+    async function createImageFromUploadedImages(data)
+    {
+        return new Promise((resolve, reject) => {
+            const image = new Image();
+            image.setAttribute('data-index', data.image.index);
+            image.setAttribute('data-node-id', data.node_id);
+            image.setAttribute('data-image-id', data.image.id);
+
+            image.onerror = () => {
+                reject(false);
+            };
+
+            image.onload = () => {
+                resolve(image);
+            };
+
+            image.src = data.image.src;
+        });
+    }
 
     async function initialize()
     {
@@ -51,6 +115,9 @@ function makeid()
         // Start chatroom
         init.setSubheaderText('Fetching chat messages...');
         const previousChats = await fetchChatMessages(window.ELOSpeakClassroomID);
+
+        init.setSubheaderText('Fetching previous drawstate...');
+        PreviousDrawstate = await fetchDrawstate(window.ELOSpeakClassroomID);
 
         ChatHandler = new Chat({
             messages: previousChats,
@@ -72,45 +139,92 @@ function makeid()
             wsPort: 6001
         });
 
+        init.setSubheaderText('Listening to chat server...');
         LaravelEcho.private(ChatChannel).listen('NewChat', (chat) => {
             if (Users.current.user_type !== chat.from) {
                 ChatHandler.display(chat.message, true);
             }
         });
 
-        init.end();
+        if (PreviousDrawstate != null && PreviousDrawstate.Stage.length) {
+            isFromPreviousDrawstate = true;
+
+            // Load PreviousDrawstate to Konva.Stage
+            init.setSubheaderText('Loading drawing board from previous drawstate');
+            Stage = Konva.Node.create(PreviousDrawstate.Stage, Components.drawingBoard);
+            
+
+            init.setSubheaderText('Setting up drawing board layers...');
+            Layers = new StageLayers(Stage);
+
+            UploadCounter = PreviousDrawstate.UploadCounter;
+            UploadedImages = PreviousDrawstate.UploadedImages;
+
+            if (PreviousDrawstate.Tabs.length) {
+                init.setSubheaderText('Creating tabs...');
+                PreviousDrawstate.Tabs.forEach((tab) => {
+                    Components.TabGroup.add({
+                        id: tab.id,
+                        label: tab.label,
+                        active: false
+                    });
+                });
+
+                init.setSubheaderText('Creating layers...');
+                Stage.getLayers().forEach((layer) => {
+                    Layers.layers[layer.id()] = layer;
+                });
+            }
+
+            if (UploadedImages.length) {
+                init.setSubheaderText('Getting previous images...');
+                UploadedImages.forEach(async (upload) => {
+                    const image = await createImageFromUploadedImages(upload);
+                    Stage.find(`#${image.getAttribute('data-node-id')}`)[0].image(image);
+                    Stage.draw();
+                });
+            }
+
+            // Use the layer id from PreviousDrawstate.currentLayer
+            Layers.use(PreviousDrawstate.currentLayer);
+            Components.TabGroup.get(PreviousDrawstate.currentLayer).setActive();
+            Components.ToolBox.use(PreviousDrawstate.currentSelectedTool);
+        } else {
+            isFromPreviousDrawstate = false;
+
+            // Start Konva.Stage
+            init.setSubheaderText('Creating drawing board...');
+            let dimensions = Components.drawingBoard.getBoundingClientRect();
+
+            Stage = new Konva.Stage({
+                container: Components.drawingBoard,
+                width: dimensions.width,
+                height: dimensions.height
+            });
+
+            init.setSubheaderText('Setting up drawing board layers...');
+            Layers = new StageLayers(Stage);
+        }
+
+        init.setSubheaderText('Heart Shaker by TWICE is my favorite song');
+        setTimeout(() => {
+            init.end();
+        }, 500);
     }
 
     await initialize();
 
-    function transmit(data, isDebounce = false)
+    function getStageMidPoint(node)
     {
-        if (isDebounce) {
-            if (typeof window.__sendEventData === 'undefined') {
-                window.__sendEventData = _.debounce((_data) => {
-                    LaravelEcho.private(ChatChannel).whisper('draw', _data);
-                }, 100);
-            }
-
-            window.__sendEventData(data);
-        } else {
-            LaravelEcho.private(ChatChannel).whisper('draw', data);
+        return {
+            x: (Stage.width() / 2) - (node.width() / 2),
+            y: Math.abs(Components.drawingBoard.getBoundingClientRect().top) + (window.innerHeight / 2)
         }
     }
-    
 
     // Mouse clicks
     const LEFT_CLICK = 0, RIGHT_CLICK = 2, CENTER_CLICK = 3;
 
-    // Start Konva.Stage
-    let dimensions = Components.drawingBoard.getBoundingClientRect();
-    Stage = new Konva.Stage({
-        container: Components.drawingBoard,
-        width: dimensions.width,
-        height: dimensions.height
-    });
-
-    Layers = new StageLayers(Stage);
     Components.TabGroup.bindLayers(Layers);
     Components.TabGroup.switchTransmit = (id) => {
         transmit({
@@ -120,13 +234,75 @@ function makeid()
     };
 
     /**
-     * Create the first tab, which is 'main'
+     * #main may be already initialized, so check
      */
-    Components.TabGroup.add({
-        id: 'main',
-        label: 'Main'
-    });
+    if (!Stage.find('#main').length) {
+        /**
+         * Create the first tab, which is 'main'
+         */
+        Components.TabGroup.add({
+            id: 'main',
+            label: 'Main'
+        });
+    }
 
+    if (isFromPreviousDrawstate) {
+        Stage.find('.shapes').each((shape) => {
+            shape.on('dragstart dragend dragmove', (evt) => {
+                const target = evt.type === 'dragstart' ? evt.currentTarget : evt.target;
+                const debounce = evt.type == 'dragmove';
+
+                transmit({
+                    event: 'node_drag',
+                    node: {
+                        id: target.id(),
+                        x: target.x(),
+                        y: target.y()
+                    },
+                    layer: target.getLayer().id()
+                }, debounce);
+            });
+
+            shape.on('transfromstart transformend transform', (evt) => {
+                const target = evt.type === 'transformstart' ? evt.currentTarget : evt.target;
+                const debounce = evt.type == 'transform';
+
+                transmit({
+                    event: 'node_transform',
+                    node: {
+                        id: target.id(),
+                        x: target.x(),
+                        y: target.y(),
+                        scaleX: target.scaleX(),
+                        scaleY: target.scaleY(),
+                        rotation: target.rotation()
+                    },
+                    layer: Layers.current().id()
+                }, debounce);
+            });
+        });
+
+        Stage.find('.images').each((image) => {
+            image.on('dragstart dragend dragmove', (evt) => {
+                const target = evt.type === 'dragstart' ? evt.currentTarget : evt.target;
+                transmit({
+                    event: 'node_drag',
+                    node: {
+                        id: target.id(),
+                        x: target.x(),
+                        y: target.y()
+                    },
+                    layer: target.getLayer().id()
+                });
+            });
+        });
+
+        if (Components.ToolBox.getSelectedToolName() === 'Brush') {
+            Stage.find('.images').each((node) => {
+                node.draggable(false);
+            });
+        }
+    }
     /**
      * [START] Stage Brush/Eraser event
      */
@@ -136,6 +312,7 @@ function makeid()
         const toolIndex = drawOverTools.indexOf(Components.ToolBox.getSelectedToolName());
 
         if (toolIndex >= 0 && evt.evt.button == LEFT_CLICK) {
+            console.log('draw');
             const toolName = drawOverTools[toolIndex];
             let color = '#ffffff', globalCompositeOperation = 'destination-out';
 
@@ -217,7 +394,14 @@ function makeid()
     Components.ToolBox.Tool.Clear.button.addEventListener('click', (evt) => {
         evt.preventDefault();
 
-        Layers.current().destroyChildren();
+        const deletedNodes = Layers.current().getChildren((child) => {
+            return child.getClassName() !== 'Image';
+        });
+
+        deletedNodes.each((node) => {
+            node.destroy();
+        });
+
         Layers.current().batchDraw();
 
         transmit({
@@ -234,14 +418,6 @@ function makeid()
     /**
      * [START] Shapes
      */
-    function getStageMidPoint(node)
-    {
-        return {
-            x: (Stage.width() / 2) - (node.width() / 2),
-            y: Math.abs(Components.drawingBoard.getBoundingClientRect().top) + (window.innerHeight / 2)
-        }
-    }
-
     _.each(Components.ToolBox.Tool.Shapes.all(), (shape) => {
         shape.button.addEventListener('click', (evt) => {
             evt.preventDefault();
@@ -271,11 +447,11 @@ function makeid()
             });
 
             node.on('transformstart transform transformend', (evt) => {
-                const target = evt.type === 'dragstart' ? evt.currentTarget : evt.target;
+                const target = evt.type === 'transformstart' ? evt.currentTarget : evt.target;
 
-                if (evt.type == 'dragstart') {
+                if (evt.type == 'transformstart') {
                     // @TODO History
-                } else if (evt.type == 'dragend') {
+                } else if (evt.type == 'transformend') {
                     // @TODO History
                 }
 
@@ -463,6 +639,7 @@ function makeid()
         });
 
         SelectedNode.destroy();
+        Layers.current().batchDraw();
 
         SelectedNode = null;
         CopiedNode = null;
@@ -484,6 +661,11 @@ function makeid()
         if (evt.keyCode === 46) {
             deleteNode();
         }
+    }, false);
+
+    Components.ToolBox.Tool.Select.deleteShapeButton.addEventListener('click', (evt) => {
+        evt.preventDefault();
+        deleteNode();
     }, false);
 
     // ZOOM
@@ -626,7 +808,6 @@ function makeid()
         });
     }
 
-    let uploadCounter = 1;
     async function uploadHandler(data)
     {
         const image = new Image();
@@ -634,11 +815,11 @@ function makeid()
         return new Promise((resolve, reject) => {
             const id = makeid();
 
-            image.setAttribute('data-index', uploadCounter);
+            image.setAttribute('data-index', UploadCounter);
             image.setAttribute('data-node-id', id);
             image.setAttribute('data-image-id', data.image.id);
 
-            uploadCounter++;
+            UploadCounter++;
 
             image.onerror = () => {
                 reject({
@@ -673,8 +854,7 @@ function makeid()
 
     function addImageNodeToStage(node, image)
     {
-        const id = node.id();
-        node.on('dragend dragstart', (evt) => {
+        node.on('dragend dragmove dragstart', (evt) => {
             const target = evt.type === 'dragstart' ? evt.currentTarget : evt.target;
 
             if (evt.type == 'dragstart') {
@@ -682,6 +862,8 @@ function makeid()
             } else if (evt.type == 'dragend') {
                 // Save to history [to]
             }
+
+            const debounce = evt.type == 'dragmove';
 
             transmit({
                 event: 'node_drag',
@@ -691,19 +873,29 @@ function makeid()
                     y: target.y()
                 },
                 layer: target.getLayer().id()
-            });
+            }, debounce);
         });
 
         const label = `Image ${image.getAttribute('data-index')}`;
+        const layerId = makeid();
         Components.TabGroup.add({
-            id,
+            id: layerId,
             label,
-            layer: {
-                height: image.height
+            layerAttrs: {
+                drawingBoardHeight: image.height
             }
         });
 
-        Layers.get(id).add(node);
+        Layers.get(layerId).add(node);
+
+        UploadedImages.push({
+            node_id: node.id(),
+            image: {
+                id: image.getAttribute('data-image-id'),
+                src: image.src,
+                index: image.getAttribute('data-index')
+            }
+        });
 
         transmit({
             event: 'image_new',
@@ -711,7 +903,7 @@ function makeid()
                 id: image.getAttribute('data-image-id'),
                 label
             },
-            layer: id
+            layer: layerId
         });
     }
 
@@ -739,15 +931,37 @@ function makeid()
 
         children.draggable(false);
     }, false);
-    // [END FIX]
+    // [END FIX] Prevent image drag and brush from doing the same thing
     /**
      * [END] ImageUpload
      */
+
+
+    /**
+     * [START] Autosaver
+     */
+    let autosaver = () => {
+        setTimeout(() => {
+            const sender = saveDrawState();
+
+            sender.then((resp) => {
+                autosaver();
+            });
+        }, 2000);
+    };
+
+    autosaver();
+    /**
+     * [END] Autosaver
+     */
+
+
     window.__DebugELO = {
         ClassroomInfo,
         Users,
         Components,
         Layers,
-        Stage
+        Stage,
+        PreviousDrawstate
     };
 })();

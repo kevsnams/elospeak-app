@@ -163,8 +163,8 @@ import {fetchClassroomInfo, fetchChatMessages} from './classroom-v3/functions/fe
                 Components.TabGroup.add({
                     id: data.layer,
                     label: data.image.label,
-                    layer: {
-                        height: imageNode.image.height
+                    layerAttrs: {
+                        drawingBoardHeight: imageNode.image.height
                     }
                 });
 
@@ -179,7 +179,14 @@ import {fetchClassroomInfo, fetchChatMessages} from './classroom-v3/functions/fe
         },
 
         'layer_clear': (data) => {
-            Layers.get(data.layer).destroyChildren();
+            const deletedNodes = Layers.get(data.layer).getChildren((child) => {
+                return child.getClassName() !== 'Image';
+            });
+    
+            deletedNodes.each((node) => {
+                node.destroy();
+            });
+
             Layers.get(data.layer).batchDraw();
         },
 

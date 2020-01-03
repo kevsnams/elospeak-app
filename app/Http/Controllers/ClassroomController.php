@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Classroom;
 use App\ClassroomFileUpload;
 use App\ChatLog;
+use App\ClassroomDrawstate;
 
 use Auth;
 
@@ -153,5 +154,35 @@ class ClassroomController extends Controller
         $chatLogs = ChatLog::where('classroom_id', $request->id)->orderBy('created_at', 'ASC')->get();
 
         return response()->json($chatLogs);
+    }
+
+    public function drawstate(Request $request)
+    {
+        $classroom = ClassroomDrawstate::where('classroom_id', $request->id)->first();
+        $response = [
+            'data' => null,
+            'success' => false
+        ];
+
+        if (!$classroom) {
+            $classroom = new ClassroomDrawstate();
+            $classroom->classroom_id = $request->id;
+            $classroom->json = '';
+            $classroom->save();
+        }
+
+        if ($request->mode == 'save' && $classroom->json != $request->data) {
+            $classroom->json = $request->data;
+            $classroom->save();
+
+            $response['success'] = true;
+        }
+
+        if ($request->mode == 'fetch') {
+            $response['success'] = true;
+            $response['data'] = json_decode($classroom->json);
+        }
+
+        return response()->json($response);
     }
 }

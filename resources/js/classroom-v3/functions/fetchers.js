@@ -25,3 +25,17 @@ export async function fetchChatMessages(id)
         console.log(error);
     }
 }
+
+export async function fetchDrawstate(id)
+{
+    try {
+        const fetcher = await axios.post(url('/classroom/drawstate'), {
+            id,
+            mode: 'fetch'
+        });
+
+        return fetcher.data.data;
+    } catch (error) {
+        console.log(error);
+    }
+}

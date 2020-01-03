@@ -9,10 +9,8 @@ export default class Tab {
             id: null,
             label: null,
             active: true,
-            layer: {
-                width: null,
-                height: null
-            }
+            layerConfig: {},
+            layerAttrs: {}
         };
 
         const config = _.defaults(configs, defaults);
@@ -26,13 +24,14 @@ export default class Tab {
         this.button.setAttribute('data-tab', this.id);
 
         if (this.TabGroup.isLayersBonded()) {
-            let params = config.layer;
+            let params = config.layerConfig;
             params['id'] = this.id;
 
             this.TabGroup.Layers.create(params);
+            this.TabGroup.Layers.get(this.id).setAttrs(config.layerAttrs);
         }
 
-        if (config.active) {
+        if (config.active && this.TabGroup.isLayersBonded()) {
             this.setActive();
             this.TabGroup.Layers.use(this.id);
         }
@@ -42,12 +41,14 @@ export default class Tab {
                 evt.preventDefault();
                 this.setActive();
 
+                const id = evt.target.getAttribute('data-tab');
+
                 if (this.TabGroup.isLayersBonded()) {
-                    this.TabGroup.Layers.use(this.id);
+                    this.TabGroup.Layers.use(id);
                 }
 
                 if ('switchTransmit' in this.TabGroup) {
-                    this.TabGroup.switchTransmit(this.id);
+                    this.TabGroup.switchTransmit(id);
                 }
             }, false);
         }
