@@ -14,13 +14,14 @@ import ComponentsBuilder from './classroom-v3/ComponentsBuilder';
 import Chat from './classroom-v3/Chat';
 import StageLayers from './classroom-v3/StageLayers';
 
-import {fetchClassroomInfo, fetchChatMessages} from './classroom-v3/functions/fetchers';
+import {fetchClassroomInfo, fetchChatMessages, fetchDrawstate, fetchImageURL} from './classroom-v3/functions/fetchers';
+import {createImageFromUploadedImages} from './classroom-v3/functions/util';
 
 (async function () {
     const container = document.getElementById('classroom');
     const init = new InitLoader(container);
 
-    let ClassroomInfo, Users, Components, ChatChannel, ChatHandler, Stage, Layers, LaravelEcho;
+    let ClassroomInfo, Users, Components, ChatChannel, ChatHandler, Stage, Layers, LaravelEcho, PreviousDrawstate, isFromPreviousDrawstate;
 
     async function initialize()
     {
@@ -37,6 +38,9 @@ import {fetchClassroomInfo, fetchChatMessages} from './classroom-v3/functions/fe
         // Start chatroom
         init.setSubheaderText('Fetching chat messages...');
         const previousChats = await fetchChatMessages(window.ELOSpeakClassroomID);
+
+        init.setSubheaderText('Fetching previous drawstate...');
+        PreviousDrawstate = await fetchDrawstate(window.ELOSpeakClassroomID);
 
         ChatHandler = new Chat({
             messages: previousChats,
@@ -65,29 +69,73 @@ import {fetchClassroomInfo, fetchChatMessages} from './classroom-v3/functions/fe
             }
         });
 
+        if (PreviousDrawstate != null && PreviousDrawstate.Stage.length) {
+            isFromPreviousDrawstate = true;
+
+            init.setSubheaderText('Loading drawing board from previous drawstate');
+            Stage = Konva.Node.create(PreviousDrawstate.Stage, Components.drawingBoard);
+
+            init.setSubheaderText('Setting up drawing board layers...');
+            Layers = new StageLayers(Stage);
+        } else {
+            isFromPreviousDrawstate = false;
+
+            // Start Konva.Stage
+            let dimensions = Components.drawingBoard.getBoundingClientRect();
+            Stage = new Konva.Stage({
+                container: Components.drawingBoard,
+                width: dimensions.width,
+                height: dimensions.height
+            });
+        }
+
+        init.setSubheaderText('Setting up drawing board layers...');
+        Layers = new StageLayers(Stage);
+
         init.end();
     }
 
     await initialize();
 
-    // Start Konva.Stage
-    let dimensions = Components.drawingBoard.getBoundingClientRect();
-    Stage = new Konva.Stage({
-        container: Components.drawingBoard,
-        width: dimensions.width,
-        height: dimensions.height
-    });
-
-    Layers = new StageLayers(Stage);
+    
     Components.TabGroup.bindLayers(Layers);
 
     /**
-     * Create the first tab, which is 'main'
+     * #main may be already initialized, so check
      */
-    Components.TabGroup.add({
-        id: 'main',
-        label: 'Main'
-    });
+    if (!Stage.find('#main').length) {
+        /**
+         * Create the first tab, which is 'main'
+         */
+        Components.TabGroup.add({
+            id: 'main',
+            label: 'Main',
+            addCloseButton: false
+        });
+    }
+
+    if (isFromPreviousDrawstate) {
+        Stage.find('.layers').each((layer) => {
+            Layers.layers[layer.id()] = layer;
+        });
+
+        Stage.find('.images').each(async (image) => {
+            const fetchURL = await fetchImageURL(image.getAttr('imageUrlId'));
+            const objectImage = await createImageFromUploadedImages({
+                image: {
+                    index: image.getAttr('imageUrlId'),
+                    id: image.getAttr('imageIndex'),
+                    src: fetchURL
+                },
+                node_id: image.id()
+            });
+
+            image.image(objectImage);
+            Stage.draw();
+        });
+
+        Layers.use(PreviousDrawstate.currentLayer);
+    }
 
     const dispatchDef = {
         'node_new': (data) => {
@@ -175,7 +223,6 @@ import {fetchClassroomInfo, fetchChatMessages} from './classroom-v3/functions/fe
 
         'tab_switch': (data) => {
             Layers.use(data.id);
-            Components.TabGroup.get(data.id).setActive();
         },
 
         'layer_clear': (data) => {

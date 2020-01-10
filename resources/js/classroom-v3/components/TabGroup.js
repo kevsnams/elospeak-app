@@ -37,9 +37,4 @@ export default class TabGroup {
     {
         this.Layers = Layers;
     }
-
-    isLayersBonded()
-    {
-        return this.Layers !== null;
-    }
 }

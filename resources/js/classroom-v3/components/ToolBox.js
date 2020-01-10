@@ -90,8 +90,8 @@ export default class ToolBox {
             Select: new Select(this),
             Clear: new Clear(this),
             ZoomReset: new ZoomReset(this),
-            HistoryUndo: new HistoryUndo(this),
-            HistoryRedo: new HistoryRedo(this)
+            //HistoryUndo: new HistoryUndo(this),
+            //HistoryRedo: new HistoryRedo(this)
         };
 
         this.tools = this.wrapper.querySelectorAll('[data-tool]');
@@ -162,6 +162,7 @@ export default class ToolBox {
                 <div class="tools">
                     <a href="#" data-tool="clear" class="tool-button">Clear</a>
                 </div>
+                <!---
                 <div class="undo-redo">
                     <span class="divider">HISTORY</span>
                     <div class="tools">
@@ -169,6 +170,7 @@ export default class ToolBox {
                         <a href="#" data-tool="history-redo" class="tool-button"><span uk-icon="future"></span></a>
                     </div>
                 </div>
+                --->
             </div>
         `;
     }

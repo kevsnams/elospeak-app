@@ -12,11 +12,14 @@ export default class StageLayers {
 
     create(options)
     {
-        this.layers[options.id] = new Konva.Layer(options);
+        const layer = new Konva.Layer(options);
+        layer.name('layers');
 
-        this.Stage.add(this.layers[options.id]);
+        this.layers[options.id] = layer;
 
-        return this.layers[options.id];
+        this.Stage.add(layer);
+
+        return this.layers[layer];
     }
 
     get(id)
@@ -63,6 +66,6 @@ export default class StageLayers {
 
         node.destroy();
 
-        this.use(this.previous).draw();
+        this.use(this.previous);
     }
 }

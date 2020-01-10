@@ -9,11 +9,14 @@ export default class Tab {
             id: null,
             label: null,
             active: true,
+            createLayer: true,
             layerConfig: {},
-            layerAttrs: {}
+            layerAttrs: {},
+            addCloseButton: true
         };
 
         const config = _.defaults(configs, defaults);
+        this.config = config;
 
         this.id = config.id;
         this.label = config.label;
@@ -23,7 +26,16 @@ export default class Tab {
         this.button.innerText = this.label;
         this.button.setAttribute('data-tab', this.id);
 
-        if (this.TabGroup.isLayersBonded()) {
+        if (config.addCloseButton) {
+            this.buttonClose = document.createElement('a');
+            this.buttonClose.innerHTML = '&#10006;';
+            this.buttonClose.setAttribute('data-tab-close', this.id);
+            this.buttonClose.className = 'tab-close';
+            this.buttonClose.style.visibility = 'hidden';
+            this.button.insertAdjacentElement('beforeend', this.buttonClose);
+        }
+
+        if (config.createLayer) {
             let params = config.layerConfig;
             params['id'] = this.id;
 
@@ -31,7 +43,7 @@ export default class Tab {
             this.TabGroup.Layers.get(this.id).setAttrs(config.layerAttrs);
         }
 
-        if (config.active && this.TabGroup.isLayersBonded()) {
+        if (config.active) {
             this.setActive();
             this.TabGroup.Layers.use(this.id);
         }
@@ -43,14 +55,31 @@ export default class Tab {
 
                 const id = evt.target.getAttribute('data-tab');
 
-                if (this.TabGroup.isLayersBonded()) {
-                    this.TabGroup.Layers.use(id);
-                }
+                this.TabGroup.Layers.use(id);
 
                 if ('switchTransmit' in this.TabGroup) {
                     this.TabGroup.switchTransmit(id);
                 }
             }, false);
+
+            if (config.addCloseButton) {
+                this.buttonClose.addEventListener('click', (evt) => {
+                    evt.stopPropagation();
+                    const id = evt.target.getAttribute('data-tab-close');
+
+                    this.TabGroup.Layers.delete(id);
+                    this.remove();
+                }, false);
+            }
+        }
+    }
+
+    remove()
+    {
+        this.button.remove();
+
+        if (this.config.addCloseButton) {
+            this.buttonClose.remove();
         }
     }
 
@@ -61,7 +90,14 @@ export default class Tab {
                 tab.classList.remove('active');
             }
         });
-
         this.button.classList.add('active');
+
+        document.querySelectorAll('[data-tab-close]').forEach((close) => {
+            close.style.visibility = 'hidden';
+        });
+
+        if (this.config.addCloseButton) {
+            this.buttonClose.style.visibility = 'visible';
+        }
     }
 }

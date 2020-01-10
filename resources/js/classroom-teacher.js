@@ -16,43 +16,15 @@ import Chat from './classroom-v3/Chat';
 import StageLayers from './classroom-v3/StageLayers';
 import RandomQuote from './classroom-v3/RandomQuotes';
 
-import {fetchClassroomInfo, fetchChatMessages, fetchDrawstate} from './classroom-v3/functions/fetchers';
-
-function makeid()
-{
-    let length = 6, result = '';
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    const charactersLength = characters.length;
-
-    for ( var i = 0; i < length; i++ ) {
-       result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-
-    return result;
-}
-
+import {fetchClassroomInfo, fetchChatMessages, fetchDrawstate, fetchImageURL} from './classroom-v3/functions/fetchers';
+import {makeid, getStageMidPointOfNode, imageShapeBound, createImageFromUploadedImages} from './classroom-v3/functions/util';
 
 (async function () {
     const container = document.getElementById('classroom');
     const init = new InitLoader(container);
 
     let ClassroomInfo, Users, Components, ChatChannel, ChatHandler, Stage, Layers, LaravelEcho, PreviousDrawstate;
-    let isFromPreviousDrawstate = false, UploadedImages = [], UploadCounter = 1;
-
-    function imageShapeBound(pos)
-    {
-        const newPos = {x: pos.x, y: pos.y};
-
-        if (pos.x < 0) {
-            newPos.x = 0;
-        }
-
-        if (pos.y < 0) {
-            newPos.y = 0;
-        }
-
-        return newPos;
-    }
+    let isFromPreviousDrawstate = false, UploadCounter = 1;
 
     function transmit(data, isDebounce = false)
     {
@@ -73,18 +45,14 @@ function makeid()
     {
         let Tabs = [];
 
-        _.each(Components.TabGroup.Tabs, (tab, key) => {
-            Tabs.push({
-                id: key,
-                label: tab.label
-            });
+        _.each(Components.TabGroup.Tabs, (tab) => {
+            Tabs.push(tab.config);
         });
 
         let data = {
             Stage: Stage.toJSON(),
             Tabs,
             UploadCounter,
-            UploadedImages,
             currentLayer: Layers.current().id(),
             currentSelectedTool: Components.ToolBox.getSelectedToolName()
         };
@@ -93,26 +61,6 @@ function makeid()
             id: window.ELOSpeakClassroomID,
             data,
             mode: 'save'
-        });
-    }
-
-    async function createImageFromUploadedImages(data)
-    {
-        return new Promise((resolve, reject) => {
-            const image = new Image();
-            image.setAttribute('data-index', data.image.index);
-            image.setAttribute('data-node-id', data.node_id);
-            image.setAttribute('data-image-id', data.image.id);
-
-            image.onerror = () => {
-                reject(false);
-            };
-
-            image.onload = () => {
-                resolve(image);
-            };
-
-            image.src = data.image.src;
         });
     }
 
@@ -168,43 +116,8 @@ function makeid()
             // Load PreviousDrawstate to Konva.Stage
             init.setSubheaderText('Loading drawing board from previous drawstate');
             Stage = Konva.Node.create(PreviousDrawstate.Stage, Components.drawingBoard);
-            
-
-            init.setSubheaderText('Setting up drawing board layers...');
-            Layers = new StageLayers(Stage);
 
             UploadCounter = PreviousDrawstate.UploadCounter;
-            UploadedImages = PreviousDrawstate.UploadedImages;
-
-            if (PreviousDrawstate.Tabs.length) {
-                init.setSubheaderText('Creating tabs...');
-                PreviousDrawstate.Tabs.forEach((tab) => {
-                    Components.TabGroup.add({
-                        id: tab.id,
-                        label: tab.label,
-                        active: false
-                    });
-                });
-
-                init.setSubheaderText('Creating layers...');
-                Stage.getLayers().forEach((layer) => {
-                    Layers.layers[layer.id()] = layer;
-                });
-            }
-
-            if (UploadedImages.length) {
-                init.setSubheaderText('Getting previous images...');
-                UploadedImages.forEach(async (upload) => {
-                    const image = await createImageFromUploadedImages(upload);
-                    Stage.find(`#${image.getAttribute('data-node-id')}`)[0].image(image);
-                    Stage.draw();
-                });
-            }
-
-            // Use the layer id from PreviousDrawstate.currentLayer
-            Layers.use(PreviousDrawstate.currentLayer);
-            Components.TabGroup.get(PreviousDrawstate.currentLayer).setActive();
-            Components.ToolBox.use(PreviousDrawstate.currentSelectedTool);
         } else {
             isFromPreviousDrawstate = false;
 
@@ -217,26 +130,15 @@ function makeid()
                 width: dimensions.width,
                 height: dimensions.height
             });
-
-            init.setSubheaderText('Setting up drawing board layers...');
-            Layers = new StageLayers(Stage);
         }
 
-        init.setSubheaderText(RandomQuote);
-        setTimeout(() => {
-            init.end();
-        }, 500);
+        init.setSubheaderText('Setting up drawing board layers...');
+        Layers = new StageLayers(Stage);
+
+        init.end();
     }
 
     await initialize();
-
-    function getStageMidPoint(node)
-    {
-        return {
-            x: (Stage.width() / 2) - (node.width() / 2),
-            y: Math.abs(Components.drawingBoard.getBoundingClientRect().top) + (window.innerHeight / 2)
-        }
-    }
 
     // Mouse clicks
     const LEFT_CLICK = 0, RIGHT_CLICK = 2, CENTER_CLICK = 3;
@@ -258,11 +160,22 @@ function makeid()
          */
         Components.TabGroup.add({
             id: 'main',
-            label: 'Main'
+            label: 'Main',
+            addCloseButton: false
         });
     }
 
     if (isFromPreviousDrawstate) {
+        PreviousDrawstate.Tabs.forEach((tab) => {
+            tab.createLayer = false;
+            tab.active = false;
+            Components.TabGroup.add(tab);
+        });
+
+        Stage.find('.layers').each((layer) => {
+            Layers.layers[layer.id()] = layer;
+        });
+
         Stage.find('.shapes').each((shape) => {
             shape.on('dragstart dragend dragmove', (evt) => {
                 const target = evt.type === 'dragstart' ? evt.currentTarget : evt.target;
@@ -300,7 +213,19 @@ function makeid()
             shape.dragBoundFunc(imageShapeBound);
         });
 
-        Stage.find('.images').each((image) => {
+        Stage.find('.images').each(async (image) => {
+            const fetchURL = await fetchImageURL(image.getAttr('imageUrlId'));
+            const objectImage = await createImageFromUploadedImages({
+                image: {
+                    index: image.getAttr('imageUrlId'),
+                    id: image.getAttr('imageIndex'),
+                    src: fetchURL
+                },
+                node_id: image.id()
+            });
+
+            image.image(objectImage);
+
             image.on('dragstart dragend dragmove', (evt) => {
                 const target = evt.type === 'dragstart' ? evt.currentTarget : evt.target;
                 transmit({
@@ -315,6 +240,8 @@ function makeid()
             });
 
             image.dragBoundFunc(imageShapeBound);
+
+            Stage.draw();
         });
 
         if (['Brush', 'Eraser', 'Shapes'].indexOf(Components.ToolBox.getSelectedToolName()) >= 0) {
@@ -322,6 +249,10 @@ function makeid()
                 node.draggable(false);
             });
         }
+
+        Layers.use(PreviousDrawstate.currentLayer);
+        Components.ToolBox.use(PreviousDrawstate.currentSelectedTool);
+        Components.TabGroup.get(PreviousDrawstate.currentLayer).setActive();
     }
     /**
      * [START] Stage Brush/Eraser event
@@ -332,7 +263,6 @@ function makeid()
         const toolIndex = drawOverTools.indexOf(Components.ToolBox.getSelectedToolName());
 
         if (toolIndex >= 0 && evt.evt.button == LEFT_CLICK) {
-            console.log('draw');
             const toolName = drawOverTools[toolIndex];
             let color = '#ffffff', globalCompositeOperation = 'destination-out';
 
@@ -438,13 +368,13 @@ function makeid()
     /**
      * [START] Shapes
      */
+    let SelectedNode = null;
     _.each(Components.ToolBox.Tool.Shapes.all(), (shape) => {
         shape.button.addEventListener('click', (evt) => {
             evt.preventDefault();
 
             const node = shape.use();
 
-            // @TODO Bug. Shapes don't respect dragBoundFunc?
             node.dragBoundFunc(imageShapeBound);
 
             node.on('dragstart dragmove dragend', (evt) => {
@@ -494,7 +424,7 @@ function makeid()
                 }, debounce);
             });
 
-            const midpoint = getStageMidPoint(node);
+            const midpoint = getStageMidPointOfNode(Stage, node);
 
             node.x(midpoint.x);
             node.y(midpoint.y);
@@ -504,6 +434,7 @@ function makeid()
 
             const transformer = new Konva.Transformer();
             transformer.attachTo(node);
+            SelectedNode = node;
 
             Layers.current().add(node);
             Layers.current().add(transformer);
@@ -519,8 +450,6 @@ function makeid()
             });
         }, false);
     });
-
-    let SelectedNode = null;
 
     // CANVAS RIGHT CLICK
     document.addEventListener('contextmenu', (evt) => {
@@ -869,7 +798,11 @@ function makeid()
 
                 node.id(id);
                 node.image(image);
-                image.dragBoundFunc(imageShapeBound);
+                node.dragBoundFunc(imageShapeBound);
+                node.setAttrs({
+                    imageUrlId: data.image.id,
+                    imageIndex: UploadCounter
+                });
 
                 resolve({
                     success: true,
@@ -917,15 +850,6 @@ function makeid()
         });
 
         Layers.get(layerId).add(node);
-
-        UploadedImages.push({
-            node_id: node.id(),
-            image: {
-                id: image.getAttribute('data-image-id'),
-                src: image.src,
-                index: image.getAttribute('data-index')
-            }
-        });
 
         transmit({
             event: 'image_new',

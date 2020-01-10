@@ -39,3 +39,16 @@ export async function fetchDrawstate(id)
         console.log(error);
     }
 }
+
+export async function fetchImageURL(id)
+{
+    try {
+        const fetcher = await axios.post(url('/classroom/image'), {
+            id: id
+        });
+
+        return fetcher.data.url
+    } catch (error) {
+        console.log(error);
+    }
+}
