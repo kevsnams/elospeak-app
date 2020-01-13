@@ -50,7 +50,10 @@ export default class Tab {
 
         if (this.TabGroup.Components.isTeacher()) {
             this.button.addEventListener('click', (evt) => {
+                evt.stopPropagation();
                 evt.preventDefault();
+                console.log('fired switch');
+
                 this.setActive();
 
                 const id = evt.target.getAttribute('data-tab');
@@ -62,14 +65,24 @@ export default class Tab {
                 }
             }, false);
 
-            if (config.addCloseButton) {
+            if (this.config.addCloseButton) {
                 this.buttonClose.addEventListener('click', (evt) => {
                     evt.stopPropagation();
+                    evt.preventDefault();
+
                     const id = evt.target.getAttribute('data-tab-close');
 
                     this.TabGroup.Layers.delete(id);
+                    delete this.TabGroup.Tabs[id];
+
                     this.remove();
-                }, false);
+
+                    this.TabGroup.get(this.TabGroup.Layers.current().id()).setActive();
+                    this.TabGroup.removeTransmit({
+                        currentLayer: id,
+                        previousLayer: this.TabGroup.Layers.current().id()
+                    });
+                });
             }
         }
     }
@@ -77,6 +90,7 @@ export default class Tab {
     remove()
     {
         this.button.remove();
+        
 
         if (this.config.addCloseButton) {
             this.buttonClose.remove();

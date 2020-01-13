@@ -5,7 +5,7 @@ export default class StageLayers {
     constructor(Stage)
     {
         this.Stage = Stage;
-        this.currentLayer = null;
+        this.currentLayer = 'main';
         this.previous = this.currentLayer;
         this.layers = {};
     }
@@ -29,7 +29,7 @@ export default class StageLayers {
 
     use(id)
     {
-        this.previous = this.currentLayer;
+        this.previous = this.currentLayer in this.layers ? this.currentLayer : 'main';
         this.currentLayer = id;
 
         _.each(this.layers, (layer) => {
@@ -66,6 +66,7 @@ export default class StageLayers {
 
         node.destroy();
 
+        delete this.layers[id];
         this.use(this.previous);
     }
 }

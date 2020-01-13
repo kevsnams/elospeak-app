@@ -54,6 +54,7 @@ import {makeid, getStageMidPointOfNode, imageShapeBound, createImageFromUploaded
             Tabs,
             UploadCounter,
             currentLayer: Layers.current().id(),
+            previousLayer: Layers.previous,
             currentSelectedTool: Components.ToolBox.getSelectedToolName()
         };
 
@@ -148,6 +149,14 @@ import {makeid, getStageMidPointOfNode, imageShapeBound, createImageFromUploaded
         transmit({
             event: 'tab_switch',
             id
+        });
+    };
+
+    Components.TabGroup.removeTransmit = ({currentLayer, previousLayer}) => {
+        transmit({
+            event: 'tab_remove',
+            currentLayer,
+            previousLayer
         });
     };
 
@@ -251,9 +260,11 @@ import {makeid, getStageMidPointOfNode, imageShapeBound, createImageFromUploaded
         }
 
         Layers.use(PreviousDrawstate.currentLayer);
+        Layers.previous = PreviousDrawstate.previousLayer;
         Components.ToolBox.use(PreviousDrawstate.currentSelectedTool);
         Components.TabGroup.get(PreviousDrawstate.currentLayer).setActive();
     }
+
     /**
      * [START] Stage Brush/Eraser event
      */
@@ -773,12 +784,6 @@ import {makeid, getStageMidPointOfNode, imageShapeBound, createImageFromUploaded
         return new Promise((resolve, reject) => {
             const id = makeid();
 
-            image.setAttribute('data-index', UploadCounter);
-            image.setAttribute('data-node-id', id);
-            image.setAttribute('data-image-id', data.image.id);
-
-            UploadCounter++;
-
             image.onerror = () => {
                 reject({
                     success: false,
@@ -787,6 +792,12 @@ import {makeid, getStageMidPointOfNode, imageShapeBound, createImageFromUploaded
             };
 
             image.onload = () => {
+                UploadCounter++;
+
+                image.setAttribute('data-node-id', id);
+                image.setAttribute('data-image-id', data.image.id);
+                image.setAttribute('data-index', UploadCounter);
+
                 const node = new Konva.Image({
                     width: image.width,
                     height: image.height,

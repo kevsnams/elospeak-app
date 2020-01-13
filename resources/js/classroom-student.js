@@ -100,21 +100,21 @@ import {createImageFromUploadedImages} from './classroom-v3/functions/util';
     
     Components.TabGroup.bindLayers(Layers);
 
-    /**
-     * #main may be already initialized, so check
-     */
-    if (!Stage.find('#main').length) {
-        /**
-         * Create the first tab, which is 'main'
-         */
+    if (!isFromPreviousDrawstate) {
         Components.TabGroup.add({
             id: 'main',
             label: 'Main',
+            active: true,
             addCloseButton: false
         });
-    }
+    } else {
+        PreviousDrawstate.Tabs.forEach((tab) => {
+            tab.createLayer = false;
+            tab.addCloseButton = false;
+            tab.active = false;
+            Components.TabGroup.add(tab);
+        });
 
-    if (isFromPreviousDrawstate) {
         Stage.find('.layers').each((layer) => {
             Layers.layers[layer.id()] = layer;
         });
@@ -135,6 +135,7 @@ import {createImageFromUploadedImages} from './classroom-v3/functions/util';
         });
 
         Layers.use(PreviousDrawstate.currentLayer);
+        Components.TabGroup.get(PreviousDrawstate.currentLayer).setActive();
     }
 
     const dispatchDef = {
@@ -213,7 +214,9 @@ import {createImageFromUploadedImages} from './classroom-v3/functions/util';
                     label: data.image.label,
                     layerAttrs: {
                         drawingBoardHeight: imageNode.image.height
-                    }
+                    },
+                    active: true,
+                    addCloseButton: false
                 });
 
                 Layers.get(data.layer).add(imageNode.node);
@@ -223,6 +226,19 @@ import {createImageFromUploadedImages} from './classroom-v3/functions/util';
 
         'tab_switch': (data) => {
             Layers.use(data.id);
+            Components.TabGroup.get(data.id).setActive();
+        },
+
+        'tab_remove': (data) => {
+            Layers.delete(data.currentLayer);
+            Layers.use(data.previousLayer);
+
+            Components.TabGroup.get(data.currentLayer).remove();
+            Components.TabGroup.get(data.previousLayer).setActive();
+
+            delete Components.TabGroup.Tabs[data.currentLayer];
+
+            Layers.current().draw();
         },
 
         'layer_clear': (data) => {

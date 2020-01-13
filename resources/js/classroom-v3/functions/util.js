@@ -13,9 +13,10 @@ export function makeid()
 
 export function getStageMidPointOfNode(stage, node)
 {
+    const scaleX = stage.scaleX();
     return {
-        x: (stage.width() / 2) - (node.width() / 2),
-        y: Math.abs(stage.getContainer().getBoundingClientRect().top) + (window.innerHeight / 2)
+        x: ((stage.width() / 2) - (node.width() / 2)) / scaleX - stage.x() / scaleX,
+        y: (Math.abs(stage.getContainer().getBoundingClientRect().top - scaleX) + (window.innerHeight / 2)) / scaleX - stage.y() / scaleX
     }
 }
 

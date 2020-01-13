@@ -14,6 +14,7 @@ export default class TabGroup {
 
         this.Components.board.appendChild(this.container);
         this.switchTransmit = null;
+        this.removeTransmit = null;
     }
 
     add(config)
