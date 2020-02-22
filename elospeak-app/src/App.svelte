@@ -1,30 +1,151 @@
 <script>
-	export let name;
-</script>
+	import User from './user';
+	import ELOClasses from './eloclasses';
+	import axios from 'axios';
+	import Router from 'svelte-spa-router';
+	import {link} from 'svelte-spa-router';
+	import active from 'svelte-spa-router/active';
+	import {onMount} from 'svelte';
+	import routes from './routes';
 
-<main>
-	<h1>Hello {name}!</h1>
-	<p>Visit the <a href="https://svelte.dev/tutorial">Svelte tutorial</a> to learn how to build Svelte apps.</p>
-</main>
+	import {
+		HomeIcon,
+		BookOpenIcon,
+		SmileIcon,
+		BellIcon,
+		FileTextIcon
+	} from 'svelte-feather-icons';
 
-<style>
-	main {
-		text-align: center;
-		padding: 1em;
-		max-width: 240px;
-		margin: 0 auto;
-	}
+	export let ELOSpeak;
 
-	h1 {
-		color: #ff3e00;
-		text-transform: uppercase;
-		font-size: 4em;
-		font-weight: 100;
-	}
+	User.set(ELOSpeak.User);
 
-	@media (min-width: 640px) {
-		main {
-			max-width: none;
+	async function fetchClassrooms()
+	{
+		const fetcher = await axios.post('./app/classrooms');
+
+		try {
+			return fetcher.data;
+		} catch (e) {
+			// Error
 		}
 	}
+
+	onMount(async () => {
+		ELOClasses.set(await fetchClassrooms());
+	});
+</script>
+
+<div class="container" id="container">
+	<div class="row">
+		<div class="col-lg-2 col-md-2">
+			<div id="logo" class="text-center">
+				<img src="img/elospeak-logo.png" alt="logo">
+			</div>
+
+			<nav id="app-nav">
+				<ul>
+					<li>
+						<a href="/" use:link use:active><HomeIcon /> Home</a>
+					</li>
+					<li>
+						<a href="/classrooms" use:link use:active><BookOpenIcon /> Classrooms</a>
+					</li>
+					<li>
+						<a href="/feedbacks" use:link use:active><SmileIcon /> Feedbacks</a>
+					</li>
+					<li>
+						<a href="/invoices" use:link use:active><FileTextIcon /> Invoices</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+
+		<div class="col-lg-10 col-md-10">
+			<div class="row">
+				<div class="offset-9 col-3">
+					<nav id="app-top-nav">
+						<ul class="nav justify-content-end">
+							<li class="nav-item dropdown">
+								<a href="#" class="nav-link bell dropdown-toggle" data-toggle="dropdown"><BellIcon /></a>
+								<div class="dropdown-menu dropdown-menu-right">
+									<div class="p-2">
+										No notifications
+									</div>
+								</div>
+							</li>
+							<li class="nav-item dropdown">
+								<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
+									<img src="{$User.photo_url}" style="margin-top: 7px;" width="35" class="rounded-circle" alt="user icon">
+								</a>
+								<div class="dropdown-menu dropdown-menu-right">
+									<a class="dropdown-item" href="#/profile">Profile</a>
+									<a class="dropdown-item" href="#/settings">Settings</a>
+									<div class="dropdown-divider"></div>
+									<a class="dropdown-item" href="{'./'+ $User.user_type +'/logout'}">Logout</a>
+								</div>
+							</li>
+						</ul>
+					</nav>
+				</div>
+			</div>
+
+			<div class="row" id="routes">
+				<div class="col-12">
+					<Router {routes} />
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<style>
+:global(#app-nav ul li a.active) {
+	color: #2c7be5 !important;
+}
+
+#container {
+	margin-top: 20px;
+}
+
+#app-nav {
+	margin-top: 20px;
+}
+
+#app-nav ul {
+	display: block;
+	padding: 0;
+}
+
+#app-nav ul li {
+	list-style-type: none;
+	display: block;
+}
+
+#app-nav ul li a {
+	text-decoration: none;
+	color: #5e6e82;
+	font-weight: bold;
+	padding: 5px;
+	display: block;
+}
+
+#app-nav ul li a:hover {
+	color: #232e3c;
+}
+
+#app-top-nav ul li a.bell {
+	font-size: 1.9em;
+	display: block;
+	color: #232e3c;
+	font-weight: bolder;
+}
+
+#app-top-nav .dropdown-toggle:after {
+	display: none !important;
+}
+
+#routes {
+	margin-top: 20px;
+}
 </style>

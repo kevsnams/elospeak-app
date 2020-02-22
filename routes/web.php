@@ -22,6 +22,26 @@ Route::get('/login/teacher', 'Auth\LoginController@showTeacherLogin')->name('tea
 Route::post('/login/student', 'Auth\LoginController@authStudentLogin')->name('student.auth');
 Route::post('/login/teacher', 'Auth\LoginController@authTeacherLogin')->name('teacher.auth');
 
+Route::name('app.')->group(function() {
+    Route::get('/app', 'AppController@index')->name('index');
+    Route::post('/app/classrooms', 'AppController@classrooms')->name('app.classroom.all');
+    Route::post('/app/teacher', 'AppController@teacher')->name('app.teacher');
+    Route::post('/app/student', 'AppController@student')->name('app.student');
+    
+    Route::post('/app/classroom/next', 'AppController@nextClassroom')->name('app.classroom.next');
+    Route::post('/app/classroom/end', 'AppController@endClassroom')->name('app.classroom.end');
+
+    Route::post('/app/settings/details', 'AppController@saveSettingsDetails')->name('app.settings.details');
+    Route::post('/app/settings/password', 'AppController@saveSettingsPassword')->name('app.settings.password');
+    Route::post('/app/settings/photo', 'AppController@saveSettingsUserPhoto')->name('app.settings.user_photo');
+});
+
+Route::name('board.')->group(function () {
+    Route::get('/board', 'BoardController@index')->name('index');
+
+    Route::post('/board/classroom', 'BoardController@classroom')->name('classroom');
+});
+
 Route::name('teacher.')->group(function() {
     Route::get('/teacher', 'TeacherController@index')->name('index');
     Route::get('/teacher/logout', 'TeacherController@logout')->name('logout');

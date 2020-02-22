@@ -34,6 +34,11 @@ mix.sass('resources/sass/main.scss', 'public/dist/css')
         processCssUrls: false
     });
 
+mix.sass('resources/sass/app.scss', 'public/dist')
+    .sass('resources/sass/board-global.scss', 'public/dist')
+    .options({
+        processCssUrls: false
+    });
 /*
 mix.sass('resources/sass/main.scss', 'public/dist/css')
 .sass('resources/sass/lib.scss', 'public/dist/css')

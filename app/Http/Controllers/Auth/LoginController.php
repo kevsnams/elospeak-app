@@ -60,7 +60,7 @@ class LoginController extends Controller
         if (Auth::guard('student')->attempt($credentials, $request->get('remember_me'))) {
             $request->session()->put('user_type', 'student');
 
-            return redirect()->intended(route('student.index'));
+            return redirect()->intended(route('app.index'));
         }
 
         return back()->with('loginError', 'Username or password is incorrect');
@@ -76,7 +76,7 @@ class LoginController extends Controller
         if (Auth::guard('teacher')->attempt($credentials, $request->get('remember_me'))) {
             $request->session()->put('user_type', 'teacher');
 
-            return redirect()->intended(route('teacher.index'));
+            return redirect()->intended(route('app.index'));
         }
 
         return back()->with('loginError', 'Username or password is incorrect');
@@ -85,11 +85,11 @@ class LoginController extends Controller
     public function redirectTo()
     {
         if (Auth::guard('student')->check()) {
-            return '/student';
+            return '/app';
         }
 
         if (Auth::guard('teacher')->check()) {
-            return '/teacher';
+            return '/app';
         }
 
         return '/';

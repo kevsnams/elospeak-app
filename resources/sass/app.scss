@@ -1,0 +1,47 @@
+@import url(https://fonts.googleapis.com/css?family=Patrick+Hand|Quicksand:300,400,700&display=swap);
+@import '~js-datepicker/src/datepicker';
+
+body {
+    background: #edf2f8;
+}
+
+#app {
+    font-family: "Quicksand", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.font-patrick-hand {
+    font-family: "Patrick Hand", cursive !important;
+}
+
+.font-quicksand {
+    font-family: "Quicksand", sans-serif !important;
+}
+
+svg.feather {
+    height: 1em;
+    margin-top: -4px;
+    pointer-events: none;
+    vertical-align: middle;
+    width: 1em;
+}
+
+.wbox {
+    box-shadow: 0 7px 14px 0 rgba(59,65,94,.1), 0 3px 6px 0 rgba(0,0,0,.07);
+    background: #fff;
+    padding: 10px;
+    border: 0 solid #edf2f9;
+    border-radius: .375rem;
+}
+.wbox .wbox-header {
+    font-size: 1.2rem;
+    color: #344050;
+    line-height: 1.2;
+    font-weight: bolder;
+}
+
+.wbox .wbox-subheader {
+    font-size: .83333rem;
+    color: #344050;
+    line-height: 1.2;
+    font-weight: bolder;
+}

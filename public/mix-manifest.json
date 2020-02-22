@@ -1,5 +1,9 @@
 {
     "/dist/js/classroom-student.js": "/dist/js/classroom-student.js",
+    "/dist/js/classroom-student.js.map": "/dist/js/classroom-student.js.map",
     "/dist/js/classroom-teacher.js": "/dist/js/classroom-teacher.js",
-    "/dist/css/main.css": "/dist/css/main.css"
+    "/dist/css/main.css": "/dist/css/main.css",
+    "/dist/app.css": "/dist/app.css",
+    "/dist/board-global.css": "/dist/board-global.css",
+    "/dist/js/classroom-teacher.js.map": "/dist/js/classroom-teacher.js.map"
 }
