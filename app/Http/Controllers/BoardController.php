@@ -51,7 +51,6 @@ class BoardController extends Controller
     public function ping(Request $request)
     {
         $userType = $request->user()->user_type;
-        $now = now()->format('Y-m-d H:i:s');
 
         // Update the current user
         $user = $this->getUserORM($request->user()->id, $userType);
@@ -61,7 +60,10 @@ class BoardController extends Controller
         // @TODO Dynamic timezone please
         // Get the other user's last active
         $other = $this->getUserORM($request->other, $userType == 'teacher' ? 'student' : 'teacher');
-        $datetime = Carbon::createFromFormat('Y-m-d H:i:s', $now);
+        $datetime = Carbon::createFromFormat('Y-m-d H:i:s', (
+            $other->last_active == null ?
+                now()->subDays(3)->format('Y-m-d H:i:s') : $other->last_active
+        ));
         $datetime->timezone = 'Asia/Manila';
 
         return response()->json([
