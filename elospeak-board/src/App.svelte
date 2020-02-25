@@ -2,11 +2,12 @@
 	import moment from 'moment';
 	import axios from 'axios';
 	import {
-		MenuIcon,
+		ArrowLeftIcon,
 		ClockIcon
 	} from 'svelte-feather-icons'
 
 	import Board from './board/Board.svelte';
+	import SideBar from './board/SideBar.svelte';
 
 	let isDoneInit = false;
 	let retryTimeout = 10;
@@ -79,8 +80,6 @@
 			};
 		}
 	}
-
-	let currentLayer = null;
 </script>
 
 {#if !isDoneInit}
@@ -99,8 +98,8 @@
 		<div class="container-fluid">
 			<div class="row">
 				<div class="col-auto">
-					<a href="javascript:;" id="drawer" on:click="{showDrawer}">
-						<MenuIcon />
+					<a href="./app" id="drawer" on:click="{showDrawer}">
+						<ArrowLeftIcon />
 					</a>
 				</div>
 				<div class="col-auto">
@@ -111,12 +110,14 @@
 			</div>
 		</div>
 	</div>
-	<div>fuck this shit</div>
 
 	<div class="container-fluid">
 		<div class="row no-gutters">
-			<div class="col-12">
-				<Board classroom="{Classroom}" bind:currentLayer={currentLayer} showToolbox={UserCurrent.user_type == 'teacher'} />
+			<div class="col-2">
+				<SideBar {Classroom} {UserCurrent} {UserOther}  />
+			</div>
+			<div class="col-10">
+				<Board classroom="{Classroom}" {UserCurrent} showToolbox={UserCurrent.user_type == 'teacher'} />
 			</div>
 		</div>
 	</div>

@@ -1,5 +1,9 @@
 <script>
     import {SelectedNode} from './settings.js';
+
+    import {createEventDispatcher} from 'svelte';
+    const dispatch = createEventDispatcher();
+
     import ShapeSettings from './Settings.svelte';
     import {Trash2Icon} from 'svelte-feather-icons';
 
@@ -7,6 +11,11 @@
     {
         const layer = $SelectedNode.getLayer();
         const stage = $SelectedNode.getStage();
+
+        dispatch('deleteNode', {
+            node: $SelectedNode,
+            layer: layer.id()
+        });
 
         $SelectedNode.destroy();
         stage.find('Transformer').destroy();

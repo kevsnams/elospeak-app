@@ -66,6 +66,21 @@ export default [{
 			browser: true
 		})
 	]
+}, {
+	input: 'src/status-indicator.js',
+	output: {
+		sourcemap: true,
+		format: 'iife',
+		name: 'app',
+		file: '../public/dist/status-indicator.js'
+	},
+	plugins: [
+		commonjs(),
+		
+		resolve({
+			browser: true
+		})
+	]
 }];
 
 function serve() {
