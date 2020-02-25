@@ -28,9 +28,13 @@ class BoardController extends Controller
     {
         $column = $this->getClassroomColumnFromAuthUserType($request);
         $otherUserType = $request->user()->user_type == 'teacher' ? 'student' : 'teacher';
-        
+        $localizeNow = $this->getCarbonLocalTimeNow();
+
         // @TODO change this to the actual current board
-        $classroom = Classroom::where($column, $request->user()->id)->where('id', 37)->first();
+        $classroom = Classroom::where($column, $request->user()->id)
+            ->whereRaw('DATE(start) = ?', [$localizeNow->format('Y-m-d')])
+            //->where('id', 37)
+            ->where('status', Classroom::STATUS_ACTIVE)->first();
         
         $currentUser = $request->user();
         $otherUser = $this->getUserORM($classroom->{$otherUserType .'_id'}, $otherUserType);

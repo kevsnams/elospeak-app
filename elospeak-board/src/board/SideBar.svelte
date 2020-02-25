@@ -97,6 +97,10 @@
                     <span class="itext">Offline</span>
                 {/if}
             </div>
+            <div style="font-size: 0.8rem;" class="pt-1">
+                <hr style="margin: 0;" />
+                Skype: <a href="skype:{UserOther.skype}?chat">{UserOther.skype}</a>
+            </div>
         </div>
     </div>
 </div>
