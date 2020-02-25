@@ -176,7 +176,7 @@ class ClassroomController extends Controller
         }
 
         if ($request->mode == 'save' && $classroom->json != $request->data) {
-            $classroom->json = $request->data;
+            $classroom->json = json_encode($request->data);
             $classroom->save();
 
             $response['success'] = true;
