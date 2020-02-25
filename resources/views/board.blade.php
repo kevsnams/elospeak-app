@@ -21,11 +21,10 @@
             width: 1em;
         }
     </style>
+    <script async src="{{ asset('/dist/js/echo.js') }}"></script>
 </head>
 <body>
     <div id="main"></div>
-    
     <script defer src="{{ asset('/dist/board.js') .'?'. time() }}"></script>
-    
 </body>
 </html>

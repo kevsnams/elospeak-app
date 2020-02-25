@@ -34,7 +34,7 @@ class NewChat implements ShouldBroadcast
         $this->classroomId = $classroomId;
         $this->from = $from;
         $this->classroom = Classroom::findOrFail($this->classroomId);
-        $this->channelId = 'classroom.'. $this->classroom->id .'.chat';
+        $this->channelId = 'classroom.'. $this->classroom->id .'.board';
 
         /** @TODO Queue this, also TeacherChatNew event */
         $chatLog = new ChatLog();

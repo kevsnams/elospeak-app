@@ -25,7 +25,7 @@ mix.sass('resources/sass/main.scss', 'public/dist/css/', {
         processCssUrls: false
     });
 */
-
+mix.js('resources/js/echo.js', 'public/dist/js');
 mix.sass('resources/sass/main.scss', 'public/dist/css')
     .js('resources/js/classroom-teacher.js', 'public/dist/js')
     .js('resources/js/classroom-student.js', 'public/dist/js')

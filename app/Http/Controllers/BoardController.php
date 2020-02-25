@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Auth;
+use Carbon\Carbon;
 
 use App\Classroom;
 use App\Student;
 use App\Teacher;
 use App\UserPhoto;
+use App\ClassroomFileUpload;
 
 class BoardController extends Controller
 {
@@ -40,6 +42,37 @@ class BoardController extends Controller
                 'Other' => $otherUser->toArray()
             ]
         ]);
+    }
+
+    public function ping(Request $request)
+    {
+        $userType = $request->user()->user_type;
+
+        // Update the current user
+        $user = $this->getUserORM($request->user()->id, $userType);
+        $user->last_active = now()->format('Y-m-d H:i:s');
+        $user->save();
+
+        // @TODO Dynamic timezone please
+        // Get the other user's last active
+        $other = $this->getUserORM($request->other, $userType == 'teacher' ? 'student' : 'teacher');
+        $datetime = Carbon::createFromFormat('Y-m-d H:i:s', $other->last_active);
+        $datetime->timezone = 'Asia/Manila';
+
+        return response()->json([
+            'datetime' => $datetime->format('Y-m-d H:i:s')
+        ]);
+    }
+
+    public function getImagesURL(Request $request)
+    {
+        $images = ClassroomFileUpload::whereIn('node', $request->node_ids)->get()->map(function ($image) {
+            return [
+                'node' => $image->node,
+                'src' => $image->imageURL
+            ];
+        });
+        return response()->json($images->toArray());
     }
 
     private function getClassroomColumnFromAuthUserType($request)

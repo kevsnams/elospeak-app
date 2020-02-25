@@ -24,22 +24,24 @@ Route::post('/login/teacher', 'Auth\LoginController@authTeacherLogin')->name('te
 
 Route::name('app.')->group(function() {
     Route::get('/app', 'AppController@index')->name('index');
-    Route::post('/app/classrooms', 'AppController@classrooms')->name('app.classroom.all');
-    Route::post('/app/teacher', 'AppController@teacher')->name('app.teacher');
-    Route::post('/app/student', 'AppController@student')->name('app.student');
+    Route::post('/app/classrooms', 'AppController@classrooms')->name('classroom.all');
+    Route::post('/app/teacher', 'AppController@teacher')->name('teacher');
+    Route::post('/app/student', 'AppController@student')->name('student');
     
-    Route::post('/app/classroom/next', 'AppController@nextClassroom')->name('app.classroom.next');
-    Route::post('/app/classroom/end', 'AppController@endClassroom')->name('app.classroom.end');
+    Route::post('/app/classroom/next', 'AppController@nextClassroom')->name('classroom.next');
+    Route::post('/app/classroom/end', 'AppController@endClassroom')->name('classroom.end');
 
-    Route::post('/app/settings/details', 'AppController@saveSettingsDetails')->name('app.settings.details');
-    Route::post('/app/settings/password', 'AppController@saveSettingsPassword')->name('app.settings.password');
-    Route::post('/app/settings/photo', 'AppController@saveSettingsUserPhoto')->name('app.settings.user_photo');
+    Route::post('/app/settings/details', 'AppController@saveSettingsDetails')->name('settings.details');
+    Route::post('/app/settings/password', 'AppController@saveSettingsPassword')->name('settings.password');
+    Route::post('/app/settings/photo', 'AppController@saveSettingsUserPhoto')->name('settings.user_photo');
 });
 
 Route::name('board.')->group(function () {
     Route::get('/board', 'BoardController@index')->name('index');
 
     Route::post('/board/classroom', 'BoardController@classroom')->name('classroom');
+    Route::post('/board/ping', 'BoardController@ping')->name('ping');
+    Route::post('/board/get-images-url', 'BoardController@getImagesURL')->name('get-images-url');
 });
 
 Route::name('teacher.')->group(function() {

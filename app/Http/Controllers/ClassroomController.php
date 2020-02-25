@@ -123,6 +123,7 @@ class ClassroomController extends Controller
 
         $classroomFileUpload->filename = $newFilename;
         $classroomFileUpload->path = ClassroomFileUpload::UPLOAD_DIR;
+        $classroomFileUpload->node = $request->node;
         $classroomFileUpload->save();
 
         $classroomFileUpload->filename = $classroomFileUpload->filename . '_'. $classroomFileUpload->id .'.'. $file->extension();
@@ -133,6 +134,9 @@ class ClassroomController extends Controller
         ];
 
         if ($file->storeAs($classroomFileUpload->path, $classroomFileUpload->filename)) {
+            $classroomFileUpload->md5_hash = md5_file(storage_path('app/'. $classroomFileUpload->path .'/'. $classroomFileUpload->filename));
+            $classroomFileUpload->save();
+
             $response['success'] = true;
             $response['image'] = $classroomFileUpload->toArray();
         }

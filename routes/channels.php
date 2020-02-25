@@ -12,11 +12,7 @@
 */
 use App\Classroom;
 
-Broadcast::channel('classroom.{id}.drawboard', function ($user, $id) {
-    return true;
-}, ['guards' => ['student', 'teacher']]);
-
-Broadcast::channel('classroom.{id}.chat', function ($user, $id) {
+Broadcast::channel('classroom.{id}.board', function ($user, $id) {
     $classroom = Classroom::findOrFail($id);
 
     if ($user->user_type === 'student') {
