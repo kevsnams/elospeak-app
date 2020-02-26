@@ -625,6 +625,11 @@
         saveAndTransmit('node_delete', e.detail);
     }
 
+    function shapeColors(e)
+    {
+        saveAndTransmit('node_update', e.detail);
+    }
+
     if (UserCurrent.user_type == 'student') {
         const doDraw = {
             'node_add': (params) => {
@@ -632,7 +637,6 @@
             },
 
             'node_update': (params) => {
-                console.log(params.attrs);
                 Stage.find(`#${params.id}`).setAttrs(params.attrs);
             },
 
@@ -728,6 +732,7 @@
                 addImages(e.detail);
             }}
             on:deleteNode={deleteNode}
+            on:shapeColors={shapeColors}
             bind:mode={mode}
             bind:displayUploader={displayUploader}
         />

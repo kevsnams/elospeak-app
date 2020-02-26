@@ -54,6 +54,27 @@
         if (def == null) {
             SelectedNode.set(null);
         } else {
+            const attrs = {};
+            attrs['fillEnabled'] = !def.fill.transparent;
+
+            if (!def.fill.transparent) {
+                attrs['fill'] = def.fill.color;
+                attrs['opacity'] = def.fill.opacity;
+            } else {
+                attrs['fill'] = null;
+            }
+
+            attrs['strokeEnabled'] = def.border.enabled;
+
+            if (def.border.enabled) {
+                attrs['stroke'] = def.border.color;
+            }
+
+            dispatch('shapeColors', {
+                id: $SelectedNode.id(),
+                attrs
+            });
+            
             SelectedNode.update((node) => {
                 node.fillEnabled(!def.fill.transparent);
 

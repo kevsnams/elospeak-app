@@ -324,7 +324,7 @@
             </div>
         </div>
         <div id="mode-settings" class="mb-3">
-            <svelte:component this={getMode(mode).component} on:deleteNode />
+            <svelte:component this={getMode(mode).component} on:deleteNode on:shapeColors />
         </div>
     </div>
 </div>
