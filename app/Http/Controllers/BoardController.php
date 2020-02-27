@@ -11,6 +11,7 @@ use App\Student;
 use App\Teacher;
 use App\UserPhoto;
 use App\ClassroomFileUpload;
+use App\ClassroomFeedback;
 
 class BoardController extends Controller
 {
@@ -80,6 +81,36 @@ class BoardController extends Controller
             ];
         });
         return response()->json($images->toArray());
+    }
+
+    public function close(Request $request)
+    {
+        $classroom = Classroom::find($request->id);
+
+        $classroom->status = Classroom::STATUS_DONE;
+        $classroom->save();
+
+        return response()->json([
+            'success' => true
+        ]);
+    }
+
+    public function feedback(Request $request)
+    {
+        /**
+         * @TODO validation
+         */
+        $feedback = new ClassroomFeedback();
+        $feedback->feedback = $request->message;
+        $feedback->from_id = $request->user()->id;
+        $feedback->user_type = $request->user()->user_type;
+        $feedback->classroom_id = $request->classroom_id;
+
+        $feedback->save();
+
+        return response()->json([
+            'success' => true
+        ]);
     }
 
     private function getClassroomColumnFromAuthUserType($request)

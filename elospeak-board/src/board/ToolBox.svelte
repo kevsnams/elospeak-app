@@ -31,6 +31,7 @@
     {
         e = e || window.event;
         e.preventDefault();
+        e.stopPropagation();
         
         pos3 = e.clientX;
         pos4 = e.clientY;
@@ -46,6 +47,7 @@
 
         e = e || window.event;
         e.preventDefault();
+        e.stopPropagation();
 
         pos1 = pos3 - e.clientX;
         pos2 = pos4 - e.clientY;

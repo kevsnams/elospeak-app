@@ -13,7 +13,8 @@
 		BookOpenIcon,
 		SmileIcon,
 		BellIcon,
-		FileTextIcon
+		FileTextIcon,
+		LogOutIcon
 	} from 'svelte-feather-icons';
 
 	export let ELOSpeak;
@@ -51,11 +52,16 @@
 					<li>
 						<a href="/classrooms" use:link use:active><BookOpenIcon /> Classrooms</a>
 					</li>
+					<!---
 					<li>
 						<a href="/feedbacks" use:link use:active><SmileIcon /> Feedbacks</a>
 					</li>
 					<li>
 						<a href="/invoices" use:link use:active><FileTextIcon /> Invoices</a>
+					</li>
+					--->
+					<li>
+						<a href="{'./'+ $User.user_type +'/logout'}"><LogOutIcon /> Logout</a>
 					</li>
 				</ul>
 			</nav>
@@ -76,13 +82,11 @@
 							</li>
 							<li class="nav-item dropdown">
 								<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
-									<img src="{$User.photo_url}" style="margin-top: 7px;" width="35" class="rounded-circle" alt="user icon">
+									<img src="{$User.photo_url}" style="margin-top: 7px;" width="35" class="shadow-sm rounded-circle" alt="user icon">
 								</a>
 								<div class="dropdown-menu dropdown-menu-right">
 									<a class="dropdown-item" href="#/profile">Profile</a>
 									<a class="dropdown-item" href="#/settings">Settings</a>
-									<div class="dropdown-divider"></div>
-									<a class="dropdown-item" href="{'./'+ $User.user_type +'/logout'}">Logout</a>
 								</div>
 							</li>
 						</ul>

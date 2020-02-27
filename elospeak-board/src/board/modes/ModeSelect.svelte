@@ -13,7 +13,7 @@
         const stage = $SelectedNode.getStage();
 
         dispatch('deleteNode', {
-            node: $SelectedNode,
+            node: $SelectedNode.id(),
             layer: layer.id()
         });
 

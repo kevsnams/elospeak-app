@@ -7,8 +7,9 @@ onmessage = (e) => {
           mEnd = moment(end),
           tSeconds = mEnd.diff(mStart, 'seconds');
 
-    setInterval(() => {
-        let remaining = tSeconds + mStart.diff(new Date(), 'seconds');
+    let timer = setInterval(() => {
+        let remaining = tSeconds + mStart.diff(new Date(), 'seconds'),
+            secRemaining = parseInt(remaining);
 
         const hours = Math.floor(remaining / 3600);
         remaining %= 3600;
@@ -25,10 +26,13 @@ onmessage = (e) => {
         fTime.push(minutes < 10 ? '0'+ minutes : minutes);
         fTime.push(seconds < 10 ? '0'+ seconds : seconds);
 
-        if (hours >= 0 && minutes >= 0 && seconds >= 0) {
+        if (hours >= 0 || minutes >= 0 || seconds >= 0) {
             postMessage(fTime);
-        } else {
-            // @TODO perform xhr that instructs the server that this class is over
+        }
+
+        if (secRemaining <= 0) {
+            clearInterval(timer);
+            postMessage(false);
         }
     }, 1000);
 };

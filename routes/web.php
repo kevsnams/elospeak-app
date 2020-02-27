@@ -42,6 +42,8 @@ Route::name('board.')->group(function () {
     Route::post('/board/classroom', 'BoardController@classroom')->name('classroom');
     Route::post('/board/ping', 'BoardController@ping')->name('ping');
     Route::post('/board/get-images-url', 'BoardController@getImagesURL')->name('get-images-url');
+    Route::post('/board/feedback', 'BoardController@feedback')->name('feedback');
+    Route::post('/board/close', 'BoardController@close')->name('close');
 });
 
 Route::name('teacher.')->group(function() {

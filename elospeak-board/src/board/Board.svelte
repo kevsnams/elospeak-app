@@ -73,6 +73,8 @@
             if (updateAttrs) {
                 node.width(pos.x - nodePos.x);
                 node.height(pos.y - nodePos.y);
+
+
             }
         } else if (node.hasName('triangle')) {
             if (updateAttrs) {
@@ -89,6 +91,7 @@
                 node.radiusY(newRadius.y);
             }
         }
+
         saveAndTransmit('node_update', {
             id: node.id(),
             attrs: {
@@ -324,6 +327,11 @@
             Stage.on('mouseup touchend', (e) => {
                 if (mode == 'brush' || mode == 'eraser' || mode == 'shapes') {
                     _isPaint = false;
+
+                    saveAndTransmit('node_update', {
+                        id: _lastNode.id(),
+                        attrs: _lastNode.getAttrs()
+                    });
 
                     if (mode == 'shapes' && $SettingsShapes.shape) {
                         SelectedNode.update((node) => {
@@ -641,7 +649,7 @@
             },
 
             'node_delete': (params) => {
-                Stage.find(`#${params.id}`).destroy();
+                Stage.find(`#${params.node}`).destroy();
             },
 
             'stage_dimension': (params) => {
@@ -683,7 +691,8 @@
         
         LaravelEcho.private(Channel).listenForWhisper('draw', (draw) => {
             doDraw[draw.event](draw.params);
-            Stage.batchDraw();
+            console.log(draw.event, draw.params);
+            Stage.draw();
         });
     }
 </script>
