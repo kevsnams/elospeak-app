@@ -119,12 +119,6 @@
             {:then chats}
                 {#if chats.data.length}
                     <ChatMessages chats={chats.data} UserCurrent={UserCurrent} UserOther={UserOther} />
-                {:else}
-                    <div class="align-self-end w-100 text-center">
-                        <div class="alert alert-info mb-0 st pr-0 pl-0" role="alert">
-                            Start by saying "Hello!"
-                        </div>
-                    </div>
                 {/if}
             {:catch}
                 <div class="align-self-center w-100">
