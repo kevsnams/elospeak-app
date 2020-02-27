@@ -1,6 +1,7 @@
 <script>
 	import moment from 'moment';
 	import axios from 'axios';
+	import _ from 'underscore';
 	import {
 		ArrowLeftIcon,
 		ClockIcon
@@ -70,7 +71,10 @@
 		}, 1000);
 	}
 
-	let timeRemaining = ['--', '--'], timeDuration = [], timer, showFeedbackForm = false;
+	let timeRemaining = ['--', '--'],
+		timeDuration = [],
+		timer,
+		showFeedbackForm = false;
 
 	$: if (typeof Classroom != 'undefined') {
 		if (!timeDuration.length) {
@@ -96,13 +100,20 @@
 			timer = new Worker('./dist/board-timer.js');
 			timer.postMessage({
 				start: Classroom.start,
-				end: Classroom.end
+				end: Classroom.end,
+				currentUserType: UserCurrent.user_type
 			});
 
 			timer.onmessage = async (e) => {
-				if (e.data !== false ) {
+				if (_.isArray(e.data)) {
 					timeRemaining = e.data;
-				} else {
+				} else if (e.data === 2) {
+					// @TODO do not just redirect
+					window.location.href = './app';
+				} else if (e.data == 3) {
+					// @TODO
+					console.log('Teacher mode');
+				} else if (e.data === 1) {
 					try {
 						const closeBoard = await axios.post('./board/close', {
 							id: Classroom.id

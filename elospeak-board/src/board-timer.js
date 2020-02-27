@@ -1,38 +1,48 @@
 import moment from 'moment';
+import { current_component } from 'svelte/internal';
 
 onmessage = (e) => {
     const start = e.data.start,
           end = e.data.end,
           mStart = moment(start),
           mEnd = moment(end),
-          tSeconds = mEnd.diff(mStart, 'seconds');
+          duration = mEnd.diff(mStart, 'seconds'),
+          userType = e.data.currentUserType;
 
-    let timer = setInterval(() => {
-        let remaining = tSeconds + mStart.diff(new Date(), 'seconds'),
-            secRemaining = parseInt(remaining);
+    console.log(duration);
 
-        const hours = Math.floor(remaining / 3600);
-        remaining %= 3600;
+    if (userType == 'student' && mStart > new Date()) {
+        postMessage(2);
+    } else if (userType == 'teacher' && mStart > new Date()) {
+        postMessage(3);
+    } else {
+        let timer = setInterval(() => {
+            let remaining = duration + mStart.diff(new Date(), 'seconds'),
+                secRemaining = parseInt(remaining);
 
-        const minutes = Math.floor(remaining / 60),
-            seconds = remaining % 60;
+            const hours = Math.floor(remaining / 3600);
+            remaining %= 3600;
 
-        let fTime = [];
+            const minutes = Math.floor(remaining / 60),
+                seconds = remaining % 60;
 
-        if (hours > 0) {
-            fTime.push(hours < 10 ? '0'+ hours : hours);
-        }
+            let fTime = [];
 
-        fTime.push(minutes < 10 ? '0'+ minutes : minutes);
-        fTime.push(seconds < 10 ? '0'+ seconds : seconds);
+            if (hours > 0) {
+                fTime.push(hours < 10 ? '0'+ hours : hours);
+            }
 
-        if (hours >= 0 || minutes >= 0 || seconds >= 0) {
-            postMessage(fTime);
-        }
+            fTime.push(minutes < 10 ? '0'+ minutes : minutes);
+            fTime.push(seconds < 10 ? '0'+ seconds : seconds);
 
-        if (secRemaining <= 0) {
-            clearInterval(timer);
-            postMessage(false);
-        }
-    }, 1000);
+            if (hours >= 0 || minutes >= 0 || seconds >= 0) {
+                postMessage(fTime);
+            }
+
+            if (secRemaining <= 0) {
+                clearInterval(timer);
+                postMessage(1);
+            }
+        }, 1000);
+    }
 };
