@@ -17,26 +17,22 @@
     <!-- link href="https://fonts.googleapis.com/css?family=Jua|Nanum+Gothic:400,700&display=swap&subset=korean" rel="stylesheet" -->
 
     <!-- Styles -->
-    <link href="{{ asset('/uikit-3.1.6/css/uikit.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('/lib.css') }}" rel="stylesheet">
     <link href="{{ asset('css/main.css') }}" rel="stylesheet">
 </head>
 <body>
-    <div class="uk-grid" uk-grid>
-        <div class="uk-text-center uk-width-expand">
-            <img src="{{ asset('/splash.png') }}">
-            <h1 style="font-family: 'Patrick Hand', sans-seriff; font-weight: 700; color: rgba(0, 0, 0, 0.5)">Home Page - Coming Soon</h1>
-            <a href="{{ url('/login/student') }}" class="uk-button uk-button-default" style="font-family: 'Quicksand', sans-seriff;">Student Login</a>
-            &nbsp;
-            <a href="{{ url('/login/teacher') }}" class="uk-button uk-button-default" style="font-family: 'Quicksand', sans-seriff;">Teacher Login</a>
-            <!-- a class="uk-button uk-button-default" style="font-family: 'Quicksand', sans-seriff;">Teacher Login</a -->
+    <div class="d-flex justify-content-center align-items-center" style="width: 100%; height: 100%; position: absolute;">
+        <div class="mt-n5 text-center">
+            <div>
+                <img src="{{ asset('img/elospeak-6-final.png') }}">
+            </div>
+            <div class="mt-5">
+                <a href="{{ url('/login/student') }}" class="btn btn-success">Student Login</a>
+                <a href="{{ url('/login/teacher') }}" class="btn btn-primary">Teacher Login</a>
+            </div>
+            <p class="text-muted mt-5">elospeak.com</p>
         </div>
     </div>
-    <!-- Scripts -->
-    <script src="{{ asset('/uikit-3.1.6/js/uikit.min.js') }}"></script>
-    <script src="{{ asset('/uikit-3.1.6/js/uikit-icons.min.js') }}"></script>
-    <script src="{{ asset('js/underscore-1.9.1.min.js') }}"></script>
-    <script src="{{ asset('js/axios.min.js') }}"></script>
-    <script src="{{ asset('js/moment-2.24.0.min.js') }}"></script>
-    <script src="{{ asset('js/util.js') }}" defer></script>
+    
 </body>
 </html>
