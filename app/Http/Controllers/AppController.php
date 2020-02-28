@@ -3,12 +3,13 @@
 namespace App\Http\Controllers;
 
 use Image;
-use Illuminate\Http\Request;
 use Storage;
 use Auth;
 use Hash;
 use DB;
+use Session;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 use App\Classroom;
 use App\Student;
@@ -90,6 +91,14 @@ class AppController extends Controller
         }
 
         return response()->json($response);
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::guard($request->user()->user_type)->logout();
+        Session::flush();
+
+        return redirect(route('login'));
     }
 
     public function saveSettingsDetails(Request $request)

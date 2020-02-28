@@ -16,11 +16,10 @@ Route::get('/', function () {
 });
 
 Auth::routes();
-Route::get('/login/student', 'Auth\LoginController@showStudentLogin')->name('student.login');
-Route::get('/login/teacher', 'Auth\LoginController@showTeacherLogin')->name('teacher.login');
 
-Route::post('/login/student', 'Auth\LoginController@authStudentLogin')->name('student.auth');
-Route::post('/login/teacher', 'Auth\LoginController@authTeacherLogin')->name('teacher.auth');
+Route::get('/login', 'Auth\LoginController@showLogin')->name('login');
+Route::post('/login/auth', 'Auth\LoginController@authLogin')->name('login.auth');
+Route::get('/logout', 'AppController@logout')->name('logout');
 
 Route::name('app.')->group(function() {
     Route::get('/app', 'AppController@index')->name('index');
@@ -48,12 +47,10 @@ Route::name('board.')->group(function () {
 
 Route::name('teacher.')->group(function() {
     Route::get('/teacher', 'TeacherController@index')->name('index');
-    Route::get('/teacher/logout', 'TeacherController@logout')->name('logout');
 });
 
 Route::name('student.')->group(function () {
     Route::get('/student', 'StudentController@index')->name('index');
-    Route::get('/student/logout', 'StudentController@logout')->name('logout');
     Route::get('/student/notifications', 'StudentController@notifications')->name('notifications');
     Route::get('/student/feedbacks', 'StudentController@feedbacks')->name('feedbacks');
     Route::get('/student/balance', 'StudentController@balance')->name('balance');

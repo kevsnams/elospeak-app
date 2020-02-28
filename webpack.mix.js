@@ -11,43 +11,12 @@ let mix = require('laravel-mix');
  |
  */
 
-//mix.js('src/app.js', 'dist/').sass('src/app.scss', 'dist/');
-
-/*
-mix.sass('resources/sass/main.scss', 'public/dist/css/', {
-       // outputStyle: 'compressed',
-    })
-    .sass('resources/sass/lib.scss', 'public/dist/css')
-    //.js('resources/js/lib.js', 'public/dist/js/')
-    //.js('resources/js/Konva.js', 'public/dist/js')
-    .js('resources/js/classroom.js', 'public/dist/js')
-    .options({
-        processCssUrls: false
-    });
-*/
-mix.js('resources/js/echo.js', 'public/dist/js');
-mix.sass('resources/sass/main.scss', 'public/dist/css')
-    .js('resources/js/classroom-teacher.js', 'public/dist/js')
-    .js('resources/js/classroom-student.js', 'public/dist/js')
-    .sourceMaps()
-    .options({
-        processCssUrls: false
-    });
-
-mix.sass('resources/sass/app.scss', 'public/dist')
+mix.js('resources/js/echo.js', 'public/dist/js')
+    .sass('resources/sass/app.scss', 'public/dist')
     .sass('resources/sass/board-global.scss', 'public/dist')
     .options({
         processCssUrls: false
     });
-/*
-mix.sass('resources/sass/main.scss', 'public/dist/css')
-.sass('resources/sass/lib.scss', 'public/dist/css')
-.js('resources/js/classroom-v2.js', 'public/dist/js')
-.sourceMaps()
-.options({
-    processCssUrls: false
-});
-*/
 
 // Full API
 // mix.js(src, output);

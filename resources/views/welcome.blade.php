@@ -18,7 +18,6 @@
 
     <!-- Styles -->
     <link href="{{ asset('/lib.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/main.css') }}" rel="stylesheet">
 </head>
 <body>
     <div class="d-flex justify-content-center align-items-center" style="width: 100%; height: 100%; position: absolute;">
@@ -27,8 +26,7 @@
                 <img src="{{ asset('img/elospeak-6-final.png') }}">
             </div>
             <div class="mt-5">
-                <a href="{{ url('/login/student') }}" class="btn btn-success">Student Login</a>
-                <a href="{{ url('/login/teacher') }}" class="btn btn-primary">Teacher Login</a>
+                <a href="{{ url('/login') }}" class="btn btn-primary">Login</a>
             </div>
             <p class="text-muted mt-5">elospeak.com</p>
         </div>

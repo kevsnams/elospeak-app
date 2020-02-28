@@ -40,46 +40,29 @@ class LoginController extends Controller
         return 'username';
     }
 
-    public function showStudentLogin()
+    public function showLogin()
     {
-        return view('auth.student.login');
+        return view('auth.login');
     }
 
-    public function showTeacherLogin()
+    public function authLogin(Request $request)
     {
-        return view('auth.teacher.login');
-    }
+        $authType = $request->auth_type;
 
-    public function authStudentLogin(Request $request)
-    {
-        $credentials = [
+        if (Auth::guard($authType)->attempt([
             'username' => $request->username,
             'password' => $request->password
-        ];
+        ], $request->get('remember_me'))) {
+            $request->session()->put('timezone', $request->timezone);
 
-        if (Auth::guard('student')->attempt($credentials, $request->get('remember_me'))) {
-            $request->session()->put('user_type', 'student');
-
-            return redirect()->intended(route('app.index'));
+            return response()->json([
+                'success' => true
+            ]);
         }
 
-        return back()->with('loginError', 'Username or password is incorrect');
-    }
-
-    public function authTeacherLogin(Request $request)
-    {
-        $credentials = [
-            'username' => $request->username,
-            'password' => $request->password
-        ];
-
-        if (Auth::guard('teacher')->attempt($credentials, $request->get('remember_me'))) {
-            $request->session()->put('user_type', 'teacher');
-
-            return redirect()->intended(route('app.index'));
-        }
-
-        return back()->with('loginError', 'Username or password is incorrect');
+        return response()->json([
+            'success' => false
+        ]);
     }
 
     public function redirectTo()
@@ -93,10 +76,5 @@ class LoginController extends Controller
         }
 
         return '/';
-    }
-
-    public function showLoginForm()
-    {
-        return redirect()->to('/');
     }
 }

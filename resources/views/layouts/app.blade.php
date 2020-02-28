@@ -27,7 +27,6 @@
         <div id="left-column">
             <div class="uk-padding">
                 <div class="uk-text-center">
-                    <img class="uk-border-circle" width="100" height="100" src="https://a.imge.to/2019/08/07/AsQlR.jpg" alt="" />
                     <a href="#" class="student-full-name">
                         <span class="uk-text-small" style="display: block">
                             @if (Auth::guard('student')->check())

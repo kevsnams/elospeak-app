@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Patrick+Hand|Quicksand:300,400,700&display=swap">
     <link rel="stylesheet" href="{{ asset('/lib.css') }}">
     <link rel="stylesheet" href="{{ asset('/dist/board-global.css') }}">
-    <link rel="stylesheet" href="{{ asset('/dist/board.css') .'?'. time() }}">
+    <link rel="stylesheet" href="{{ asset('/dist/board.css') }}">
 
     <style>
         svg.feather {
@@ -25,6 +25,6 @@
 </head>
 <body>
     <div id="main"></div>
-    <script defer src="{{ asset('/dist/board.js') .'?'. time() }}"></script>
+    <script defer src="{{ asset('/dist/board.js') }}"></script>
 </body>
 </html>

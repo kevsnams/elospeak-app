@@ -1,5 +1,4 @@
 import moment from 'moment';
-import { current_component } from 'svelte/internal';
 
 onmessage = (e) => {
     const start = e.data.start,
