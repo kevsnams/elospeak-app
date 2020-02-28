@@ -61,7 +61,7 @@
 					</li>
 					--->
 					<li>
-						<a href="{'./'+ $User.user_type +'/logout'}"><LogOutIcon /> Logout</a>
+						<a href="{'./logout'}"><LogOutIcon /> Logout</a>
 					</li>
 				</ul>
 			</nav>
