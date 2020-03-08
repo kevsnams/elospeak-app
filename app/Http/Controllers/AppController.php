@@ -191,7 +191,7 @@ class AppController extends Controller
         /**
          * @TODO set this dynamically
          */
-        $carbonDate->timezone = 'Asia/Manila';
+        $carbonDate->timezone = session('timezone');
 
         return $carbonDate;
     }

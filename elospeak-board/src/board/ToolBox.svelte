@@ -1,6 +1,6 @@
 <script>
     export let mode = 'brush';
-    export let classroom;
+    export let Classroom;
 
     import {onMount, createEventDispatcher, tick} from 'svelte';
     const dispatch = createEventDispatcher();
@@ -152,7 +152,7 @@
         let tkn = [];
         for (let i = 0; i < files.length; i++) {
             const file = files.item(i);
-            const id = `${classroom.id}_img_${genId()}`;
+            const id = `${Classroom.id}_img_${genId()}`;
 
             if (allowedFiles.indexOf(file.type) > -1) {
                 tkn = [...tkn, {

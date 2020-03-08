@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Auth;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 use App\Classroom;
 use App\Student;
@@ -33,14 +33,15 @@ class BoardController extends Controller
 
         // @TODO change this to the actual current board
         $classroom = Classroom::where($column, $request->user()->id)
-            ->whereRaw('DATE(start) = ?', [$localizeNow->format('Y-m-d')])
-            //->where('id', 37)
-            ->where('status', Classroom::STATUS_ACTIVE)->first();
+            //->whereRaw('DATE(start) = ?', [$localizeNow->format('Y-m-d')])
+            ->where('id', 37)
+            ->where('status', Classroom::STATUS_ACTIVE)->firstOrFail();
         
         $currentUser = $request->user();
         $otherUser = $this->getUserORM($classroom->{$otherUserType .'_id'}, $otherUserType);
-        
+
         return response()->json([
+            'success' => true,
             'Classroom' => $classroom->toArray(),
             'Users' => [
                 'Current' => $currentUser->toArray(),
@@ -58,14 +59,13 @@ class BoardController extends Controller
         $user->last_active = now()->format('Y-m-d H:i:s');
         $user->save();
 
-        // @TODO Dynamic timezone please
         // Get the other user's last active
         $other = $this->getUserORM($request->other, $userType == 'teacher' ? 'student' : 'teacher');
         $datetime = Carbon::createFromFormat('Y-m-d H:i:s', (
             $other->last_active == null ?
                 now()->subDays(3)->format('Y-m-d H:i:s') : $other->last_active
         ));
-        $datetime->timezone = 'Asia/Manila';
+        $datetime->timezone = session('timezone');
 
         return response()->json([
             'datetime' => $datetime->format('Y-m-d H:i:s')
@@ -125,7 +125,7 @@ class BoardController extends Controller
         /**
          * @TODO set this dynamically
          */
-        $carbonDate->timezone = 'Asia/Manila';
+        $carbonDate->timezone = session('timezone');
 
         return $carbonDate;
     }

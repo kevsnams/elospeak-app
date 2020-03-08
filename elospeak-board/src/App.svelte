@@ -6,44 +6,11 @@
 		ArrowLeftIcon,
 		ClockIcon
 	} from 'svelte-feather-icons';
-	import {onMount} from 'svelte';
 
 	import Board from './board/Board.svelte';
 	import SideBar from './board/SideBar.svelte';
 
-	let isDoneInit = false,
-		retryTimeout = 10,
-		initText = 'Loading...';
-
-	function initStatus(str)
-	{
-		initText = str;
-	}
-
-	let Classroom, UserCurrent, UserOther;
-
-	async function fetchInitClassroom()
-	{
-		try {
-			initStatus('Fetching classroom...');
-			const xhr = await axios.post('./board/classroom');
-
-			initStatus('Classroom found..');
-
-			Classroom = xhr.data.Classroom;
-			UserCurrent = xhr.data.Users.Current;
-			UserOther = xhr.data.Users.Other;
-
-			isDoneInit = true;
-		} catch (e) {
-			initStatus('You do not have a class today. Go <a href="./app"> back</a> to home page');
-			return new Error(e);
-		}
-	}
-
-	fetchInitClassroom();
-
-	let feedbackField, feedbackSubmit, feedbackFormSubmitted = false;
+	let Classroom, feedbackField, feedbackSubmit, feedbackFormSubmitted = false;
 	async function submitFeedback()
 	{
 		const feedback = (feedbackField.value).replace(/\s+/, '');
@@ -71,127 +38,127 @@
 		}, 1000);
 	}
 
+	const classFetcher = axios.post('./board/classroom');
+
 	let timeRemaining = ['--', '--'],
 		timeDuration = [],
 		timer,
-		showFeedbackForm = false;
+		showFeedbackForm = false,
+		showBoard = false;
 
-	$: if (typeof Classroom != 'undefined') {
-		if (!timeDuration.length) {
-			const mEnd = moment(Classroom.end),
-				mStart = moment(Classroom.start);
-			let tSeconds = mEnd.diff(mStart, 'seconds');
-			const hours = Math.floor(tSeconds / 3600);
+	classFetcher.then((r) => {
+		Classroom = r.data.Classroom;
+		timer = new Worker('./dist/board-timer.js');
+		timer.postMessage({
+			start: r.data.Classroom.start_with_tz,
+			end: r.data.Classroom.end_with_tz
+		});
 
-			tSeconds %= 3600;
-
-			const minutes = Math.floor(tSeconds / 60),
-				seconds = tSeconds % 60;
-
-			if (hours > 0) {
-				timeDuration.push(hours < 10 ? '0'+ hours : hours);
-			}
-
-			timeDuration.push(minutes < 10 ? '0'+ minutes : minutes);
-			timeDuration.push(seconds < 10 ? '0'+ seconds : seconds);
-		}
-
-		if (window.Worker && typeof timer == 'undefined') {
-			timer = new Worker('./dist/board-timer.js');
-			timer.postMessage({
-				start: Classroom.start,
-				end: Classroom.end,
-				currentUserType: UserCurrent.user_type
-			});
-
-			timer.onmessage = async (e) => {
-				if (_.isArray(e.data)) {
-					timeRemaining = e.data;
-				} else if (e.data === 2) {
-					// @TODO do not just redirect
-					window.location.href = './app';
-				} else if (e.data == 3) {
-					// @TODO
-					console.log('Teacher mode');
-				} else if (e.data === 1) {
+		timer.onmessage = async (e) => {
+			switch (e.data.type) {
+				case 'NOT_STARTED':
+					if (r.data.Users.Current.user_type != 'teacher') {
+						top.location.href = './app';
+					} else {
+						showBoard = true;
+					}
+				break;
+				
+				case 'HAS_ENDED':
+					showBoard = true;
 					try {
 						const closeBoard = await axios.post('./board/close', {
 							id: Classroom.id
 						});
+
+						showFeedbackForm = true;
 					} catch (e) {
 						// @TODO error closing board
 					}
-
-					showFeedbackForm = true;
-				}
-			};
-		}
-	}
+				break;
+				
+				case 'HAS_STARTED':
+					showBoard = true;
+					timeRemaining = e.data.ftime;
+				break;
+			}
+		};
+	});
 </script>
-{#if !isDoneInit}
-	<div class="container-fluid">
-		<div class="row pt-5">
-			<div class="col-12 text-center">
-				<h3>{@html initText}</h3>
-				<div class="spinner-border text-info mt-5" role="status">
-					<span class="sr-only">Loading...</span>
-				</div>
-			</div>
-		</div>
-	</div>
-{:else}
-	<div id="feedback-form" class="awesome-bg" class:show={showFeedbackForm}>
-		<div class="d-flex justify-content-center align-items-center" style="height: 100%">
-			<div class="text-center">
-				<h1 class="font-patrick-hand tr-1">Class is over.Thank you!</h1>
-				<span class="tr-2">What can you say about your overall experience? Let us know!</span>
-				<div class="the-form tr-3 mt-3">
-					<textarea class="form-control" bind:this={feedbackField} placeholder="Say something here"></textarea>
-				</div>
-				<div class="the-form mt-3 tr-4">
-					<button class="btn btn-primary" bind:this={feedbackSubmit} on:click={submitFeedback}>
-						{#if feedbackFormSubmitted}
-							<span class="spinner-grow spinner-grow-sm" role="status"></span> Loading...
-						{:else}
-							Submit Feedback
-						{/if}
-					</button>
-					<a href="./app" class="btn btn-secondary">Skip</a>
-				</div>
-			</div>
-		</div>
-	</div>
 
-	<div class="header" id="header">
-		<div class="container-fluid">
-			<div class="row">
-				<div class="col-auto">
-					<a href="./app" id="drawer">
-						<ArrowLeftIcon /> Back
-					</a>
-				</div>
-				<div class="col-auto">
-					<h3 class="time">
-						<span class="text"><ClockIcon /> Time Remaining</span> {timeRemaining.join(' : ')}
-					</h3>
-				</div>
+<div id="feedback-form" class="awesome-bg" class:show={showFeedbackForm}>
+	<div class="d-flex justify-content-center align-items-center" style="height: 100%">
+		<div class="text-center">
+			<h1 class="font-patrick-hand tr-1">Class is over.Thank you!</h1>
+			<span class="tr-2">What can you say about your overall experience? Let us know!</span>
+			<div class="the-form tr-3 mt-3">
+				<textarea class="form-control" bind:this={feedbackField} placeholder="Say something here"></textarea>
+			</div>
+			<div class="the-form mt-3 tr-4">
+				<button class="btn btn-primary" bind:this={feedbackSubmit} on:click={submitFeedback}>
+					{#if feedbackFormSubmitted}
+						<span class="spinner-grow spinner-grow-sm" role="status"></span> Loading...
+					{:else}
+						Submit Feedback
+					{/if}
+				</button>
+				<a href="./app" class="btn btn-secondary">Skip</a>
 			</div>
 		</div>
 	</div>
-
+</div>
+<div class="header" id="header">
 	<div class="container-fluid">
+		<div class="row">
+			<div class="col-auto">
+				<a href="./app" id="drawer">
+					<ArrowLeftIcon /> Back
+				</a>
+			</div>
+			<div class="col-auto">
+				<h3 class="time">
+					<span class="text"><ClockIcon /> Time Remaining</span> {timeRemaining.join(' : ')}
+				</h3>
+			</div>
+		</div>
+	</div>
+</div>
+
+{#await classFetcher}
+	<div class="d-flex justify-content-center align-items-center whole-page">
+		<div class="text-center">
+			<div class="spinner-border" style="width: 3rem; height: 3rem;" role="status">
+				<span class="sr-only">Loading...</span>
+			</div>
+			<h1>Retrieving classroom information...</h1>
+		</div>
+	</div>
+{:then response}
+	<div class="container-fluid" class:invisible={!showBoard}>
 		<div class="row no-gutters">
 			<div class="col-2">
-				<SideBar {Classroom} {UserCurrent} {UserOther}  />
+				<SideBar Classroom={response.data.Classroom} UserCurrent={response.data.Users.Current} UserOther={response.data.Users.Other}  />
 			</div>
 			<div class="col-10">
-				<Board classroom="{Classroom}" {UserCurrent} showToolbox={UserCurrent.user_type == 'teacher'} />
+				<Board Classroom={response.data.Classroom} UserCurrent={response.data.Users.Current} showToolbox={response.data.Users.Current.user_type == 'teacher'} />
 			</div>
 		</div>
 	</div>
-{/if}
+{:catch}
+	<div class="d-flex justify-content-center align-items-center whole-page">
+		<div style="margin-top: -5rem;">
+			<h1>No Class Available</h1>
+		</div>
+	</div>
+{/await}
 
 <style>
+	.whole-page {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+	}
+
 	#feedback-form .the-form {
 		position: relative;
 	}

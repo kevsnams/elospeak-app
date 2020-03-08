@@ -1,5 +1,5 @@
 <script>
-    export let classroom;
+    export let Classroom;
     export let showToolbox = false;
     export let UserCurrent;
 
@@ -23,7 +23,7 @@
     let currentLayer = null, container, wrapper, mode, _lastNode, _isPaint = false;
 
     const LaravelEcho = window.Echo;
-    const Channel = `classroom.${classroom.id}.board`;
+    const Channel = `classroom.${Classroom.id}.board`;
 
     function saveAndTransmit(event, params)
     {
@@ -40,7 +40,7 @@
     const save = _.debounce(async () => {
         try {
             await axios.post('./classroom/drawstate', {
-                id: classroom.id,
+                id: Classroom.id,
                 mode: 'save',
                 data: {
                     Stage: Stage.toJSON(),
@@ -134,7 +134,7 @@
 
     onMount(async () => {
         const drawstateFetch = await axios.post('./classroom/drawstate', {
-            id: classroom.id,
+            id: Classroom.id,
             mode: 'fetch'
         });
         const drawstate = await drawstateFetch.data;
@@ -525,7 +525,7 @@
 
     function genNodeId()
     {
-        return classroom.id +'_'+ genId()
+        return Classroom.id +'_'+ genId()
     }
 
     function btnAddLayer()
@@ -730,7 +730,7 @@
 
     {#if showToolbox}
         <ToolBox
-            classroom={classroom}
+            Classroom={Classroom}
             on:clearLayer={() => {
                 clearLayer();
             }}
