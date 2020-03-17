@@ -7,7 +7,6 @@ import Teacher from './views/Teacher.svelte';
 import Student from './views/Student.svelte';
 import Invoices from './views/Invoices.svelte';
 
-
 const routes = {
     '/': Home,
     '/classrooms': Classrooms,
