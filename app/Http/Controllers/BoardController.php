@@ -33,8 +33,8 @@ class BoardController extends Controller
 
         // @TODO change this to the actual current board
         $classroom = Classroom::where($column, $request->user()->id)
-            //->whereRaw('DATE(start) = ?', [$localizeNow->format('Y-m-d')])
-            ->where('id', 37)
+            ->whereRaw('DATE(start) = ?', [$localizeNow->format('Y-m-d')])
+            //->where('id', 37)
             ->where('status', Classroom::STATUS_ACTIVE)->firstOrFail();
         
         $currentUser = $request->user();

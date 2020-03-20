@@ -1,0 +1,139 @@
+/**
+blue: 92c2fd
+pink: fc719f
+black: 4c4a4a
+*/
+/**
+    font-family: 'Open Sans', sans-serif;
+    font-family: 'Roboto Slab', serif;
+*/
+
+body {
+  color: #4c4a4a;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 1rem;
+}
+.nav nav ul {
+  display: block;
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+.nav nav ul li {
+  list-style-type: none;
+  display: inline-block;
+}
+.nav nav ul li:not(:last-child) {
+  margin-right: 1.5rem;
+}
+
+.nav nav ul li a {
+  text-decoration: none;
+  color: #fc719f;
+  font-family: 'Roboto Slab', serif;
+  font-size: 1.3rem;
+  padding: .5rem .8rem;
+}
+
+.nav nav ul li a:hover, .nav nav ul li a.active {
+  background: #fc719f;
+  color: #fff;
+  border-radius: 5rem;
+}
+
+.intro-text {
+  width: 400px;
+}
+.header {
+  font-family: 'Roboto Slab', serif;
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.intro-text p {
+  font-size: 1rem;
+}
+
+
+.trans-blue {
+  background: url('../img/blue-trans.png') no-repeat scroll transparent;
+  background-position: top left;
+  background-size: auto;
+  width: 100%;
+  min-height: 592px;
+  height: auto;
+}
+
+.trans-pink {
+  background: url('../img/pink-trans.png') no-repeat scroll transparent;
+  background-position: top right;
+  background-size: auto;
+  width: 100%;
+  min-height: 592px;
+  height: auto;
+}
+
+/**
+ * .btn-*
+ */
+.btn-blue {
+  background: #92c2fd;
+  color: #fff;
+  padding: 0.5rem .9rem;
+  text-decoration: none;
+  border-radius: .5rem;
+  font-size: .9rem;
+}
+
+.btn-pink {
+  background: #fc719f;
+  color: #fff;
+  padding: 0.5rem .9rem;
+  text-decoration: none;
+  border-radius: .5rem;
+  font-size: .9rem;
+}
+.divider {
+  background: #92c2fd;
+  height: .5rem;
+  width: 2rem;
+  margin: 0 auto;
+}
+
+.programs {
+  margin-top: 200px;
+}
+.programs .programs-desc {
+  margin-top: 13rem;
+  width: 50%;
+}
+
+.r1 {
+  margin-top: 5rem;
+}
+.r2 {
+  margin-top: 2rem;
+  margin-left: 3rem;
+}
+.program-card {
+  background: #fff;
+  margin-right: 3rem;
+  padding: 1rem;
+  border-radius: .35rem;
+  text-align: center;
+  box-shadow: 0 0 0 1px rgba(43, 45, 80, 0.1),
+        0 2px 5px 0 rgba(43, 45, 80, 0.08),
+        0 1px 1.5px 0 rgba(0, 0, 0, 0.07),
+        0 1px 2px 0 rgba(0, 0, 0, 0.08);
+}
+
+.program-card h1 {
+  font-size: 2rem;
+  margin: 0 0 1rem 0;
+  font-family: 'Roboto Slab', serif;
+}
+
+.mvc {
+  margin-top: 5rem;
+}
