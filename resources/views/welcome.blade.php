@@ -9,7 +9,8 @@
 
     <title>{{ config('app.name', 'ELOSpeak.com') }}</title>
 
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans|Roboto+Slab:400,700&display=swap" rel="stylesheet"> <link rel="stylesheet" href="css/normalize.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans|Roboto+Slab:400,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('/front/css/normalize.css') }}">
     <link rel="stylesheet" href="{{ asset('/front/css/bootstrap-grid.min.css') }}">
     <link rel="stylesheet" href="{{ asset('/front/css/main.css') }}">
 </head>
