@@ -12,15 +12,15 @@
         <div class="container teachers">
             <div class="d-flex justify-content-center pt-5">
                 
-                <div class="teacher" data-teacher='{"name": "Teacher Audree", "vocaroo": "https://vocaroo.com/embed/fSRWewaCknZ"}'>
+                <div class="teacher" data-teacher='{"name": "Teacher Audree", "src": "{{ asset('/front/voice/audree.mp3') }}"}'>
                     <img src="{{ asset('/front/img/teachers/audree.png') }}">
                 </div>
                 
-                <div class="teacher" data-teacher='{"name": "Teacher Karen", "vocaroo": "https://vocaroo.com/embed/Vccp4Ebi1wv"}'>
+                <div class="teacher" data-teacher='{"name": "Teacher Karen", "src": "{{ asset('/front/voice/karen.mp3') }}"}'>
                     <img src="{{ asset('/front/img/teachers/karen.png') }}">
                 </div>
                 
-                <div class="teacher" data-teacher='{"name": "Teacher Rea", "vocaroo": "https://vocaroo.com/embed/75la53WaQuX"}'>
+                <div class="teacher" data-teacher='{"name": "Teacher Rea", "src": "{{ asset('/front/voice/rea.mp3') }}"}'>
                     <img src="{{ asset('/front/img/teachers/rea.png') }}">
                 </div>
                 
@@ -31,7 +31,10 @@
             <div class="teacher-content">
                 <h1 class="header"></h1>
                 <div class="mt-5">
-                    <iframe class="iframe-voice" width="300" height="60" frameborder="0"></iframe>
+                    <audio controls id="player">
+                        <source id="teacher-voice" type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>
                 </div>
             </div>
         </div>
@@ -44,6 +47,8 @@
 <script>
     const teachers = document.querySelectorAll('.teacher');
     const teacher = document.querySelector('.teacher-content');
+    const voiceSrc = document.getElementById('teacher-voice');
+    const player = document.getElementById('player');
     
     function clearActiveTeachers()
     {
@@ -60,7 +65,8 @@
         element.classList.add('active');
         
         teacher.querySelector('.header').innerHTML = json.name;
-        teacher.querySelector('.iframe-voice').setAttribute('src', json.vocaroo);
+        voiceSrc.src = json.src;
+        player.load();
     }
     
     window.addEventListener('load', () => {
