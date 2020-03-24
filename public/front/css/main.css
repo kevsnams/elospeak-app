@@ -2,6 +2,8 @@
 blue: 92c2fd
 pink: fc719f
 black: 4c4a4a
+gray: 939393
+light gray: ececec
 */
 /**
     font-family: 'Open Sans', sans-serif;
@@ -41,6 +43,14 @@ body {
   border-radius: 5rem;
 }
 
+.nav nav ul li a.cta, .nav nav ul li a:hover.cta {
+    text-shadow: 0px 1px 1px #4c4a4a;
+    color: #ffffff;
+    border-radius: 5rem;
+    background: rgb(146,194,253);
+    background: linear-gradient(50deg, rgba(146,194,253,1) 0%, rgba(194,158,211,0.633473457742472) 50%, rgba(252,113,159,1) 100%);
+}
+
 .intro-text {
   width: 400px;
 }
@@ -50,9 +60,12 @@ body {
   font-weight: bold;
   margin: 0;
 }
-
+.sub-header {
+    font-size: 1rem;
+    color: #939393;
+}
 .intro-text p {
-  font-size: 1rem;
+    font-size: 1rem;
 }
 
 
@@ -77,6 +90,10 @@ body {
 /**
  * .btn-*
  */
+button.btn {
+    border: 0 !important;
+    cursor: pointer;
+}
 .btn-blue {
   background: #92c2fd;
   color: #fff;
@@ -102,7 +119,7 @@ body {
 }
 
 .programs {
-  margin-top: 200px;
+  margin-top: 4rem;
 }
 .programs .programs-desc {
   margin-top: 13rem;
@@ -136,4 +153,245 @@ body {
 
 .mvc {
   margin-top: 5rem;
+}
+
+.w-1h3 {
+    width: 33.333333333333336%;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.grad-bg {
+    background: rgb(146,194,253);
+    background: linear-gradient(50deg, rgba(146,194,253,1) 0%, rgba(194,158,211,0.633473457742472) 50%, rgba(252,113,159,1) 100%);
+}
+
+.strip-header {
+    font-size: 2.5rem;
+    font-weight: bold;
+    font-family: 'Roboto Slab', serif;
+    padding-top: .5rem;
+    padding-bottom: .5rem;
+    text-align: center;
+    color: #fff;
+    background: rgb(146,194,253);
+    background: linear-gradient(50deg, rgba(146,194,253,1) 0%, rgba(194,158,211,0.633473457742472) 50%, rgba(252,113,159,1) 100%);
+}
+
+.steps {
+    margin-top: 2rem;
+}
+.steps .step {
+    width: 20%;
+    text-align: right;
+}
+.steps .step span {
+    font-size: 5rem;
+    font-family: 'Roboto Slab', serif;
+    color: #92c2fd;
+}
+.steps .step-desc {
+    width: 80%;
+    text-align: left;
+}
+.steps .step-desc h1 {
+    font-family: 'Roboto Slab', serif;
+    color: #fc719f
+}
+.steps .step-desc p {
+    padding-top: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.enroll-now {
+    text-decoration: none;
+    text-shadow: 1px 1px 1px #4c4a4a;
+    border-radius: 1rem;
+    font-size: 1.6rem;
+    font-family: 'Roboto Slab', serif;
+    display: block;
+    width: 20rem;
+    margin: 0 auto;
+    padding: 1rem;
+    font-weight: bold;
+    color: #ffffff;
+    background: rgb(146,194,253);
+    background: linear-gradient(50deg, rgba(146,194,253,1) 0%, rgba(194,158,211,0.633473457742472) 50%, rgba(252,113,159,1) 100%);
+}
+
+.teachers {
+    margin-top: 3rem;
+}
+.teacher {
+    background: #ffffff;
+    margin-right: 2rem;
+    padding: .5rem;
+    border-radius: 50%;
+    cursor: pointer;
+}
+.teacher.active {
+    background: rgb(146,194,253);
+    background: linear-gradient(50deg, rgba(146,194,253,1) 0%, rgba(194,158,211,0.633473457742472) 50%, rgba(252,113,159,1) 100%);
+}
+.teacher.active img {
+    opacity: 1;
+}
+.teacher:hover img {
+    opacity: 1;
+    transition-duration: 1s;
+    transition-property: opacity;
+}
+.teacher img {
+    border-radius: 50%;
+    width: 150px;
+    padding: 0;
+    margin: 0;
+    display: block;
+    box-shadow: 0 0 0 1px rgba(43, 45, 80, 0.1),
+        0 2px 5px 0 rgba(43, 45, 80, 0.08),
+        0 1px 1.5px 0 rgba(0, 0, 0, 0.07),
+        0 1px 2px 0 rgba(0, 0, 0, 0.08);
+    opacity: .5;
+    transition-duration: 1s;
+    transition-property: opacity;
+}
+
+.teacher-content {
+    text-align: center;
+    padding-bottom: 1rem;
+    margin-top: 4rem;
+}
+
+.faqs .question span {
+    display: inline-block;
+    margin-right: 1rem;
+    background: url('../img/raquo.png') no-repeat scroll transparent;
+    width: 6px;
+    height: 12px;
+}
+.faqs .question {
+    text-decoration: none;
+    font-size: 1.2rem;
+    color: #92c2fd;
+    line-height: 1.2rem;
+    border-bottom: 1px solid #f0f0f0;
+    padding: 1rem;
+}
+.faqs .answer {
+    margin-top: 1rem;
+    padding: .5rem .5rem 2rem 2rem;
+}
+
+/*
+p.bubble
+{
+	position: absolute;
+    top: 217px;
+    left: 743px;
+	width: auto;
+    padding: 0 1rem;
+	height: 50px;
+	text-align: center;
+	line-height: 50px;
+	margin: 30px auto;
+	background-color: #fff;
+	border: 2px solid #666;
+	-webkit-border-radius: .5rem;
+	-moz-border-radius: .5rem;
+	border-radius: .5rem;
+	-webkit-box-shadow: 2px 2px 4px #888;
+	-moz-box-shadow: 2px 2px 4px #888;
+	box-shadow: 2px 2px 4px #888;
+}
+
+p.bubble:before, p.bubble:after
+{
+	content: ' ';
+	position: absolute;
+	width: 0;
+	height: 0;
+}
+
+p.speech:before
+{
+	left: 36px;
+	top: 47px;
+	border: 12px solid;
+	border-color: #666 transparent transparent #666;
+}
+
+p.speech:after
+{
+	left: 38px;
+	top: 46px;
+	border: 10px solid;
+	border-color: #fff transparent transparent #fff;
+}
+*/
+
+.contact {
+    margin-top: 3rem;
+    padding-top: 2rem;
+}
+
+.contact-form {
+    display: block;
+    margin: 0 auto;
+    width: 50%;
+    background: #fff;
+    padding: 2rem;
+    border-radius: .355rem;
+    box-shadow: 0 0 0 1px rgba(43, 45, 80, 0.1),
+        0 2px 5px 0 rgba(43, 45, 80, 0.08),
+        0 1px 1.5px 0 rgba(0, 0, 0, 0.07),
+        0 1px 2px 0 rgba(0, 0, 0, 0.08);
+}
+
+.field label {
+    display: block;
+    font-family: 'Roboto Slab', serif;
+}
+.field textarea {
+    resize: none;
+}
+.field input, .field textarea, .field select {
+    border: 1px solid #ececec;
+    outline: 0;
+    display: block;
+    width: 100%;
+    margin-top: .5rem;
+    padding: .7rem;
+    transition-property: border;
+    transition-duration: 500ms;
+    border-radius: .355rem;
+    font-size: .8rem;
+}
+
+.field input:focus, .field input:hover,
+.field textarea:focus, .field textarea:hover,
+.field select:focus, .field select:hover {
+    border: 1px solid #4c4a4a;
+}
+
+.field:not(:last-child) {
+    margin-bottom: 1rem;
+}
+
+.contact-submit {
+    display: block;
+    margin: 0 auto;
+    margin-top: 2rem;
+    font-size: 1.1rem;
+    font-family: 'Roboto Slab', serif;
+    padding: 1rem 2rem;
+    box-shadow: 3px 5px 0px #939393;
+    transition-duration: 1s;
+    transition-property: background-color, box-shadow;
+}
+.contact-submit:hover {
+    background: #fc719f;
+    box-shadow: 3px 5px 0px #4c4a4a;
 }

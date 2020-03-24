@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<head>
+    <link rel="dns-prefetch" href="//fonts.gstatic.com">
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+    <!-- CSRF Token -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <title>{{ config('app.name', 'ELOSpeak') }} &#8212; @yield('title', '')</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans|Roboto+Slab:400,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('/front/css/normalize.css') }}">
+    <link rel="stylesheet" href="{{ asset('/front/css/bootstrap-grid.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('/front/css/main.css') }}">
+</head>
+<body>
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center">
+        <div class="logo">
+            <a href="{{ url('/') }}">
+                <img class="mt-3" src="{{ asset('/front/img/logo-small.png') }}" alt="ELOSpeak Logo">
+            </a>
+        </div>
+
+        <div class="nav">
+            <nav>
+                <ul>
+                    <li>
+                        <a href="{{ url('/') }}" <?php echo $currentPage == 'home' ? 'class="active"' : '' ?>>HOME</a>
+                    </li>
+                    <li>
+                        <a href="{{ route('pages.classes') }}" <?php echo $currentPage == 'classes' ? 'class="active"' : '' ?>>CLASSES</a>
+                    </li>
+                    <li>
+                        <a href="{{ route('pages.teachers') }}" <?php echo $currentPage == 'teachers' ? 'class="active"' : '' ?>>OUR TEACHERS</a>
+                    </li>
+                    <li>
+                        <a href="{{ route('pages.contact') }}" class="cta">CONTACT</a>
+                    </li>
+                    <li>
+                        <a href="{{ route('pages.faqs') }}" <?php echo $currentPage == 'faqs' ? 'class="active"' : '' ?>>FAQs</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+@yield('content')
+
+<div class="container">
+    <div class="divider mt-5 mb-5"></div>
+
+    <footer class="d-flex align-items-center mb-5">
+        <div class="mr-2">Follow Us</div>
+        <a href="#">
+            <img src="{{ url('/front/img/fb.png') }}">
+        </a>
+
+        <a href="#">
+            <img src="{{ url('/front/img/ig.png') }}">
+        </a>
+
+        <a href="#">
+            <img src="{{ url('/front/img/skype.png') }}">
+        </a>
+
+        <a href="#">
+            <img src="{{ url('/front/img/twitter.png') }}">
+        </a>
+    </footer>
+</div>
+
+@yield('script')
+
+</body>
+</html>

@@ -12,7 +12,16 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('welcome', [
+        'currentPage' => 'home'
+    ]);
+});
+
+Route::name('pages.')->group(function () {
+    Route::get('/pages/classes', 'PagesController@classes')->name('classes');
+    Route::get('/pages/teachers', 'PagesController@teachers')->name('teachers');
+    Route::get('/pages/contact', 'PagesController@contact')->name('contact');
+    Route::get('/pages/faqs', 'PagesController@faqs')->name('faqs');
 });
 
 Auth::routes();
