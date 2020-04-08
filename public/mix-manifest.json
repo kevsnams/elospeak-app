@@ -1,8 +1,5 @@
 {
-    "/dist/js/classroom-student.js": "/dist/js/classroom-student.js",
-    "/dist/js/classroom-teacher.js": "/dist/js/classroom-teacher.js",
     "/dist/js/echo.js": "/dist/js/echo.js",
-    "/dist/css/main.css": "/dist/css/main.css",
     "/dist/app.css": "/dist/app.css",
     "/dist/board-global.css": "/dist/board-global.css"
 }
