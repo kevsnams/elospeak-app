@@ -7,7 +7,7 @@ window.Echo = new Echo({
     broadcaster: 'pusher',
     key: process.env.MIX_PUSHER_APP_KEY,
     cluster: process.env.MIX_PUSHER_APP_CLUSTER,
-    encrypted: PUSHER_ENCRYPTED,
+    encrypted: process.env.PUSHER_ENCRYPTED,
     wsHost: window.location.hostname,
     wsPort: 6001,
     wssPort: 6001,
