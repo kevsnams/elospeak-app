@@ -40,11 +40,7 @@ return [
                 'encrypted' => env('APP_IS_SSL', false),
                 'host' => env('PUSHER_OPTIONS_HOST'),
                 'port' => 443,
-                'scheme' => env('APP_IS_SSL', false) ? 'https' : 'http',
-                'curl_options' => [
-                    CURLOPT_SSL_VERIFYHOST => 0,
-                    CURLOPT_SSL_VERIFYPEER => 0,
-                ]
+                'scheme' => env('APP_IS_SSL', false) ? 'https' : 'http'
             ],
         ],
 
