@@ -56,21 +56,33 @@
 
     <footer class="d-flex align-items-center mb-5">
         <div class="mr-2">Follow Us</div>
-        <a href="#">
-            <img src="{{ url('/front/img/fb.png') }}">
-        </a>
 
-        <a href="#">
-            <img src="{{ url('/front/img/ig.png') }}">
-        </a>
+        @if (count($socmeds))
+            @if (isset($socmeds['facebook']))
+                <a href="{{ $socmeds['facebook'] }}">
+                    <img src="{{ url('/front/img/fb.png') }}">
+                </a>
+            @endif
 
-        <a href="#">
-            <img src="{{ url('/front/img/skype.png') }}">
-        </a>
+            @if (isset($socmeds['instagram']))
+                <a href="{{ $socmeds['instagram'] }}">
+                    <img src="{{ url('/front/img/ig.png') }}">
+                </a>
+            @endif
 
-        <a href="#">
-            <img src="{{ url('/front/img/twitter.png') }}">
-        </a>
+
+            @if (isset($socmeds['skype']))
+                <a href="{{ $socmeds['skype'] }}">
+                    <img src="{{ url('/front/img/skype.png') }}">
+                </a>
+            @endif
+
+            @if (isset($socmeds['twitter']))
+                <a href="{{ $socmeds['twitter'] }}">
+                    <img src="{{ url('/front/img/twitter.png') }}">
+                </a>
+            @endif
+        @endif
     </footer>
 </div>
 

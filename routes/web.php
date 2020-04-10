@@ -22,6 +22,7 @@ Route::name('pages.')->group(function () {
     Route::get('/pages/teachers', 'PagesController@teachers')->name('teachers');
     Route::get('/pages/contact', 'PagesController@contact')->name('contact');
     Route::get('/pages/faqs', 'PagesController@faqs')->name('faqs');
+    Route::post('/pages/send-message', 'PagesController@sendMessage')->name('send-message');
 });
 
 Auth::routes();
