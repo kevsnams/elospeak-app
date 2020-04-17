@@ -10,12 +10,33 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-
 Route::get('/', function () {
     return view('welcome', [
         'currentPage' => 'home'
     ]);
 });
+
+Auth::routes();
+
+/**
+ * Classrooms extended actions
+ */
+Route::get('/classrooms/next', 'SpaClassroomsController@getNext')->name('classrooms.next');
+Route::get('/classrooms/count', 'SpaClassroomsController@getCount')->name('classrooms.count');
+/**
+ * Enrollments extended actions
+ */
+Route::get('/enrollments/count', 'EnrollmentsController@getCount')->name('enrollments.count');
+
+/**
+ * RESTful SPA Resources
+ */
+// @TODO When it's all done remove 'Spa'
+Route::resources([
+    'classrooms' => 'SpaClassroomsController',
+    'enrollments' => 'EnrollmentsController'
+]);
+
 
 Route::name('pages.')->group(function () {
     Route::get('/pages/classes', 'PagesController@classes')->name('classes');
@@ -25,14 +46,17 @@ Route::name('pages.')->group(function () {
     Route::post('/pages/send-message', 'PagesController@sendMessage')->name('send-message');
 });
 
-Auth::routes();
-
 Route::get('/login', 'Auth\LoginController@showLogin')->name('login');
 Route::post('/login/auth', 'Auth\LoginController@authLogin')->name('login.auth');
 Route::get('/logout', 'AppController@logout')->name('logout');
 
 Route::name('app.')->group(function() {
     Route::get('/app', 'AppController@index')->name('index');
+    Route::get('/app/get-auth-user', 'AppController@getAuthUser');
+
+
+    // @TODO Remove
+    /*
     Route::post('/app/classrooms', 'AppController@classrooms')->name('classroom.all');
     Route::post('/app/teacher', 'AppController@teacher')->name('teacher');
     Route::post('/app/student', 'AppController@student')->name('student');
@@ -43,8 +67,11 @@ Route::name('app.')->group(function() {
     Route::post('/app/settings/details', 'AppController@saveSettingsDetails')->name('settings.details');
     Route::post('/app/settings/password', 'AppController@saveSettingsPassword')->name('settings.password');
     Route::post('/app/settings/photo', 'AppController@saveSettingsUserPhoto')->name('settings.user_photo');
+    */
 });
 
+/*
+// @TODO Removables
 Route::name('board.')->group(function () {
     Route::get('/board', 'BoardController@index')->name('index');
 
@@ -75,3 +102,5 @@ Route::name('classroom.')->group(function() {
     Route::post('/classroom/drawstate', 'ClassroomController@drawstate')->name('drawstate');
     Route::post('/classroom/image-upload', 'ClassroomController@imageUpload')->name('image.upload');
 });
+
+*/

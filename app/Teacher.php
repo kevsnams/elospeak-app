@@ -8,8 +8,19 @@ use App\UserPhoto;
 
 class Teacher extends Authenticatable
 {
+    const EDUC_UNDERGRADUATE = 0;
+    const EDUC_COLLEGE_GRADUATE = 1;
+
     protected $appends = ['user_type', 'uc_user_type', 'age', 'photo_url'];
     protected $hidden = ['password', 'remember_token'];
+
+    public static function educationalAttainments()
+    {
+        return collect([
+            [self::EDUC_UNDERGRADUATE, 'Undergraduate'],
+            [self::EDUC_COLLEGE_GRADUATE, 'College Graduate']
+        ]);
+    }
 
     public function photo()
     {

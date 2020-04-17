@@ -27,6 +27,7 @@ class Student extends Authenticatable
         return 'student';
     }
 
+    // removable
     public function getUcUserTypeAttribute()
     {
         return ucfirst($this->user_type);

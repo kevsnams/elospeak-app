@@ -41,7 +41,7 @@
 	<div class="row">
 		<div class="col-lg-2 col-md-2">
 			<div id="logo" class="text-center">
-				<img src="img/elospeak-logo.png" alt="logo">
+				<img src="front/img/logo-small.png" alt="logo">
 			</div>
 
 			<nav id="app-nav">

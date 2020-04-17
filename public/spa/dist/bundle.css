@@ -1,0 +1,36 @@
+.elo-card{background:#fff;padding:1.5rem;border-radius:1rem;margin-top:3rem;box-shadow:0 0 0 1px rgba(43, 45, 80, 0.1),
+        0 2px 5px 0 rgba(43, 45, 80, 0.08),
+        0 1px 1.5px 0 rgba(0, 0, 0, 0.07),
+        0 1px 2px 0 rgba(0, 0, 0, 0.08)}a{color:#92c2fd;text-decoration:none}a:hover{text-decoration:underline}.main{font-size:1em;font-family:'Quicksand',
+		system-ui,
+		-apple-system,
+		BlinkMacSystemFont,
+		"Segoe UI",
+		Roboto,
+		Ubuntu,
+		"Helvetica Neue",
+		sans-serif;width:100%;margin:0 auto;color:#4c4a4a}.font-quicksand{font-family:'Quicksand',
+		system-ui,
+		-apple-system,
+		BlinkMacSystemFont,
+		"Segoe UI",
+		Roboto,
+		Ubuntu,
+		"Helvetica Neue",
+		sans-serif}.font-roboto{font-family:'Roboto Slab', Georgia, 'Times New Roman', Times, serif}.text-pink{color:#fc719f}.text-blue{color:#92c2fd}h1, h2, h3, h4, h5{font-family:'Roboto Slab', Georgia, 'Times New Roman', Times, serif;font-weight:bold}.content{padding:3rem;background:#F6F4FC}nav#sidebar.svelte-1t3ympp.svelte-1t3ympp{margin-top:2rem}nav#sidebar.svelte-1t3ympp span.svelte-1t3ympp{display:block;padding-left:1rem}nav#sidebar.svelte-1t3ympp span a.svelte-1t3ympp{display:inline-block;font-size:1.9rem;color:#92c2fd;width:3rem;height:3rem;border-radius:100%;text-align:center}nav#sidebar.svelte-1t3ympp span a.svelte-1t3ympp:hover{background:#ffbcd22d;color:#fc719f;transition-property:background, color;transition-duration:500ms}.main-nav.svelte-1t3ympp.svelte-1t3ympp{width:15%;border-right:1px solid rgb(230, 236, 240)}.nav-content.svelte-1t3ympp.svelte-1t3ympp{margin-top:2rem;margin-left:4rem}.nav-content.svelte-1t3ympp .logo.svelte-1t3ympp{width:100%;text-align:center;margin-bottom:4rem}.main-content.svelte-1t3ympp.svelte-1t3ympp{width:70%}.main-sidebar.svelte-1t3ympp.svelte-1t3ympp{width:15%;border-left:1px solid rgb(230, 236, 240)}
+.dashboard-grid.svelte-egti4f .count.svelte-egti4f{font-size:3rem;display:block;text-align:center}.dashboard-grid.svelte-egti4f ul.recent-list.svelte-egti4f{padding:0;margin:0}.dashboard-grid.svelte-egti4f ul.recent-list li.svelte-egti4f{margin:0;padding:0;list-style-type:none;display:block}.dashboard-grid.svelte-egti4f ul.recent-list li.svelte-egti4f:not(:last-child){border-bottom:1px solid rgb(230, 236, 240)}.dashboard-grid.svelte-egti4f ul.recent-list li a.svelte-egti4f{text-decoration:none;font-weight:bold;padding:1rem 0;display:block}.dashboard-grid.svelte-egti4f ul.recent-list li a span.date.svelte-egti4f{color:#4c4a4a}.dashboard-grid.svelte-egti4f ul.recent-list li a span.time.svelte-egti4f{color:#939393}
+.card-classroom.svelte-mcwf9u .header.svelte-mcwf9u{font-size:1rem;font-weight:bold}.card-classroom.svelte-mcwf9u .sub-header.svelte-mcwf9u{font-size:1rem}.card-classroom.svelte-mcwf9u .card-photo.svelte-mcwf9u{display:block;margin-top:1rem;margin:1rem auto 0 auto}.card-classroom.svelte-mcwf9u .name.svelte-mcwf9u{font-size:.9rem;display:block;margin-top:1rem}.card-datetime.svelte-mcwf9u.svelte-mcwf9u{font-size:2rem}
+.alert-error.svelte-3jq2k{background:rgb(255, 201, 201);color:rgb(255, 17, 17)}.alert-unsuccess.svelte-3jq2k{background:rgb(255, 218, 201);color:rgb(255, 104, 17)}
+nav.route-navs.svelte-3549oo.svelte-3549oo{margin-top:1.5rem}nav.route-navs.svelte-3549oo a.svelte-3549oo{display:block;color:#4c4a4a;font-size:1.4em;font-weight:700;text-decoration:none;padding:1rem}nav.route-navs.svelte-3549oo a.svelte-3549oo:hover{color:#fc719f !important;background:#ffbcd22d;border-top-left-radius:1rem;border-bottom-left-radius:1rem;transition-property:color,
+        background,
+        border-top-left-radius,
+        border-top-right-radius,
+        border-right-color;transition-duration:500ms;border-right:.5rem solid #fc719f}a.active-nav{color:#92c2fd !important;transition-property:color,
+        background,
+        border-top-left-radius,
+        border-top-right-radius,
+        border-right-color;transition-duration:500ms;border-right:.5rem solid #92c2fd}
+.elo-card.svelte-1yc8nsl .header.svelte-1yc8nsl{font-size:1rem;font-weight:bold}
+.glowing-spinner.svelte-12psyvt.svelte-12psyvt{animation-duration:.5s;animation-name:svelte-12psyvt-glowing;animation-direction:alternate;animation-iteration-count:infinite}.glowing-spinner.svelte-12psyvt .spinner-border.svelte-12psyvt{width:3rem;height:3rem;border-width:.5rem}@keyframes svelte-12psyvt-glowing{from{color:#fc719f}to{color:#92c2fd}}
+
+/*# sourceMappingURL=bundle.css.map */

@@ -9,11 +9,18 @@ class Classroom extends Model
 {
     protected $appends = ['start_with_tz', 'end_with_tz'];
     
-    const STATUS_UNPAID = 0;
     const STATUS_ACTIVE = 1;
-    // const STATUS_CURRENT = 4;
     const STATUS_DONE = 2;
     const STATUS_CANCELLED = 3;
+
+    public static function status()
+    {
+        return collect([
+            [self::STATUS_ACTIVE, 'Active'],
+            [self::STATUS_DONE, 'Done'],
+            [self::STATUS_CANCELLED, 'Cancelled']
+        ]);
+    }
     
     public function teacher()
     {
@@ -23,6 +30,11 @@ class Classroom extends Model
     public function student()
     {
         return $this->belongsTo('App\Student');
+    }
+
+    public function enrollment()
+    {
+        return $this->belongsTo('App\Enrollment');
     }
 
     public function getStartWithTzAttribute()

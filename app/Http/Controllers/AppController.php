@@ -16,6 +16,8 @@ use App\Student;
 use App\Teacher;
 use App\UserPhoto;
 
+use App\WebsiteSetting;
+
 class AppController extends Controller
 {
     public function __construct()
@@ -25,11 +27,40 @@ class AppController extends Controller
 
     public function index()
     {
+        $WebsiteSettings = WebsiteSetting::all()->keyBy(function ($setting) {
+            return $setting['key'];
+        })->map(function ($setting) {
+            return $setting['value'];
+        });
+
+        $classroomStatus = Classroom::status();
+        $teacherEducationalAttainments = Teacher::educationalAttainments();
+
+        $svelteInitialValues = [
+            'WebsiteSetting' => $WebsiteSettings->toArray(),
+
+            'Classroom' => [
+                'status' => $classroomStatus->toArray()
+            ],
+
+            'Teacher' => [
+                'educational_attainments' => $teacherEducationalAttainments->toArray()
+            ]
+        ];
+
         return view('app', [
-            'User' => Auth::user()
+            'svelteInitialValues' => json_encode($svelteInitialValues)
         ]);
     }
 
+    public function getAuthUser(Request $request)
+    {
+        return response()->json($request->user());
+    }
+
+
+
+    // @TODO Removables
     public function classrooms(Request $request)
     {
         $column = $this->getClassroomColumnFromAuthUserType($request);
