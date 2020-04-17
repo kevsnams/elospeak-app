@@ -80,7 +80,7 @@
     
     <div class="text-center mt-5">
         <h1 class="header">Ready to learn with us?</h1>
-        <a href="#" class="enroll-now mt-3">ENROLL NOW</a>
+        <a href="{{ route('pages.contact') }}" class="enroll-now mt-3">ENROLL NOW</a>
     </div>
 </div>
 @endsection
