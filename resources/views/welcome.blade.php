@@ -73,7 +73,7 @@
         <div class="program-card w-1h3">
             <img src="{{ asset('/front/img/values.png') }}">
             <h1>CORE VALUES</h1>
-            <p>Here in EloSpeak, we value academic excellence as we help you navigate obstacles in learning the English language with critical thinking and resourcefulness. Our classes are facilitated with  mentors who also act as positive role models inspiring students to thrive in every class. We practice high levels of professionalism in our work and reward merit. We utilize competence, positive attitude and effective communication in working towards our mission. We stand by our values and empower one another as we take to heart the wholistic well-being of our students and educators.</p>
+            <p>We value academic excellence as we help you navigate obstacles in learning the English language with critical thinking and resourcefulness. Our classes are facilitated with  mentors who also act as positive role models inspiring students to thrive in every class.</p>
         </div>
     </div>
 </div>
