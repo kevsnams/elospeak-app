@@ -26,24 +26,24 @@
                     <div class="d-flex flex-row r1">
                         <div class="program-card">
                             <h1>BEGINNER</h1>
-                            <span>Lorem Ipsum</span>
+                            <span>Learn the alphabet and basic expressions. Learn basic sentence structure. Have simple conversations</span>
                         </div>
 
                         <div class="program-card">
                             <h1>INTERMEDIATE</h1>
-                            <span>Lorem Ipsum</span>
+                            <span>Learn common expressions. Deal with basic communication problems</span>
                         </div>
                     </div>
 
                     <div class="d-flex flex-row r2">
                         <div class="program-card">
                             <h1>ADVANCED</h1>
-                            <span>Lorem Ipsum</span>
+                            <span>Watch English News or video clips without subtitles. Able to have an English conversation in most situations</span>
                         </div>
 
                         <div class="program-card">
                             <h1>PROFECIENT</h1>
-                            <span>Lorem Ipsum</span>
+                            <span>Speak English like a native speaker</span>
                         </div>
                     </div>
                 </div>
@@ -73,7 +73,7 @@
         <div class="program-card w-1h3">
             <img src="{{ asset('/front/img/values.png') }}">
             <h1>CORE VALUES</h1>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin maximus orci vitae magna dictum, id imperdiet erat bibendum. Pellentesque tempor vehicula tellus, et rhoncus lectus porttitor et. Vivamus hendrerit imperdiet nunc ullamcorper consequat. Duis condimentum lacus et eros tincidunt, eu porta libero porttitor. Maecenas vel tincidunt felis.</p>
+            <p>Here in EloSpeak, we value academic excellence as we help you navigate obstacles in learning the English language with critical thinking and resourcefulness. Our classes are facilitated with  mentors who also act as positive role models inspiring students to thrive in every class. We practice high levels of professionalism in our work and reward merit. We utilize competence, positive attitude and effective communication in working towards our mission. We stand by our values and empower one another as we take to heart the wholistic well-being of our students and educators.</p>
         </div>
     </div>
 </div>

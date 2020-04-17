@@ -27,6 +27,7 @@
         </div>
         
         
+        {{---
         <a href="#" class="question faq-3">
             <span></span>
             How much does it cost?
@@ -34,6 +35,7 @@
         <div class="answer faq-3" hidden>
             Rates for 25-minute class and 50-minute class may differ. 25-minute class costs 9,200 won. Weekend classes(50 minutes class) cost 18, 400 won.
         </div>
+        ---}}
         
         
         <a href="#" class="question faq-4">
@@ -63,6 +65,7 @@
         </div>
         
         
+        {{---
         <a href="#" class="question faq-7">
             <span></span>
             Can the student pick the teacher?
@@ -70,7 +73,7 @@
         <div class="answer faq-7" hidden>
             (Siguro, you may pick if teacher is available???) NO. The Administrator will match a teacher for the student. If there are problems with the teacher, the admin will evaluate and will match the student with another teacher. 
         </div>
-        
+        ---}}
         
         <a href="#" class="question faq-8">
             <span></span>
@@ -98,7 +101,7 @@
             We currently accept the following payment methods: WeChat Pay &amp; Bank Transfer. We will add more soon.
         </div>
         
-        
+        {{---
         <a href="#" class="question faq-11">
             <span></span>
             What will the students do if he/she needs technical assistance?
@@ -106,6 +109,7 @@
         <div class="answer faq-11" hidden>
             The student can directly contact the System Administrator via Skype, Kakaotalk, or just dial 123456. Just the one most convenient to you.
         </div>
+        ---}}
         
         
         <a href="#" class="question faq-12">
@@ -167,6 +171,22 @@
         </a>
         <div class="answer faq-18" hidden>
             The System Administrator will provide the student his/her access to the lesson materials.
+        </div>
+
+        <a href="#" class="question faq-19">
+            <span></span>
+            What forms of payment are accepted? 
+        </a>
+        <div class="answer faq-19" hidden>
+            We currently accept Bank Transfer. We will add more soon, such as: WeChat Pay &amp; PayPal
+        </div>
+
+        <a href="#" class="question faq-20">
+            <span></span>
+            Do you have any other questions?
+        </a>
+        <div class="answer faq-20" hidden>
+            If you have any other questions, don’t forget to email us at: elospeak1@gmail.com/1033697774@qq.com
         </div>
     </div>
 </div>

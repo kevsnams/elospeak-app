@@ -63,6 +63,15 @@
                 <h1 class="header text-center">You can also reach us at</h1>
                 
                 <div class="d-flex justify-content-center mt-4 cu-socmed">
+                    <div class="soc">
+                        <a href="https://twitter.com/EloSpeak" class="blue-link">Twitter</a>
+                    </div>
+
+                    <div class="soc">
+                        <a href="https://www.instagram.com/ELOSpeak/" class="blue-link">Instagram</a>
+                    </div>
+
+                    {{---
                     @if (count($socmeds))
                         @foreach ($socmeds as $socmed => $url)
                             <div class="soc">
@@ -70,6 +79,7 @@
                             </div>
                         @endforeach
                     @endif
+                    ---}}
                 </div>
                 
                 <div class="divider mt-3 mb-3"></div>

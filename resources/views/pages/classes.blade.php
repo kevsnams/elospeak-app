@@ -47,9 +47,9 @@
             <span>1</span>
         </div>
         <div class="step-desc">
-            <h1>Find Tutor</h1>
+            <h1>Find Teachers</h1>
             <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque vestibulum at erat non aliquet. Nunc in condimentum justo, id scelerisque mauris.
+                Choose the time you want to take a class and select the teacher.
             </p>
         </div>
     </div>
@@ -61,7 +61,7 @@
         <div class="step-desc">
             <h1>Book a Class</h1>
             <p>
-                Once you have chosen your tutor, you can reserve a time slot and wait for your class to start.
+                Once you have chosen your teacher, you can reserve a time slot and wait for your class to start.
             </p>
         </div>
     </div>
@@ -73,7 +73,7 @@
         <div class="step-desc">
             <h1>Start Learning</h1>
             <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque vestibulum at erat non aliquet. Nunc in condimentum justo, id scelerisque mauris.
+                The teacher will contact you via Skype, when it's time for your class. Enjoy your English class live everywhere you go.
             </p>
         </div>
     </div>
