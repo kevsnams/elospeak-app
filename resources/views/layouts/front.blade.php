@@ -97,23 +97,6 @@
     </footer>
 </div>
 
-<script>
-function resizeViewPort()
-{
-    var mobileWidth = (window.innerWidth > 0) ? window.innerWidth : screen.width;
-    var viewport = (mobileWidth > 360) ? 'width=device-width, initial-scale=1.0' : 'width=1200';
-
-    document.querySelector('meta[name=viewport]').setAttribute('content', viewport);
-    console.log(document.querySelector('meta[name=viewport]').getAttribute('content'));
-}
-
-window.addEventListener('resize', function () {
-    //resizeViewPort();
-});
-
-//resizeViewPort();
-</script>
-
 @yield('script')
 
 </body>
