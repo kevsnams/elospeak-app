@@ -21,7 +21,7 @@
         </div>
         <div class="ml-5" style="width: 70%;">
             <h1 class="header">Personalized Lessons</h1>
-            <p>Our tutors focus on their students needs. We tailor fit every lessons for every student</p>
+            <p>Our teachers focus on their students needs. We tailor fit every lesson for every student</p>
         </div>
     </div>
     
@@ -32,7 +32,7 @@
         </div>
         <div class="ml-5" style="width: 70%;">
             <h1 class="header">Chat</h1>
-            <p>Tutors can suggest phrases or corrections by using our chat features</p>
+            <p>Teachers can suggest phrases or corrections by using our chat features</p>
         </div>
     </div>
 </div>
