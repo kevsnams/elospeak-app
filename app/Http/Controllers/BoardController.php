@@ -97,14 +97,27 @@ class BoardController extends Controller
 
     public function feedback(Request $request)
     {
+        $classroom = Classroom::with(['student', 'teacher'])->findOrFail($request->classroom_id);
+
+        // If the sender is a 'teacher' then this feedback will be sent TO 'student'
+        $toId = $request->user()->user_type === 'teacher' ? $classroom->student->id : $classroom->teacher->id;
+        $toUserType = $request->user()->user_type === 'teacher' ? 'student' : 'teacher';
+
         /**
          * @TODO validation
          */
         $feedback = new ClassroomFeedback();
         $feedback->feedback = $request->message;
+
+        // FROM: the sender
         $feedback->from_id = $request->user()->id;
-        $feedback->user_type = $request->user()->user_type;
-        $feedback->classroom_id = $request->classroom_id;
+        $feedback->from_user_type = $request->user()->user_type;
+
+        // TO: recipient
+        $feedback->to_id = $toId;
+        $feedback->to_user_type = $toUserType;
+
+        $feedback->classroom_id = $classroom->id;
 
         $feedback->save();
 

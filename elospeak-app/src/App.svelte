@@ -41,7 +41,7 @@
 	<div class="row">
 		<div class="col-lg-2 col-md-2">
 			<div id="logo" class="text-center">
-				<img src="img/elospeak-logo.png" alt="logo">
+				<img src="front/img/logo-xsmall.png" alt="logo">
 			</div>
 
 			<nav id="app-nav">
@@ -52,10 +52,11 @@
 					<li>
 						<a href="/classrooms" use:link use:active><BookOpenIcon /> Classrooms</a>
 					</li>
-					<!---
+					
 					<li>
 						<a href="/feedbacks" use:link use:active><SmileIcon /> Feedbacks</a>
 					</li>
+					<!---
 					<li>
 						<a href="/invoices" use:link use:active><FileTextIcon /> Invoices</a>
 					</li>
@@ -72,6 +73,7 @@
 				<div class="offset-9 col-3">
 					<nav id="app-top-nav">
 						<ul class="nav justify-content-end">
+							
 							<li class="nav-item dropdown">
 								<a href="#" class="nav-link bell dropdown-toggle" data-toggle="dropdown"><BellIcon /></a>
 								<div class="dropdown-menu dropdown-menu-right">
@@ -80,8 +82,9 @@
 									</div>
 								</div>
 							</li>
+
 							<li class="nav-item dropdown">
-								<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
+								<a href="javascript:;" class="nav-link dropdown-toggle" data-toggle="dropdown">
 									<img src="{$User.photo_url}" style="margin-top: 7px;" width="35" class="shadow-sm rounded-circle" alt="user icon">
 								</a>
 								<div class="dropdown-menu dropdown-menu-right">

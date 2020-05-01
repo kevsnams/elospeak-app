@@ -25,6 +25,8 @@ Route::name('pages.')->group(function () {
     Route::post('/pages/send-message', 'PagesController@sendMessage')->name('send-message');
 });
 
+Route::resource('classroom-feedbacks', 'ClassroomFeedbacksController');
+
 Auth::routes();
 
 Route::get('/login', 'Auth\LoginController@showLogin')->name('login');
