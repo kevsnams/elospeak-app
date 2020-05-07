@@ -11,6 +11,7 @@
     const fetch = axios.get('./classroom-feedbacks', {
         params: {
             to: $User.id,
+            to_user_type: $User.user_type,
             with: ['classroom']
         }
     });

@@ -34,7 +34,7 @@
         const allowedTypes = [
             'image/png', 'image/jpeg'
         ];
-        
+
         if (allowedTypes.indexOf(file.type) < 0) {
             alert('We only allow image in these following formats: jpg, jpeg, png');
             return false;
@@ -58,6 +58,7 @@
     const fetchFeedbacks = axios.get('./classroom-feedbacks', {
         params: {
             to: info.id,
+            to_user_type: info.user_type,
             with: ['classroom']
         }
     });
@@ -68,7 +69,7 @@
         <div class="row p-3 details no-gutters">
             <div class="col-auto">
                 <img src="{showUploadImageForm ? $User.photo_url : info.photo_url}" class="img-thumbnail img-fluid shadow-sm rounded-circle" width="120"  alt="Profile Photo" style="margin-top: -60px;">
-                
+
                 {#if showUploadImageForm}
                     <form on:submit|preventDefault>
                         <input id="user-photo" type="file" class="invisible" bind:this={imageField} style="position: absolute; left: -999" on:change="{savePhoto}" />

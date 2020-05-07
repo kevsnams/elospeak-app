@@ -21,6 +21,7 @@ class ClassroomFeedbacksController extends Controller
     {
         $from = $request->input('from');
         $to = $request->input('to');
+        $to_user_type = $request->input('to_user_type');
         $with = $request->input('with', []);
 
         $feedbacks = ClassroomFeedback::with($with)
@@ -28,6 +29,8 @@ class ClassroomFeedbacksController extends Controller
                 return $query->where('from_id', $from);
             })->when($to, function ($query, $to) {
                 return $query->where('to_id', $to);
+            })->when($to_user_type, function ($query, $ut) {
+                return $query->where('to_user_type', $ut);
             })->orderBy('created_at', 'desc')->get();
 
         return response()->json($feedbacks->toArray());
