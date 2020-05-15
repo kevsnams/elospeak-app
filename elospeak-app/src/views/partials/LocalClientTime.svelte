@@ -5,7 +5,7 @@
     import moment from 'moment';
 
     const timezone = jstz.determine().name();
-    const clientOffset = moment().utcOffset();
+    const clientOffset = jstz.determine().offsets[0];
     const serverTime = moment(server).add(clientOffset, 'minutes');
 
     let displayTime = '';

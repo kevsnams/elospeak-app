@@ -4,29 +4,24 @@
     import jquery from 'jquery';
     import {onMount} from 'svelte';
 
-    import moment from 'moment-timezone';
+    import moment from 'moment';
     import jstz from 'jstimezonedetect';
 
     export let classroom;
     export let done = false;
 
-    let timezone = jstz.determine().name();
+    // ALL IN SECONDS
+    const clientOffset = jstz.determine().offsets[0] * 60;
+    const phOffset = (60 * 60) * 8;
+    const totalOffset = clientOffset - phOffset;
 
-    const clientTime = moment(new Date(
-        moment.utc(ELOSpeak.ServerTime).tz(timezone).format('YYYY/MM/DD hh:mm:ss A')
-    ));
+    const currentTime = moment(ELOSpeak.ServerTime).add(totalOffset, 'seconds');
 
-    const phTime = moment(new Date(
-        moment.utc(ELOSpeak.ServerTime).tz('Asia/Manila').format('YYYY/MM/DD hh:mm:ss A')
-    ));
+    let start = moment(classroom.raw_start).add(totalOffset, 'seconds');
+    let end = moment(classroom.raw_end).add(totalOffset, 'seconds');
 
-    const timeDifference = clientTime.diff(phTime, 'seconds');
-
-    let start = moment(classroom.start).add(timeDifference, 'seconds');
-    let end = moment(classroom.end).add(timeDifference, 'seconds');
-
-    let startText = 'Class will start '+ moment().to(classroom.start);
-    let hasStarted = moment().diff(start, 'seconds') >= 0;
+    let startText = 'Class will start '+ currentTime.to(start);
+    let hasStarted = currentTime.diff(start, 'seconds') >= 0;
 
     onMount(() => {
         jquery(function () {
@@ -36,8 +31,8 @@
 
     let timer = () => {
         setTimeout(() => {
-            const sec = moment().diff(start, 'seconds');
-            startText = 'Class will start '+ (sec > -10 ? 'in '+ Math.abs(sec) : moment().to(classroom.start));
+            const sec = currentTime.diff(start, 'seconds');
+            startText = 'Class will start '+ (sec > -10 ? 'in '+ Math.abs(sec) : currentTime.to(start));
 
             if (sec < 0) {
                 timer();
@@ -45,7 +40,7 @@
                 hasStarted = true;
                 startText = 'Class is now active';
 
-                if (moment().diff(end, 'seconds') < 0) {
+                if (currentTime.diff(end, 'seconds') < 0) {
                     timer();
                 } else {
                     done = true;
@@ -72,7 +67,7 @@
                         <h1 class="time" id="time-start" data-toggle="tooltip" data-placement="top" title="{start.format('D MMM YYYY')}">
                             {start.format('hh:mm A')}
                         </h1>
-                        <span class="duration">Duration: {end.diff(classroom.start, 'minutes')} minutes</span>
+                        <span class="duration">Duration: {end.diff(start, 'minutes')} minutes</span>
                     </div>
                     <div class="col-auto">
                         <span class="d-block" style="color: #5e6e82">END</span>

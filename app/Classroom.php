@@ -7,7 +7,7 @@ use Carbon\Carbon;
 
 class Classroom extends Model
 {
-    protected $appends = [ 'duration' ];
+    protected $appends = [ 'duration', 'raw_start', 'raw_end' ];
     protected $dates = [ 'start', 'end' ];
 
     const STATUS_ACTIVE = 1;
@@ -27,5 +27,15 @@ class Classroom extends Model
     public function getDurationAttribute()
     {
         return $this->end->diffInMinutes($this->start);
+    }
+
+    public function getRawStartAttribute()
+    {
+        return $this->start->format('Y-m-d H:i:s');
+    }
+
+    public function getRawEndAttribute()
+    {
+        return $this->end->format('Y-m-d H:i:s');
     }
 }
