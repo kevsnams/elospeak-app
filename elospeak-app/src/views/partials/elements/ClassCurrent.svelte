@@ -1,15 +1,30 @@
 <script>
     import User from '../../../user';
-    import moment from 'moment';
     import {ClockIcon} from 'svelte-feather-icons';
     import jquery from 'jquery';
     import {onMount} from 'svelte';
 
+    import moment from 'moment-timezone';
+    import jstz from 'jstimezonedetect';
+
     export let classroom;
     export let done = false;
 
-    let start = moment(classroom.start);
-    let end = moment(classroom.end);
+    let timezone = jstz.determine().name();
+
+    const clientTime = moment(new Date(
+        moment.utc(ELOSpeak.ServerTime).tz(timezone).format('YYYY/MM/DD hh:mm:ss A')
+    ));
+
+    const phTime = moment(new Date(
+        moment.utc(ELOSpeak.ServerTime).tz('Asia/Manila').format('YYYY/MM/DD hh:mm:ss A')
+    ));
+
+    const timeDifference = clientTime.diff(phTime, 'seconds');
+
+    let start = moment(classroom.start).add(timeDifference, 'seconds');
+    let end = moment(classroom.end).add(timeDifference, 'seconds');
+
     let startText = 'Class will start '+ moment().to(classroom.start);
     let hasStarted = moment().diff(start, 'seconds') >= 0;
 

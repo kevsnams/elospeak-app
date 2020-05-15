@@ -1,12 +1,13 @@
 <script>
 	import User from './user';
-	import ELOClasses from './eloclasses';
 	import axios from 'axios';
 	import Router from 'svelte-spa-router';
 	import {link} from 'svelte-spa-router';
 	import active from 'svelte-spa-router/active';
 	import {onMount} from 'svelte';
-	import routes from './routes';
+    import routes from './routes';
+
+    import LocalClientTime from './views/partials/LocalClientTime.svelte';
 
 	import {
 		HomeIcon,
@@ -31,10 +32,6 @@
 			// Error
 		}
 	}
-
-	onMount(async () => {
-		ELOClasses.set(await fetchClassrooms());
-	});
 </script>
 
 <div class="container" id="container">
@@ -52,7 +49,7 @@
 					<li>
 						<a href="/classrooms" use:link use:active><BookOpenIcon /> Classrooms</a>
 					</li>
-					
+
 					<li>
 						<a href="/feedbacks" use:link use:active><SmileIcon /> Feedbacks</a>
 					</li>
@@ -70,10 +67,12 @@
 
 		<div class="col-lg-10 col-md-10">
 			<div class="row">
-				<div class="offset-9 col-3">
+                <div class="col-5">
+                    <LocalClientTime server={ELOSpeak.ServerTime}/>
+                </div>
+				<div class="offset-4 col-3">
 					<nav id="app-top-nav">
 						<ul class="nav justify-content-end">
-							
 							<li class="nav-item dropdown">
 								<a href="#" class="nav-link bell dropdown-toggle" data-toggle="dropdown"><BellIcon /></a>
 								<div class="dropdown-menu dropdown-menu-right">

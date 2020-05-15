@@ -38,7 +38,7 @@ Route::name('app.')->group(function() {
     Route::post('/app/classrooms', 'AppController@classrooms')->name('classroom.all');
     Route::post('/app/teacher', 'AppController@teacher')->name('teacher');
     Route::post('/app/student', 'AppController@student')->name('student');
-    
+
     Route::post('/app/classroom/next', 'AppController@nextClassroom')->name('classroom.next');
     Route::post('/app/classroom/end', 'AppController@endClassroom')->name('classroom.end');
 

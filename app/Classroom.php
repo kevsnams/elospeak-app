@@ -7,14 +7,13 @@ use Carbon\Carbon;
 
 class Classroom extends Model
 {
-    protected $appends = ['start_with_tz', 'end_with_tz'];
-    
-    const STATUS_UNPAID = 0;
+    protected $appends = [ 'duration' ];
+    protected $dates = [ 'start', 'end' ];
+
     const STATUS_ACTIVE = 1;
-    // const STATUS_CURRENT = 4;
-    const STATUS_DONE = 2;
-    const STATUS_CANCELLED = 3;
-    
+    const STATUS_DONE = 0;
+    const STATUS_CANCELLED = 2;
+
     public function teacher()
     {
         return $this->belongsTo('App\Teacher');
@@ -25,15 +24,8 @@ class Classroom extends Model
         return $this->belongsTo('App\Student');
     }
 
-    public function getStartWithTzAttribute()
+    public function getDurationAttribute()
     {
-        $carbon = Carbon::createFromFormat('Y-m-d H:i:s', $this->start, session('timezone'));
-        return $carbon->format('Y-m-d H:i:s');
-    }
-
-    public function getEndWithTzAttribute()
-    {
-        $carbon = Carbon::createFromFormat('Y-m-d H:i:s', $this->end, session('timezone'));
-        return $carbon->format('Y-m-d H:i:s');
+        return $this->end->diffInMinutes($this->start);
     }
 }

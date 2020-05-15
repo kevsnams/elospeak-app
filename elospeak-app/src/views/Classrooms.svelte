@@ -1,52 +1,54 @@
 <script>
+    import axios from 'axios';
     import User from './../user';
-    import ELOClasses from './../eloclasses';
     import moment from 'moment';
 
     import PillUser from './partials/elements/PillUser.svelte';
     import BadgeStatus from './partials/elements/BadgeStatus.svelte';
     import ButtonsTab from './partials/elements/ButtonsTab.svelte';
-    
+    import Spinner from './partials/elements/Spinner.svelte';
+
     let buttonsDef = [
         {
             label: 'All',
             flag: -1
         },
         {
-            label: 'Upcoming',
+            label: 'Active',
             flag: 1
         },
         {
-            label: 'Completed',
-            flag: 2
-        },
-        {
-            label: 'Unpaid',
+            label: 'Done',
             flag: 0
         },
         {
             label: 'Cancelled',
-            flag: 3
+            flag: 2
         }
     ];
 
     let buttonGroupLabel = 'Show';
     let filter = 1;
 
-    let classrooms;
-    ELOClasses.subscribe(value => {
-        classrooms = value;
+    let classrooms = [];
+    const xhrClassrooms = axios.post('./app/classrooms');
+
+    xhrClassrooms.then((response) => {
+        classrooms = response.data;
     });
 
     let filteredClassrooms = [];
-    $: if (classrooms != null && classrooms.length) {
+    $: if (classrooms.length) {
+
         filteredClassrooms = classrooms.filter((v) => {
             return filter == -1 ? true : v.status == filter;
         });
     }
 </script>
 <div id="classrooms">
-    {#if classrooms != null}
+    {#await xhrClassrooms}
+        <Spinner />
+    {:then response}
         <div class="wbox">
             <div class="row pt-1 pb-4">
                 <div class="col-auto mr-auto">
@@ -63,6 +65,7 @@
                         <th scope="col">ID #</th>
                         <th scope="col">Start Date</th>
                         <th scope="col">Time</th>
+                        <th scope="col">Duration</th>
                         <th scope="col">Status</th>
                         <th scope="col">
                             {#if $User.user_type == 'teacher'}
@@ -83,6 +86,9 @@
                                 </td>
                                 <td>
                                     {moment(classroom.start).format('hh:mm A')}
+                                </td>
+                                <td>
+                                    { classroom.duration } minutes
                                 </td>
                                 <td>
                                     <BadgeStatus status={classroom.status} />
@@ -108,7 +114,11 @@
                 </tbody>
             </table>
         </div>
-    {/if}
+    {:catch}
+        <div class="alert alert-warning">
+            Failed fetching classrooms. Please retry again
+        </div>
+    {/await}
 </div>
 
 <style>

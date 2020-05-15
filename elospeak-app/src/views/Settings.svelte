@@ -5,9 +5,6 @@
 
     import User from './../user';
     onMount(() => {
-        let birthday = ($User.birthday).split('-');
-        birthday[1] = birthday[1] - 1;
-
         const fieldBirthday = datepicker('#field-birthday', {
             formatter: (input, date, instance) => {
                 const month = date.getMonth() + 1;
@@ -18,9 +15,17 @@
                     (month < 10 ? '0'+ month : month),
                     (day < 10 ? '0' + day : day)
                 ].join('-');
-            },
-            dateSelected: new Date(...birthday)
+            }
         });
+
+        if ($User.birthday) {
+            let birthday = ($User.birthday).split('-');
+            birthday[1] = birthday[1] - 1;
+
+            fieldBirthday.setDate(new Date(...birthday));
+        }
+
+        fieldBirthday.setMax(new Date());
     });
 
     let settingsProfileLoading = false;
@@ -49,7 +54,7 @@
         });
 
         settingsProfileLoading = false;
-        
+
         return false;
     }
 
@@ -136,7 +141,7 @@
 
                         <div class="form-group col">
                             <label for="field-birthday">Birthday</label>
-                            <input type="text" class="form-control" value="{$User.birthday}" name="birthday" id="field-birthday">
+                            <input type="text" class="form-control" value="{$User.birthday ? $User.birthday : ''}" name="birthday" id="field-birthday">
                         </div>
                     </div>
 

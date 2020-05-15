@@ -9,7 +9,7 @@ use App\Classroom;
 use App\ClassroomFileUpload;
 use App\ChatLog;
 use App\ClassroomDrawstate;
-
+use App\Events\NewChat;
 use Auth;
 
 class ClassroomController extends Controller
@@ -69,7 +69,7 @@ class ClassroomController extends Controller
         $classroomTrimmed = $classroom->toArray();
         unset($classroomTrimmed['teacher']);
         unset($classroomTrimmed['student']);
-        
+
         $chatChannel = 'classroom.'. $classroom->id .'.chat';
 
         return response()->json([
@@ -101,7 +101,7 @@ class ClassroomController extends Controller
         $message = $request->message;
         $classroomId = $request->classroom_id;
 
-        event(new \App\Events\NewChat($message, $from, $classroomId));
+        event(new NewChat($message, $from, $classroomId));
 
         return response()->json([
             'message' => $message,

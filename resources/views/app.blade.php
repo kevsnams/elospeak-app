@@ -13,8 +13,9 @@
 </head>
 <body>
     <script>
-        var ELOSpeak = {
+        const ELOSpeak = {
             User: {!! $User->toJSON() !!},
+            ServerTime: "{{ $ServerTime }}"
         };
     </script>
 

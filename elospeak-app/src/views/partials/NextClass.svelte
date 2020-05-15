@@ -12,7 +12,7 @@
     async function fetchNextClass()
     {
         try {
-            const fetcher = await axios.post('./app/classroom/next');
+            const fetcher = await axios.post('app/classroom/next');
             return fetcher.data;
         } catch (e) {
             throw new Error(e);

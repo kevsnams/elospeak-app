@@ -26,7 +26,8 @@ class AppController extends Controller
     public function index()
     {
         return view('app', [
-            'User' => Auth::user()
+            'User' => Auth::user(),
+            'ServerTime' => date('Y-m-d H:i:s')
         ]);
     }
 
@@ -44,14 +45,14 @@ class AppController extends Controller
     public function teacher(Request $request)
     {
         $teacher = Teacher::findOrFail($request->id);
-        
+
         return response()->json($teacher->toArray());
     }
 
     public function student(Request $request)
     {
         $student = Student::findOrFail($request->id);
-        
+
         return response()->json($student->toArray());
     }
 
@@ -105,10 +106,30 @@ class AppController extends Controller
     {
         $userType = $request->user()->user_type;
         $rules = [
-            'full_name' => 'present|string|max:100',
-            'personal_contact_number' => 'present|string|max:20',
-            'skype' => 'present|string|max:30',
-            'birthday' => 'present|date'
+            'full_name' => [
+                'present',
+                'string',
+                'max:100'
+            ],
+
+            'personal_contact_number' => [
+                'sometimes',
+                'nullable',
+                'max:20'
+            ],
+
+            'skype' => [
+                'sometimes',
+                'nullable',
+                'string',
+                'max:30'
+            ],
+
+            'birthday' => [
+                'sometimes',
+                'nullable',
+                'date'
+            ]
         ];
 
         if ($userType == 'teacher') {
@@ -154,9 +175,9 @@ class AppController extends Controller
         $request->validate([
             'image' => 'mimes:jpeg,jpg,png'
         ]);
-        
+
         $user = $this->getUserORM($request->user()->id, $request->user()->user_type);
-        
+
         if ($user->photo) {
             $oldPath = explode('/', $user->photo->path);
             Storage::delete(storage_path('app/public/avatars/'. $oldPath[2]));

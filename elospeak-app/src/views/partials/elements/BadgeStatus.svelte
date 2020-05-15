@@ -1,20 +1,20 @@
 <script>
-    export let status = null;
-    
+    export let status;
+
     let className = '',
         label = '';
-    if (status == 2) {
-        className = 'badge-done';
-        label = 'DONE'
-    } else if (status == 1) {
-        className = 'badge-active';
-        label = 'ACTIVE';
-    } else if (status == 0) {
-        className = 'badge-inactive';
-        label = 'UNPAID';
-    } else if (status == 3) {
-        className = 'badge-cancelled';
-        label = 'CANCELLED';
+
+    $: {
+        if (status == 0) {
+            className = 'badge-done';
+            label = 'DONE'
+        } else if (status == 1) {
+            className = 'badge-active';
+            label = 'ACTIVE';
+        } else if (status == 2) {
+            className = 'badge-cancelled';
+            label = 'CANCELLED';
+        }
     }
 </script>
 

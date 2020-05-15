@@ -48,41 +48,7 @@
 
 	classFetcher.then((r) => {
 		Classroom = r.data.Classroom;
-		timer = new Worker('./dist/board-timer.js');
-		timer.postMessage({
-			start: r.data.Classroom.start_with_tz,
-			end: r.data.Classroom.end_with_tz
-		});
-
-		timer.onmessage = async (e) => {
-			switch (e.data.type) {
-				case 'NOT_STARTED':
-					if (r.data.Users.Current.user_type != 'teacher') {
-						top.location.href = './app';
-					} else {
-						showBoard = true;
-					}
-				break;
-				
-				case 'HAS_ENDED':
-					showBoard = true;
-					try {
-						const closeBoard = await axios.post('./board/close', {
-							id: Classroom.id
-						});
-
-						showFeedbackForm = true;
-					} catch (e) {
-						// @TODO error closing board
-					}
-				break;
-				
-				case 'HAS_STARTED':
-					showBoard = true;
-					timeRemaining = e.data.ftime;
-				break;
-			}
-		};
+		showBoard = true;
 	});
 </script>
 

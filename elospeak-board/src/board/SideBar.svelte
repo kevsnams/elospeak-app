@@ -64,7 +64,7 @@
     const previousChats = axios.post('./classroom/chat/load', {
         id: Classroom.id
     });
-    
+
     LaravelEcho.private(Channel).listenForWhisper('otherUserTyping', (isTyping) => {
         isOtherUserTyping = isTyping;
     });
