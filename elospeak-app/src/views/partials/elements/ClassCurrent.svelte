@@ -15,7 +15,7 @@
     const phOffset = (60 * 60) * 8;
     const totalOffset = clientOffset - phOffset;
 
-    const currentTime = moment(ELOSpeak.ServerTime).add(totalOffset, 'seconds');
+    const currentTime = moment(ELOSpeak.ServerTime).add(clientOffset, 'seconds');
 
     let start = moment(classroom.raw_start).add(totalOffset, 'seconds');
     let end = moment(classroom.raw_end).add(totalOffset, 'seconds');

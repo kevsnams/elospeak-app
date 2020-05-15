@@ -1,7 +1,8 @@
 <script>
 	import moment from 'moment';
 	import axios from 'axios';
-	import _ from 'underscore';
+    import _ from 'underscore';
+    import jstz from 'jstimezonedetect';
 	import {
 		ArrowLeftIcon,
 		ClockIcon
@@ -38,18 +39,72 @@
 		}, 1000);
 	}
 
-	const classFetcher = axios.post('./board/classroom');
+    const classFetcher = axios.post('./board/classroom');
 
-	let timeRemaining = ['--', '--'],
-		timeDuration = [],
-		timer,
-		showFeedbackForm = false,
-		showBoard = false;
+    const clientOffset = jstz.determine().offsets[0] * 60;
+    const phOffset = (60 * 60) * 8;
+    const totalOffset = clientOffset - phOffset;
+
+    const now = moment(ELOSpeak.ServerTime).add(clientOffset, 'seconds');
+
+    let timeRemaining = [], countdown = [], showFeedbackForm = false, showBoard = false;
 
 	classFetcher.then((r) => {
 		Classroom = r.data.Classroom;
-		showBoard = true;
-	});
+
+        const start = moment(Classroom.raw_start).add(totalOffset, 'seconds');
+        const end = moment(Classroom.raw_end).add(totalOffset, 'seconds');
+
+        if (r.data.Users.Current.user_type === 'teacher') {
+            showBoard = true;
+        } else {
+            const ct = setInterval(() => {
+                now.add(1, 'seconds');
+                countdown = display(start.diff(now, 'seconds'));
+
+                if (now.isSameOrAfter(start)) {
+                    clearInterval(ct);
+                    showBoard = true;
+                    countdown = [];
+                    startTimer();
+                }
+            }, 1000);
+        }
+    });
+
+    function startTimer()
+    {
+        const start = moment(Classroom.raw_start).add(totalOffset, 'seconds');
+        const end = moment(Classroom.raw_end).add(totalOffset, 'seconds');
+
+        const timer = setInterval(() => {
+            now.add(1, 'seconds');
+
+            timeRemaining = display(end.diff(now, 'seconds'));
+
+            if (now.isSameOrAfter(end)) {
+                clearInterval(timer);
+                showBoard = false;
+                showFeedbackForm = true;
+
+                axios.post('./board/close', {
+                    id: Classroom.id
+                });
+            }
+        }, 1000);
+    }
+
+    function display(seconds)
+    {
+        const format = val => `0${Math.floor(val)}`.slice(-2)
+        const hours = seconds / 3600
+        const minutes = (seconds % 3600) / 60
+
+        return [hours, minutes, seconds % 60]
+            .map(t => Math.floor(Math.abs(t)))
+            .filter(t => t > 0)
+            .map(format);
+    }
 </script>
 
 <div id="feedback-form" class="awesome-bg" class:show={showFeedbackForm}>
@@ -100,16 +155,24 @@
 		</div>
 	</div>
 {:then response}
-	<div class="container-fluid" class:invisible={!showBoard}>
-		<div class="row no-gutters">
-			<div class="col-2">
-				<SideBar Classroom={response.data.Classroom} UserCurrent={response.data.Users.Current} UserOther={response.data.Users.Other}  />
-			</div>
-			<div class="col-10">
-				<Board Classroom={response.data.Classroom} UserCurrent={response.data.Users.Current} showToolbox={response.data.Users.Current.user_type == 'teacher'} />
-			</div>
-		</div>
-	</div>
+    {#if showBoard}
+        <div class="container-fluid" class:invisible={!showBoard}>
+            <div class="row no-gutters">
+                <div class="col-2">
+                    <SideBar Classroom={response.data.Classroom} UserCurrent={response.data.Users.Current} UserOther={response.data.Users.Other}  />
+                </div>
+                <div class="col-10">
+                    <Board Classroom={response.data.Classroom} UserCurrent={response.data.Users.Current} showToolbox={response.data.Users.Current.user_type == 'teacher'} />
+                </div>
+            </div>
+        </div>
+    {:else}
+        <div class="d-flex mt-4" class:invisible={countdown.length <= 0}>
+            <div class="class-countdown mx-auto w-auto">
+                <h1 class="display-5">The class will start in {countdown.join(':')}</h1>
+            </div>
+        </div>
+    {/if}
 {:catch}
 	<div class="d-flex justify-content-center align-items-center whole-page">
 		<div style="margin-top: -5rem;">
@@ -119,6 +182,12 @@
 {/await}
 
 <style>
+    .class-countdown {
+        background: #fff;
+        border-radius: .375rem;
+        padding: 10px;
+    }
+
 	.whole-page {
 		position: absolute;
 		width: 100%;

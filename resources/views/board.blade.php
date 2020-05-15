@@ -25,6 +25,11 @@
 </head>
 <body>
     <div id="main"></div>
+    <script>
+        const ELOSpeak = {
+            ServerTime: '{{ date('Y-m-d H:i:s') }}'
+        };
+    </script>
     <script defer src="{{ asset('/dist/board.js') }}"></script>
 </body>
 </html>
