@@ -55,21 +55,33 @@
         const start = moment(Classroom.raw_start).add(totalOffset, 'seconds');
         const end = moment(Classroom.raw_end).add(totalOffset, 'seconds');
 
-        if (r.data.Users.Current.user_type === 'teacher') {
-            showBoard = true;
-        } else {
-            const ct = setInterval(() => {
-                now.add(1, 'seconds');
-                countdown = display(start.diff(now, 'seconds'));
+        const isStudent = r.data.Users.Current.user_type === 'student';
+        const isTeacher = r.data.Users.Current.user_type === 'teacher';
 
-                if (now.isSameOrAfter(start)) {
-                    clearInterval(ct);
-                    showBoard = true;
-                    countdown = [];
-                    startTimer();
-                }
-            }, 1000);
+        if (isTeacher) {
+            showBoard = true;
         }
+
+        const ct = setInterval(() => {
+            now.add(1, 'seconds');
+            countdown = display(start.diff(now, 'seconds'));
+
+            if (isTeacher) {
+                timeRemaining = countdown;
+            }
+
+            if (now.isSameOrAfter(start)) {
+                clearInterval(ct);
+                timeRemaining = ['START', 'NOW'];
+
+                if (isStudent) {
+                    showBoard = true;
+                }
+
+                countdown = [];
+                startTimer();
+            }
+        }, 1000);
     });
 
     function startTimer()
@@ -102,7 +114,13 @@
 
         return [hours, minutes, seconds % 60]
             .map(t => Math.floor(Math.abs(t)))
-            .filter(t => t > 0)
+            .filter((t, i, a) => {
+                if (a.length >= 3 && i === 0) {
+                    return t > 0;
+                }
+
+                return true;
+            })
             .map(format);
     }
 </script>

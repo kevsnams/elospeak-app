@@ -31,6 +31,7 @@
 
     let timer = () => {
         setTimeout(() => {
+            currentTime.add(1, 'seconds')
             const sec = currentTime.diff(start, 'seconds');
             startText = 'Class will start '+ (sec > -10 ? 'in '+ Math.abs(sec) : currentTime.to(start));
 
