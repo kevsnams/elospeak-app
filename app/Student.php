@@ -8,7 +8,7 @@ use App\UserPhoto;
 
 class Student extends Authenticatable
 {
-    protected $appends = ['user_type', 'uc_user_type', 'age', 'photo_url'];
+    protected $appends = [ 'user_type', 'uc_user_type', 'age', 'photo_url', 'name' ];
     protected $hidden = ['password', 'remember_token'];
 
     public function photo()
@@ -35,5 +35,10 @@ class Student extends Authenticatable
     public function getAgeAttribute()
     {
         return intval(idate('Y') - idate('Y', strtotime($this->birthday)));
+    }
+
+    public function getNameAttribute()
+    {
+        return $this->full_name;
     }
 }

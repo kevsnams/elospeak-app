@@ -9,7 +9,7 @@
                 <img src="{data.photo_url}" class="rounded-circle" alt="Profile Photo" width="25">
             </div>
             <div class="col-auto">
-                <a href="#/{data.user_type}?id={data.id}">{data.full_name}</a>
+                <a href="#/{data.user_type}?id={data.id}">{data.name}</a>
             </div>
         {:else}
             <div class="col-auto">

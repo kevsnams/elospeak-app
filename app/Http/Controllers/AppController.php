@@ -134,6 +134,7 @@ class AppController extends Controller
 
         if ($userType == 'teacher') {
             $rules['address'] = 'present|string|max:250';
+            $rules['nickname'] = 'present|string|max:50';
         }
 
         $request->validate($rules);

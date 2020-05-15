@@ -82,13 +82,13 @@
                 {#if classroom.student == null}
                     <img src="./img/elo-missing.png" alt="No student yet" width="100" class="img-thumbnail img-fluid shadow-sm rounded-circle student">
                 {:else}
-                    <img src="{classroom.student.photo_url}" alt="Student" data-toggle="tooltip" data-placement="bottom" title="{$User.user_type == classroom.student.user_type ? 'You' : classroom.student.full_name}" width="100" class="img-thumbnail img-fluid shadow-sm rounded-circle student">
+                    <img src="{classroom.student.photo_url}" alt="Student" data-toggle="tooltip" data-placement="bottom" title="{$User.user_type == classroom.student.user_type ? 'You' : classroom.student.name}" width="100" class="img-thumbnail img-fluid shadow-sm rounded-circle student">
                 {/if}
 
                 {#if classroom.teacher == null}
                     <img src="./img/elo-missing.png" alt="No teacher yet" width="100" class="img-thumbnail img-fluid shadow-sm rounded-circle teacher">
                 {:else}
-                    <img src="{classroom.teacher.photo_url}" alt="Teacher" data-toggle="tooltip" data-placement="bottom" title="{$User.user_type == classroom.teacher.user_type ? 'You' : classroom.teacher.full_name}" width="100" class="img-thumbnail img-fluid shadow-sm rounded-circle teacher">
+                    <img src="{classroom.teacher.photo_url}" alt="Teacher" data-toggle="tooltip" data-placement="bottom" title="{$User.user_type == classroom.teacher.user_type ? 'You' : classroom.teacher.name}" width="100" class="img-thumbnail img-fluid shadow-sm rounded-circle teacher">
                 {/if}
             </div>
         </div>

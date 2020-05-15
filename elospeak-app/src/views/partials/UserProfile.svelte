@@ -84,7 +84,7 @@
 
             <div class="col">
                 <div class="pl-5">
-                    <h2>{info.full_name}</h2>
+                    <h2>{info.name}</h2>
 
                     <dl class="row the-dl">
                         <dt class="col-sm-3">Contact No</dt>
@@ -121,12 +121,12 @@
                 <div class="row feedback">
                     <div class="col-2 text-center">
                         <a href="#/{ feedback.from.user_type }?id={ feedback.from.id }">
-                            <img src="{ feedback.from.photo_url }" alt="{ feedback.from.full_name}" class="rounded-circle mt-3" width="75" />
+                            <img src="{ feedback.from.photo_url }" alt="{ feedback.from.name }" class="rounded-circle mt-3" width="75" />
                         </a>
                     </div>
                     <div class="col-10">
                         <p>
-                            <a href="#/{ feedback.from.user_type }?id={ feedback.from.id }">{ feedback.from.full_name }</a> said
+                            <a href="#/{ feedback.from.user_type }?id={ feedback.from.id }">{ feedback.from.name }</a> said
                         </p>
                         <blockquote class="blockquote">
                             <p class="mb-0">{ feedback.feedback }</p>

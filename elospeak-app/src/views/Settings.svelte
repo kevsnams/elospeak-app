@@ -123,11 +123,27 @@
                         </div>
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-group col">
-                            <label for="field-full_name">Full name</label>
-                            <input type="text" class="form-control" value="{$User.full_name}" name="full_name" id="field-full_name">
+                    {#if $User.user_type === 'teacher'}
+                        <div class="form-row">
+                            <div class="form-group col">
+                                <label for="field-full_name">Full name</label>
+                                <input type="text" class="form-control" value="{$User.full_name}" name="full_name" id="field-full_name">
+                            </div>
+
+                            <div class="form-group col">
+                                <label for="field-nickname">Nickname (Displayed Name)</label>
+                                <input type="text" class="form-control" value="{ $User.nickname }" name="nickname" id="field-nickname">
+                            </div>
                         </div>
+                    {/if}
+
+                    <div class="form-row">
+                        {#if $User.user_type === 'student'}
+                            <div class="form-group col">
+                                <label for="field-full_name">Full name</label>
+                                <input type="text" class="form-control" value="{$User.full_name}" name="full_name" id="field-full_name">
+                            </div>
+                        {/if}
 
                         <div class="form-group col">
                             <label for="field-personal_contact_number">Personal contact number</label>

@@ -87,7 +87,7 @@
             <img class="rounded-circle user-photo" width="65" src="{UserOther.photo_url}" alt="{UserOther.user_type.toUpperCase()}" />
         </div>
         <div class="align-self-center ml-3">
-            <a href="./app#/{UserOther.user_type}?id={UserOther.id}" target="_blank" class="text-header" style="margin-bottom: 0;">{UserOther.full_name}</a>
+            <a href="./app#/{UserOther.user_type}?id={UserOther.id}" target="_blank" class="text-header" style="margin-bottom: 0;">{UserOther.name}</a>
             <div class="online-status">
                 {#if isStatusActive}
                     <span class="rounded-circle indicator available"></span>
