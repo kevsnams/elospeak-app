@@ -26,10 +26,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $socmeds = WebsiteSetting::where('key', 'LIKE', 'SOCMED.%')->get();
+        $socmeds = WebsiteSetting::where('key', 'LIKE', 'socmed.%')->get();
 
         $keyed = $socmeds->mapWithKeys(function ($setting) {
-            $soc = str_replace('SOCMED.', '', $setting->key);
+            $soc = str_replace('socmed.', '', $setting->key);
             return [$soc => $setting->value];
         });
 

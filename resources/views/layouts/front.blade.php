@@ -68,15 +68,7 @@
     <footer class="d-flex align-items-center mb-5">
         <div class="mr-2">Follow Us</div>
 
-        <a href="https://twitter.com/EloSpeak">
-            <img src="{{ url('/front/img/twitter.png') }}">
-        </a>
 
-        <a href="https://www.instagram.com/ELOSpeak/">
-            <img src="{{ url('/front/img/ig.png') }}">
-        </a>
-
-        {{---
         @if (count($socmeds))
             @if (isset($socmeds['facebook']))
                 <a href="{{ $socmeds['facebook'] }}">
@@ -103,7 +95,6 @@
                 </a>
             @endif
         @endif
-        ---}}
     </footer>
 </div>
 
