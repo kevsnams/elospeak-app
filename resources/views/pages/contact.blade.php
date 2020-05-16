@@ -11,11 +11,11 @@
 <div class="trans-pink">
     <div class="trans-blue">
         <div class="container contact">
-            <form class="contact-form" method="POST" action="{{ route('pages.send-message') }}">
+            <form class="white-form" method="POST" action="{{ route('pages.send-message') }}">
                 {{ csrf_field() }}
 
                 @if (session('sent'))
-                    <div class="success">
+                    <div class="box-success">
                         Message sent. We will get back to you shortly.
                     </div>
                 @endif
@@ -57,7 +57,7 @@
                     @enderror
                 </div>
 
-                <button type="submit" class="btn btn-blue contact-submit">Send Message</button>
+                <button type="submit" class="btn btn-blue bluepink-button mx-auto mt-4">Send Message</button>
 
                 <div class="divider mt-5 mb-5"></div>
                 <h1 class="header text-center">You can also reach us at</h1>

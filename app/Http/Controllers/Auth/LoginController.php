@@ -6,7 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 use Illuminate\Http\Request;
-use Auth;
+use Illuminate\Support\Facades\Auth as FacadesAuth;
+use Illuminate\Foundation\Auth\ThrottlesLogins;
 
 class LoginController extends Controller
 {
@@ -42,36 +43,37 @@ class LoginController extends Controller
 
     public function showLogin()
     {
-        return view('auth.login');
+        return view('auth.login', [
+            'currentPage' => 'login'
+        ]);
     }
 
     public function authLogin(Request $request)
     {
         $authType = $request->auth_type;
+        $remember = $request->get('remember_me') === 'on';
 
-        if (Auth::guard($authType)->attempt([
+        if (FacadesAuth::guard($authType)->attempt([
             'username' => $request->username,
             'password' => $request->password
-        ], $request->get('remember_me'))) {
+        ], $remember)) {
             $request->session()->put('timezone', $request->timezone);
-
-            return response()->json([
-                'success' => true
-            ]);
+            return redirect(route('app.index'));
         }
 
-        return response()->json([
-            'success' => false
+        return redirect()->back()->withErrors([
+            'login' => 'error',
+            'auth_type' => $authType
         ]);
     }
 
     public function redirectTo()
     {
-        if (Auth::guard('student')->check()) {
+        if (FacadesAuth::guard('student')->check()) {
             return '/app';
         }
 
-        if (Auth::guard('teacher')->check()) {
+        if (FacadesAuth::guard('teacher')->check()) {
             return '/app';
         }
 

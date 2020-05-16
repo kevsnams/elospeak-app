@@ -54,6 +54,10 @@
                     <li>
                         <a href="{{ route('pages.faqs') }}" <?php echo $currentPage == 'faqs' ? 'class="active"' : '' ?>>FAQs</a>
                     </li>
+
+                    <li>
+                        <a href="{{ route('login') }}" class="cta-blue <?php echo $currentPage == 'login' ? 'active' : '' ?>">LOGIN</a>
+                    </li>
                 </ul>
             </nav>
         </div>
