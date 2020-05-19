@@ -34,7 +34,7 @@ class Student extends Authenticatable
 
     public function getAgeAttribute()
     {
-        return intval(idate('Y') - idate('Y', strtotime($this->birthday)));
+        return $this->birthday ? intval(idate('Y') - idate('Y', strtotime($this->birthday))) : 0;
     }
 
     public function getNameAttribute()

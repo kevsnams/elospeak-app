@@ -2,6 +2,7 @@
     import axios from 'axios';
     import User from './../user';
     import moment from 'moment';
+    import jstz from 'jstimezonedetect';
 
     import PillUser from './partials/elements/PillUser.svelte';
     import BadgeStatus from './partials/elements/BadgeStatus.svelte';
@@ -27,6 +28,10 @@
         }
     ];
 
+    const clientOffset = jstz.determine().offsets[0] * 60;
+    const phOffset = (60 * 60) * 8;
+    const totalOffset = clientOffset - phOffset;
+
     let buttonGroupLabel = 'Show';
     let filter = 1;
 
@@ -34,7 +39,16 @@
     const xhrClassrooms = axios.post('./app/classrooms');
 
     xhrClassrooms.then((response) => {
-        classrooms = response.data;
+        classrooms = (response.data).map((data) => {
+            const start = moment(data.raw_start).add(totalOffset, 'seconds');
+
+            data.client_start_date = start.format('D MMM YYYY');
+            data.client_start_time = start.format('hh:mm A');
+
+            return data;
+        });
+
+        console.log(classrooms);
     });
 
     let filteredClassrooms = [];
@@ -82,10 +96,10 @@
                             <tr>
                                 <th scope="row">{classroom.id}</th>
                                 <td>
-                                    {moment(classroom.start).format('D MMM YYYY')}
+                                    { classroom.client_start_date }
                                 </td>
                                 <td>
-                                    {moment(classroom.start).format('hh:mm A')}
+                                    { classroom.client_start_time }
                                 </td>
                                 <td>
                                     { classroom.duration } minutes

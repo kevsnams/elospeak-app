@@ -94,7 +94,7 @@
                         <dd class="col-sm-9"><MailIcon /> <a href="mailto:{info.email}">{info.email}</a></dd>
 
                         <dt class="col-sm-3">Age</dt>
-                        <dd class="col-sm-9">{info.age}</dd>
+                        <dd class="col-sm-9">{@html info.age == 0 ? '<em>Not Specified</em>' : info.age }</dd>
 
                         <dt class="col-sm-3">Skype</dt>
                         <dd class="col-sm-9"><MessageCircleIcon /> <a href="skype:{info.skype}?chat">Chat Now</a></dd>
