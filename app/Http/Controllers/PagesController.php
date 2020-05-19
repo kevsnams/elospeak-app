@@ -64,7 +64,7 @@ class PagesController extends Controller
         $customerMessage->email = $request->input('email');
         $customerMessage->message = $request->input('message');
         $customerMessage->save();
-        
+
         return redirect(route('pages.contact'))->with('sent', 'Message sent. We will get back to you shortly.');
     }
 
@@ -72,6 +72,13 @@ class PagesController extends Controller
     {
         return view('pages.faqs', [
             'currentPage' => 'faqs'
+        ]);
+    }
+
+    public function enrollment()
+    {
+        return view('pages.enrollment', [
+            'currentPage' => 'enrollment'
         ]);
     }
 }

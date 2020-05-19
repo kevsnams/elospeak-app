@@ -23,6 +23,7 @@ Route::name('pages.')->group(function () {
     Route::get('/pages/contact', 'PagesController@contact')->name('contact');
     Route::get('/pages/faqs', 'PagesController@faqs')->name('faqs');
     Route::post('/pages/send-message', 'PagesController@sendMessage')->name('send-message');
+    Route::get('/pages/enrollment', 'PagesController@enrollment')->name('enrollment');
 });
 
 Route::resource('classroom-feedbacks', 'ClassroomFeedbacksController');

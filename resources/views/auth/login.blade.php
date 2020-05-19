@@ -4,7 +4,7 @@
 
 @section('content')
     <h1 class="header mt-5 text-center">
-        Login
+        LOGIN
     </h1>
     <p class="sub-header text-center">Let's start learning English!</p>
 

@@ -17,6 +17,8 @@
     <link rel="stylesheet" href="{{ asset('/front/css/bootstrap-grid.min.css') }}">
     <link rel="stylesheet" href="{{ asset('/front/css/main.css') }}">
 
+    @yield('style')
+
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-164284958-1"></script>
     <script>
