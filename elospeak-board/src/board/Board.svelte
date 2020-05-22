@@ -59,7 +59,7 @@
 
     function shapeShifter(node, updateAttrs = false)
     {
-        const pos = Stage.getPointerPosition(),
+        const pos = getScaleBasedPointer(),
             nodePos = {
                 x: node.x(),
                 y: node.y()
@@ -220,14 +220,59 @@
                 }
             });
 
+            const resetWheelCursor = _.debounce(() => {
+                Stage.container().style.cursor = 'default';
+            }, 1000);
+
+            const scaleBy = 1.01;
+            Stage.on('wheel', (e) => {
+                e.evt.preventDefault();
+
+                if (mode === 'zoom' && e.evt.shiftKey === true) {
+                    if (e.evt.deltaY > 0) {
+                        Stage.container().style.cursor = 'url(./img/zoom-add.png), auto';
+                    } else {
+                        Stage.container().style.cursor = 'url(./img/zoom-sub.png), auto';
+                    }
+
+                    resetWheelCursor.apply();
+
+                    const oldScale = Stage.scaleX();
+                    const pointer = Stage.getPointerPosition();
+
+                    const mousePointTo = {
+                        x: (pointer.x - Stage.x()) / oldScale,
+                        y: (pointer.y - Stage.y()) / oldScale,
+                    };
+
+                    const newScale = e.evt.deltaY > 0 ? oldScale * scaleBy : oldScale / scaleBy;
+
+                    Stage.scale({ x: newScale, y: newScale });
+
+                    const newPos = {
+                        x: pointer.x - mousePointTo.x * newScale,
+                        y: pointer.y - mousePointTo.y * newScale,
+                    };
+
+                    Stage.position(newPos);
+                    Stage.batchDraw();
+
+                    saveAndTransmit('zoom', {
+                        scale: Stage.scale(),
+                        position: Stage.position()
+                    });
+                }
+            });
+
             Stage.on('mousedown touchstart', (e) => {
                 if (mode == 'brush' || mode == 'eraser') {
                     Stage.find('Transformer').destroy();
 
                     _isPaint = true;
 
-                    const pos = Stage.getPointerPosition(),
-                        strokeWidth = mode == 'brush' ? $SettingsBrush.thickness : $SettingsEraser.thickness,
+                    const mousePointTo = getScaleBasedPointer();
+
+                    const strokeWidth = mode == 'brush' ? $SettingsBrush.thickness : $SettingsEraser.thickness,
                         stroke = mode == 'brush' ? $SettingsBrush.color : '#000';
 
                     _lastNode = new Konva.Line({
@@ -236,7 +281,7 @@
                         lineJoin: 'round',
                         lineCap: 'round',
                         globalCompositeOperation: (mode == 'brush' ? 'source-over' : 'destination-out'),
-                        points: [pos.x, pos.y],
+                        points: [mousePointTo.x, mousePointTo.y],
                         name: 'lines',
                         id: genNodeId()
                     });
@@ -284,7 +329,7 @@
 
                     _lastNode.id(genNodeId());
                     _lastNode.fillEnabled(!$SettingsShapes.fill.transparent);
-                    
+
                     if (!$SettingsShapes.fill.transparent) {
                         _lastNode.fill($SettingsShapes.fill.color);
                         _lastNode.opacity($SettingsShapes.fill.opacity);
@@ -299,7 +344,7 @@
                         _lastNode.stroke($SettingsShapes.border.color);
                     }
 
-                    const pos = Stage.getPointerPosition();
+                    const pos = getScaleBasedPointer();
                     _lastNode.draggable(true);
                     _lastNode.addName('shapes');
                     _lastNode.x(pos.x);
@@ -350,11 +395,11 @@
                         return;
                     }
 
-                    const pos = Stage.getPointerPosition();
-                    const newPoints = _lastNode.points().concat([pos.x, pos.y]);
+                    const mousePointTo = getScaleBasedPointer();
+                    const newPoints = _lastNode.points().concat([mousePointTo.x, mousePointTo.y]);
 
                     _lastNode.points(newPoints);
-                    
+
                     getLayer(currentLayer).batchDraw();
 
                     saveAndTransmit('node_update', {
@@ -419,6 +464,17 @@
         }
     }
 
+    function getScaleBasedPointer()
+    {
+        const oldScale = Stage.scaleX();
+        const pointer = Stage.getPointerPosition();
+
+        return {
+            x: (pointer.x - Stage.x()) / oldScale,
+            y: (pointer.y - Stage.y()) / oldScale,
+        };
+    }
+
     function updateStageWH()
     {
         setStageW(parseInt(wrapper.parentNode.offsetWidth) - 70);
@@ -444,7 +500,7 @@
                 node.hide();
             }
         });
-        
+
         const img = current.find('Image');
 
         if (!img.length) {
@@ -456,6 +512,7 @@
             });
         }
 
+        zoomReset(false);
         Stage.draw();
     }
 
@@ -519,6 +576,8 @@
             id: currentLayer,
             nodes: destroyedLines
         });
+
+        zoomReset(false);
 
         Stage.draw();
     }
@@ -599,7 +658,7 @@
                             const ratio = img.width() / StageWidth,
                                 newW = img.width() / ratio,
                                 newH = img.height() / ratio;
-                            
+
                             img.width(newW);
                             img.height(newH);
 
@@ -636,6 +695,25 @@
     function shapeColors(e)
     {
         saveAndTransmit('node_update', e.detail);
+    }
+
+    function zoomReset(e)
+    {
+        Stage.scale({
+            x: 1,
+            y: 1
+        });
+
+        Stage.position({
+            x: 0,
+            y: 0
+        });
+
+        if (e !== false) {
+            Stage.draw();
+        }
+
+        saveAndTransmit('zoom_reset', true);
     }
 
     if (UserCurrent.user_type == 'student') {
@@ -685,13 +763,23 @@
                 };
 
                 img.src = params.src;
-                
+
             },
+
+            'zoom_reset': () => {
+                zoomReset(true);
+            },
+
+            'zoom': (params) => {
+                Stage.scale(params.scale);
+                Stage.position(params.position);
+
+                Stage.batchDraw();
+            }
         };
-        
+
         LaravelEcho.private(Channel).listenForWhisper('draw', (draw) => {
             doDraw[draw.event](draw.params);
-            console.log(draw.event, draw.params);
             Stage.draw();
         });
     }
@@ -742,6 +830,7 @@
             }}
             on:deleteNode={deleteNode}
             on:shapeColors={shapeColors}
+            on:zoomReset={ zoomReset }
             bind:mode={mode}
             bind:displayUploader={displayUploader}
         />

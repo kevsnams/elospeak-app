@@ -4,7 +4,7 @@
 
     import {onMount, createEventDispatcher, tick} from 'svelte';
     const dispatch = createEventDispatcher();
-    
+
     import _ from 'underscore';
     import {genId, pluralize} from './util.js';
     import {
@@ -23,6 +23,7 @@
     import ModeEraser from './modes/ModeEraser.svelte';
     import ModeShapes from './modes/ModeShapes.svelte';
     import ModeSelect from './modes/ModeSelect.svelte';
+    import ModeZoom from './modes/ModeZoom.svelte';
 
     let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
     let dragElem, dragBox;
@@ -32,7 +33,7 @@
         e = e || window.event;
         e.preventDefault();
         e.stopPropagation();
-        
+
         pos3 = e.clientX;
         pos4 = e.clientY;
 
@@ -86,7 +87,7 @@
     onMount(() => {
         dragElem.onmousedown = _.debounce(dragMouseDown, 100);
     });
-    
+
     const Modes = [
         {
             key: 'brush',
@@ -111,6 +112,12 @@
             label: 'Select',
             component: ModeSelect
         },
+
+        {
+            key: 'zoom',
+            label: 'Zoom',
+            component: ModeZoom
+        }
     ];
 
     function getMode(key)
@@ -178,7 +185,7 @@
 
             const img = document.querySelector('[data-image-id="'+ image.id +'"]');
             const progress = img.querySelector('.queue-progress .progress .progress-bar');
-            
+
             try {
                 const upload = await axios.post('./classroom/image-upload', data, {
                     onUploadProgress: (progressEvent) => {
@@ -235,7 +242,7 @@
 
         createPreview();
     }
-    
+
     function openManualUploader()
     {
         const fileSelect = document.getElementById('select-files');
@@ -293,7 +300,7 @@
 
 <div id="toolbox" bind:this={dragBox}>
     <input type="file" on:change={selectFiles} style="position: absolute; left: -9999px;" multiple name="files" id="select-files">
-    
+
     <div class="d-flex header" bind:this={dragElem}>
         <div class="align-self-start toolbox-toggle" on:click|preventDefault|stopPropagation|self={toggleToolbox}>
             {#if isHiddenToolbox}
@@ -326,7 +333,7 @@
             </div>
         </div>
         <div id="mode-settings" class="mb-3">
-            <svelte:component this={getMode(mode).component} on:deleteNode on:shapeColors />
+            <svelte:component this={getMode(mode).component} on:deleteNode on:shapeColors on:zoomReset />
         </div>
     </div>
 </div>
