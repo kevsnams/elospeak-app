@@ -30,6 +30,7 @@
             ServerTime: '{{ date('Y-m-d H:i:s') }}'
         };
     </script>
+
     <script>
         window.Laravel = {
             csrfToken: "{{ csrf_token() }}"
