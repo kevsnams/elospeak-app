@@ -196,6 +196,16 @@
                     node.on('dragend', nodeTextDragStartEndEvent);
                 });
             }
+
+            if (UserCurrent.user_type == 'student') {
+                Stage.find('.shapes').each((node) => {
+                    node.draggable(false);
+                });
+
+                Stage.find('.texts').each((node) => {
+                    node.draggable(false);
+                });
+            }
         } else {
             updateStageWH();
 
@@ -896,11 +906,12 @@
     if (UserCurrent.user_type == 'student') {
         const doDraw = {
             'node_add': (params) => {
-                getLayer(params.layer).add(Konva.Node.create(params.node));
+                const node = Konva.Node.create(params.node);
+                node.draggable(false);
+                getLayer(params.layer).add(node);
             },
 
             'node_update': (params) => {
-                console.log(params);
                 Stage.find(`#${params.id}`).setAttrs(params.attrs);
             },
 
