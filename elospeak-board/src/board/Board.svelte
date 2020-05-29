@@ -182,18 +182,20 @@
                 imgObj.src = def.src;
             });
 
-            Stage.find('.shapes').each((node) => {
-                node.on('transformstart', eventShapeTransformStart);
-                node.on('transform', eventShapeTransform);
-                node.on('transformend', eventShapeTransformEnd);
-                node.on('dragmove', eventShapeDragMove);
-            });
+            if (UserCurrent.user_type == 'teacher') {
+                Stage.find('.shapes').each((node) => {
+                    node.on('transformstart', eventShapeTransformStart);
+                    node.on('transform', eventShapeTransform);
+                    node.on('transformend', eventShapeTransformEnd);
+                    node.on('dragmove', eventShapeDragMove);
+                });
 
-            Stage.find('.texts').each((node) => {
-                node.on('dblclick', nodeTextDbclickEvent);
-                node.on('dragstart', nodeTextDragStartEndEvent);
-                node.on('dragend', nodeTextDragStartEndEvent);
-            });
+                Stage.find('.texts').each((node) => {
+                    node.on('dblclick', nodeTextDbclickEvent);
+                    node.on('dragstart', nodeTextDragStartEndEvent);
+                    node.on('dragend', nodeTextDragStartEndEvent);
+                });
+            }
         } else {
             updateStageWH();
 
