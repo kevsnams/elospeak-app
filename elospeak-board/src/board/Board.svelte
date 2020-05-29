@@ -480,6 +480,8 @@
                     textInput.classList.remove('d-block');
                     textInput.classList.add('d-none');
                     textInput.value = '';
+
+                    isTextInputEditing = false;
                 }
 
                 let node = null;
