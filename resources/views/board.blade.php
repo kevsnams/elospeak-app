@@ -30,6 +30,11 @@
             ServerTime: '{{ date('Y-m-d H:i:s') }}'
         };
     </script>
+    <script>
+        window.Laravel = {
+            csrfToken: "{{ csrf_token() }}"
+        };
+    </script>
     <script defer src="{{ asset('/dist/board.js') }}"></script>
 </body>
 </html>
