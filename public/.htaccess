@@ -1,4 +1,5 @@
 Header set Access-Control-Allow-Origin "*"
+Header set Access-Control-Allow-Headers "Origin, Content-Type, X-Auth-Token, X-Requested-With, Accept, Authorization, X-CSRF-TOKEN, X-Socket-Id"
 
 # BEGIN GZIP
 <IfModule mod_deflate.c>
