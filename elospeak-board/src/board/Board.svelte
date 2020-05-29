@@ -243,6 +243,10 @@
                         showTextEditor();
                     }
                 }
+
+                if (mode == 'text' && isTextInputEditing == true) {
+                    textInput.focus();
+                }
             });
 
             const resetWheelCursor = _.debounce(() => {
@@ -1031,8 +1035,18 @@
     border-top: none;
     border-left: none;
     border-right: none;
-    border-bottom: 1px solid #333;
+    border-bottom: 1px solid rgb(0, 219, 255);
     position: absolute;
+    outline: 0;
+    padding: 3px;
+    border-radius: .355rem;
+}
+
+:global(.board-texteditor:hover, .board-texteditor:focus) {
+    border: 1px solid rgb(0, 219, 255);
+    -webkit-box-shadow: 0px 0px 20px -7px rgb(16, 221, 255);
+    -moz-box-shadow: 0px 0px 20px -7px rgb(16, 221, 255);
+    box-shadow: 0px 0px 20px -7px rgb(16, 221, 255);
 }
 
 #tabs {
