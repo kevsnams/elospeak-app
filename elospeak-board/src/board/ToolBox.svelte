@@ -24,6 +24,7 @@
     import ModeShapes from './modes/ModeShapes.svelte';
     import ModeSelect from './modes/ModeSelect.svelte';
     import ModeZoom from './modes/ModeZoom.svelte';
+    import ModeText from './modes/ModeText.svelte';
 
     let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
     let dragElem, dragBox;
@@ -105,6 +106,12 @@
             key: 'shapes',
             label: 'Shapes',
             component: ModeShapes
+        },
+
+        {
+            key: 'text',
+            label: 'Text',
+            component: ModeText
         },
 
         {

@@ -1,4 +1,5 @@
 import { writable } from 'svelte/store';
+import Konva from 'konva';
 
 const SettingsBrush = writable({
     thickness: 5,
@@ -23,11 +24,20 @@ const SettingsShapes = writable({
     }
 });
 
+const SettingsText = writable({
+    font: {
+        size: 14,
+        color: '#000',
+        face: 'Arial'
+    }
+});
+
 const SelectedNode = writable(null);
 
 export {
     SettingsBrush,
     SettingsEraser,
     SettingsShapes,
-    SelectedNode
+    SelectedNode,
+    SettingsText
 };

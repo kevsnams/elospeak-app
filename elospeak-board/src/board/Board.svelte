@@ -7,7 +7,8 @@
         SettingsBrush,
         SettingsEraser,
         SettingsShapes,
-        SelectedNode
+        SelectedNode,
+        SettingsText
     } from './modes/settings.js';
 
     import {onMount, tick} from 'svelte';
@@ -187,6 +188,12 @@
                 node.on('transformend', eventShapeTransformEnd);
                 node.on('dragmove', eventShapeDragMove);
             });
+
+            Stage.find('.texts').each((node) => {
+                node.on('dblclick', nodeTextDbclickEvent);
+                node.on('dragstart', nodeTextDragStartEndEvent);
+                node.on('dragend', nodeTextDragStartEndEvent);
+            });
         } else {
             updateStageWH();
 
@@ -217,6 +224,12 @@
                         node = e.target;
                         return node;
                     });
+                }
+
+                if (mode == 'text' && isTextInputEditing == false) {
+                    if (e.currentTarget == Stage) {
+                        showTextEditor();
+                    }
                 }
             });
 
@@ -419,6 +432,166 @@
         }
     });
 
+
+
+    let fontSize, fontColor, fontFace, textInput, isTextInputEditing = false;
+
+    $: fontSize = $SettingsText.font.size;
+    $: fontColor = $SettingsText.font.color;
+    $: fontFace = $SettingsText.font.face;
+
+    $: if (typeof textInput !== 'undefined') {
+        textInput.style.color = fontColor;
+        textInput.style.fontFamily = fontFace;
+        textInput.style.fontSize = fontSize +'px';
+    }
+
+    function createTextInputNode()
+    {
+        if (typeof textInput === 'undefined') {
+            textInput = document.createElement('input');
+            textInput.type = 'text';
+            textInput.classList.add('board-texteditor');
+            textInput.classList.add('d-none');
+            textInput.style.left = '-1000px';
+            textInput.style.top = '-1000px';
+            document.body.appendChild(textInput);
+
+            textInput.addEventListener('keydown', (e) => {
+                const KEY_ESC = 27, KEY_ENTER = 13, KEY_DELETE = 46;
+
+                if (e.keyCode === KEY_ESC) {
+                    textInput.classList.remove('d-block');
+                    textInput.classList.add('d-none');
+                    textInput.value = '';
+                }
+
+                let node = null;
+                if (textInput.getAttribute('data-node-id')) {
+                    node = Stage.find(`#${textInput.getAttribute('data-node-id')}`);
+                }
+
+                if (e.keyCode == KEY_DELETE && node !== null) {
+                    const node_id = node[0].attrs.id;
+                    node.destroy();
+                    Stage.batchDraw();
+
+                    textInput.classList.remove('d-block');
+                    textInput.classList.add('d-none');
+
+                    mode = 'select';
+                    isTextInputEditing = false;
+
+                    saveAndTransmit('node_delete', {
+                        node: node_id
+                    });
+                }
+
+                if (e.keyCode === KEY_ENTER) {
+                    if (node === null) {
+                        const newNode = new Konva.Text({
+                            text: textInput.value,
+                            x: parseFloat(textInput.getAttribute('data-px')),
+                            y: parseFloat(textInput.getAttribute('data-py')),
+                            fontFamily: fontFace,
+                            fontSize: fontSize,
+                            fill: fontColor,
+                            draggable: true,
+                            name: 'texts',
+                            id: genNodeId()
+                        });
+
+                        newNode.on('dblclick', nodeTextDbclickEvent);
+                        newNode.on('dragstart', nodeTextDragStartEndEvent);
+                        newNode.on('dragend', nodeTextDragStartEndEvent);
+                        getLayer(currentLayer).add(newNode);
+                        textInput.value = '';
+
+                        saveAndTransmit('node_add', {
+                            node: newNode.toJSON(),
+                            layer: currentLayer
+                        });
+                    } else {
+                        node.fontFamily(fontFace);
+                        node.fill(fontColor);
+                        node.fontSize(fontSize);
+                        node.text(textInput.value);
+                        node.visible(true);
+
+                        saveAndTransmit('node_update', {
+                            id: node[0].attrs.id,
+                            attrs: {
+                                fontFamily: fontFace,
+                                fill: fontColor,
+                                fontSize: fontSize,
+                                text: textInput.value
+                            }
+                        });
+                    }
+
+                    Stage.batchDraw();
+
+                    textInput.classList.remove('d-block');
+                    textInput.classList.add('d-none');
+
+                    mode = 'select';
+                    isTextInputEditing = false;
+                }
+            });
+        }
+    }
+    function nodeTextDragStartEndEvent(evt)
+    {
+        const node = evt.currentTarget;
+
+        saveAndTransmit('node_update', {
+            id: node.id(),
+            attrs: {
+                x: node.x(),
+                y: node.y()
+            }
+        });
+    }
+
+    function nodeTextDbclickEvent(evt)
+    {
+        createTextInputNode();
+        textInput.value = evt.currentTarget.attrs.text;
+        showTextEditor(evt.currentTarget);
+
+        mode = 'text';
+    }
+
+    function showTextEditor(node = null)
+    {
+        createTextInputNode();
+
+        const pointer = getScaleBasedPointer();
+        const stageBox = Stage.container().getBoundingClientRect();
+
+        textInput.classList.add('d-block');
+
+        textInput.style.left = node === null ? (stageBox.x + pointer.x) +'px' : (stageBox.x + node.attrs.x) +'px';
+        textInput.style.top = node === null ? (stageBox.y + pointer.y) +'px' : (stageBox.y + node.attrs.y) +'px';
+
+        textInput.setAttribute('data-px', pointer.x);
+        textInput.setAttribute('data-py', pointer.y);
+
+        textInput.focus();
+
+        if (node !== null) {
+            node.visible(false);
+            Stage.draw();
+
+            textInput.setAttribute('data-node-id', node.id());
+        } else {
+            textInput.removeAttribute('data-node-id');
+            textInput.value = '';
+        }
+
+        isTextInputEditing = true;
+    }
+
     $: if ($SelectedNode != null) {
         Stage.find('Transformer').destroy();
         const transformer = new Konva.Transformer();
@@ -459,6 +632,8 @@
             Stage.container().style.cursor = 'url(./img/eraser.png) 11 11, auto';
         } else if (mode == 'eraser' && _isPaint) {
             Stage.container().style.cursor = 'url(./img/eraser-click.png) 11 11, auto';
+        } else if (mode == 'text') {
+            Stage.container().style.cursor = 'text';
         } else {
             Stage.container().style.cursor = 'default';
         }
@@ -723,6 +898,7 @@
             },
 
             'node_update': (params) => {
+                console.log(params);
                 Stage.find(`#${params.id}`).setAttrs(params.attrs);
             },
 
@@ -812,8 +988,8 @@
         {/each}
     </div>
 
-    <div id="board-wrapper" class="mb-4" bind:this={wrapper}>
-        <div id="board-container" bind:this={container}></div>
+    <div id="board-wrapper" class="mb-4" bind:this={ wrapper }>
+        <div id="board-container" bind:this={ container }></div>
     </div>
 
     {#if showToolbox}
@@ -837,6 +1013,15 @@
     {/if}
 {/if}
 <style>
+:global(.board-texteditor) {
+    background: transparent;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-bottom: 1px solid #333;
+    position: absolute;
+}
+
 #tabs {
     width: 95%;
     margin: 0 auto;
