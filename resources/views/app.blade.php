@@ -19,6 +19,12 @@
         };
     </script>
 
+    <script>
+        window.Laravel = {
+            csrfToken: "{{ csrf_token() }}"
+        };
+    </script>
+
     <div id="app"></div>
 
     <script defer src="{{ asset('/dist/bundle.js') }}"></script>
