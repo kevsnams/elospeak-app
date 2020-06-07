@@ -51,12 +51,11 @@
                         <a href="{{ route('pages.teachers') }}" <?php echo $currentPage == 'teachers' ? 'class="active"' : '' ?>>OUR TEACHERS</a>
                     </li>
                     <li>
-                        <a href="{{ route('signup.index') }}" class="cta">SIGN UP</a>
-                    </li>
-                    <li>
                         <a href="{{ route('pages.faqs') }}" <?php echo $currentPage == 'faqs' ? 'class="active"' : '' ?>>FAQs</a>
                     </li>
-
+                    <li>
+                        <a href="{{ route('signup.index') }}" class="cta">SIGN UP</a>
+                    </li>
                     <li>
                         <a href="{{ route('login') }}" class="cta-blue <?php echo $currentPage == 'login' ? 'active' : '' ?>">LOGIN</a>
                     </li>
