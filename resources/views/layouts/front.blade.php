@@ -26,6 +26,8 @@
 
         gtag('config', 'UA-164284958-1');
     </script>
+
+    @yield('style')
 </head>
 <body>
 <div class="container">
@@ -49,7 +51,7 @@
                         <a href="{{ route('pages.teachers') }}" <?php echo $currentPage == 'teachers' ? 'class="active"' : '' ?>>OUR TEACHERS</a>
                     </li>
                     <li>
-                        <a href="{{ route('pages.contact') }}" class="cta">CONTACT</a>
+                        <a href="{{ route('signup.index') }}" class="cta">SIGN UP</a>
                     </li>
                     <li>
                         <a href="{{ route('pages.faqs') }}" <?php echo $currentPage == 'faqs' ? 'class="active"' : '' ?>>FAQs</a>
@@ -99,6 +101,8 @@
                 </a>
             @endif
         @endif
+
+        <a href="{{ route('pages.contact') }}" class="ml-3 blue-link">Contact Us</a>
     </footer>
 </div>
 

@@ -33,6 +33,9 @@ Route::get('/login', 'Auth\LoginController@showLogin')->name('login');
 Route::post('/login/auth', 'Auth\LoginController@authLogin')->name('login.auth');
 Route::get('/logout', 'AppController@logout')->name('logout');
 
+Route::get('/signup', 'SignupController@index')->name('signup.index');
+Route::post('/signup', 'SignupController@save')->name('signup.save');
+
 Route::name('app.')->group(function() {
     Route::get('/app', 'AppController@index')->name('index');
     Route::post('/app/classrooms', 'AppController@classrooms')->name('classroom.all');
